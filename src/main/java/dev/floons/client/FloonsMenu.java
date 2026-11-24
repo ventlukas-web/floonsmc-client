@@ -18,8 +18,8 @@ import java.util.function.Supplier;
  * Mehrseitige Reiter blättert man mit &lt; &gt;.
  */
 public class FloonsMenu extends FloonsScreen {
-    private static final int W = 384, H = 280, PW = W - 20;
-    private static final String[] TABS = {"General", "Gamble", "Auktion", "Visuals", "Streamer", "Tools", "Commands"};
+    private static final int W = 440, H = 280, PW = W - 20;
+    private static final String[] TABS = {"General", "Gamble", "Auktion", "Visuals", "Streamer", "Tools", "Server", "Commands"};
     private static final String[][] PAGES = {
         {"Design", "FPS"},
         {"Gamble"},
@@ -27,6 +27,7 @@ public class FloonsMenu extends FloonsScreen {
         {"HUD", "Mehr HUDs", "PvP-Anzeigen", "Extras", "Crosshair", "Scoreboard", "Eigenes HUD"},
         {"Twitch-Chat", "Giveaway", "Auktion", "Streamer & Werbung"},
         {"Tools", "Wegpunkte", "Notizen"},
+        {"Server"},
         {"Commands"}
     };
     private static final String[][] PRESETS = {
@@ -146,6 +147,7 @@ public class FloonsMenu extends FloonsScreen {
             case "Wegpunkte" -> waypoints(y);
             case "Notizen" -> notes(y);
             case "Tools" -> timers(y);
+            case "Server" -> serverPage(y);
             case "Commands" -> commands(y);
             default -> {}
         }
@@ -727,6 +729,25 @@ public class FloonsMenu extends FloonsScreen {
         button(() -> "Timer löschen", () -> FloonsGamble.chat(FloonsTimers.cancelTimers() + " Timer gelöscht."), x2, y, half, 18);
         y += 26;
         label("Eigene Timer: /timer <sekunden> <name>  ·  Rechner versteht k/m/b, z. B. 2.5m*1.5", left, y);
+    }
+
+    // ---------- Server ----------
+    private void serverPage(int y) {
+        FloonsConfig c = FloonsConfig.get();
+        int half = (PW - 6) / 2;
+        label("Beitreten-Button im Hauptmenü: Name", left, y);
+        label("Server-IP", left + half + 6, y);
+        field(left, y + 10, half, c.serverName, 32, s -> { c.serverName = s.trim().isEmpty() ? "WindSMP" : s.trim(); c.save(); });
+        field(left + half + 6, y + 10, half, c.serverIp, 64, s -> { c.serverIp = s.trim().isEmpty() ? "windsmp.net" : s.trim(); c.save(); });
+        y += 34;
+        toggle("Beitreten-Button", () -> c.joinButton, v -> c.joinButton = v, left, y, half);
+        toggle("Buttons im Floons-Design", () -> c.niceButtons, v -> c.niceButtons = v, left + half + 6, y, half);
+        y += 24;
+        button(() -> FloonsTitle.joinLabel(), () -> FloonsTitle.joinServer(client, this), left, y, PW, 22, true);
+        y += 30;
+        label("Der Button erscheint im Hauptmenü über den anderen Buttons, etwas größer.", left, y);
+        label("Leeres Feld = Standard (WindSMP / windsmp.net). Änderungen gelten beim", left, y + 11);
+        label("nächsten Öffnen des Hauptmenüs.", left, y + 22);
     }
 
     // ---------- Commands ----------

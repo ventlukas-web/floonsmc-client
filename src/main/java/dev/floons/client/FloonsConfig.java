@@ -31,6 +31,10 @@ public final class FloonsConfig {
     public boolean hud = true;
     /** Wasserzeichen "Floons Client" oben rechts in allen Menüs. */
     public boolean watermark = true;
+    /** Hauptmenue: Beitreten-Button + Vanilla-Buttons im Floons-Design. */
+    public boolean joinButton = true, niceButtons = true;
+    public String serverName = "WindSMP";
+    public String serverIp = "windsmp.net";
 
     // ---------- Gamble (wie Toasty Client) ----------
     /** Auszahlungs-Faktor bei /win (2.0 = doppelter Einsatz). */

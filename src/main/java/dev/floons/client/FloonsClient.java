@@ -49,6 +49,7 @@ public class FloonsClient implements ClientModInitializer {
         FloonsMisc.register();
         FloonsVisuals.register();
         FloonsStreamer.register();
+        FloonsTitle.register();
         FloonsTwitch.start();
         HudElementRegistry.replaceElement(VanillaHudElements.SCOREBOARD,
             orig -> (ctx, tick) -> FloonsScoreboard.render(ctx, tick, () -> orig.render(ctx, tick)));
