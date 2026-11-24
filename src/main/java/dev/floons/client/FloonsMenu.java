@@ -305,9 +305,15 @@ public class FloonsMenu extends FloonsScreen {
     private void auction(int y) {
         int half = (PW - 6) / 2, x2 = left + half + 6;
         if (!FloonsAuction.active) {
-            label("Item", left, y); label("Start", left + half + 44, y); label("Dauer", left + half + 120, y);
+            label("Item (tippen, Hand oder Inv)", left, y); label("Start", left + half + 44, y); label("Dauer", left + half + 120, y);
             y += 10;
-            field(left, y, half + 40, fItem, 60, s -> fItem = s);
+            field(left, y, half - 34, fItem, 60, s -> fItem = s);
+            button(() -> "Hand", () -> {
+                var p = client.player;
+                if (p == null || p.getMainHandStack().isEmpty()) { FloonsAuction.info("Du hältst kein Item in der Hand."); return; }
+                fItem = FloonsItemPicker.describe(p.getMainHandStack()); rebuild();
+            }, left + half - 32, y, 38, 18, true);
+            button(() -> "Inv", () -> client.setScreen(new FloonsItemPicker(this, it -> fItem = it)), left + half + 8, y, 32, 18, true);
             field(left + half + 44, y, 72, fStart, 16, s -> fStart = s);
             field(left + half + 120, y, PW - half - 120, fDur, 8, s -> fDur = s);
             y += 22;
@@ -718,7 +724,7 @@ public class FloonsMenu extends FloonsScreen {
         {"Gamble", "/gamble"}, {"Gamble", "/gamble list"}, {"Gamble", "/gamble reset"}, {"Gamble", "/gamble min 1k"},
         {"Gamble", "/gamble max 1b"}, {"Gamble", "/gamble multiplier 2"}, {"Gamble", "/gamble autopay"}, {"Gamble", "/gamble delay 500"},
         {"Gamble", "/gamble warn 30"}, {"Gamble", "/gamble limit 250k"}, {"Gamble", "/gamble hud"}, {"Gamble", "/gamble effects"}, {"Gamble", "/gamble confetti"},
-        {"Auktion", "/wa start 500k 2m Item"}, {"Auktion", "/wa end"}, {"Auktion", "/wa cancel"}, {"Auktion", "/wa extend 30"},
+        {"Auktion", "/wa start 500k 2m Item"}, {"Auktion", "/wa hand 500k 2m"}, {"Auktion", "/wa end"}, {"Auktion", "/wa cancel"}, {"Auktion", "/wa extend 30"},
         {"Auktion", "/wa status"}, {"Auktion", "/wa refund"}, {"Auktion", "/wa history"}, {"Auktion", "/wa test Spieler 1k"},
         {"Auktion", "/wa pause"}, {"Auktion", "/wa resume"}, {"Auktion", "/wa buynow 5m"}, {"Auktion", "/wa reserve 1m"}, {"Auktion", "/wa stats"},
         {"Auktion", "/wa queue add 500k 2m Item"}, {"Auktion", "/wa queue list"}, {"Auktion", "/wa queue next"}, {"Auktion", "/wa queue remove 1"}, {"Auktion", "/wa queue clear"},

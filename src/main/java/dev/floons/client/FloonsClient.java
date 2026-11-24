@@ -140,6 +140,17 @@ public class FloonsClient implements ClientModInitializer {
                             if (sec < 0) return ok("Dauer ungültig (z. B. 90, 90s, 2m, 1m30s).");
                             return ok(FloonsAuction.start(StringArgumentType.getString(c, "item"), st, sec));
                         })))))
+            .then(ClientCommandManager.literal("hand")
+                .then(ClientCommandManager.argument("startgebot", StringArgumentType.word())
+                    .then(ClientCommandManager.argument("dauer", StringArgumentType.word()).executes(c -> {
+                        var p = net.minecraft.client.MinecraftClient.getInstance().player;
+                        if (p == null || p.getMainHandStack().isEmpty()) return ok("Du hältst kein Item in der Hand.");
+                        long st = FloonsAuction.parseInput(StringArgumentType.getString(c, "startgebot"));
+                        int sec = FloonsAuction.parseDuration(StringArgumentType.getString(c, "dauer"));
+                        if (st < 0) return ok("Startgebot ungültig (z. B. 500k, 1.5m, 2000).");
+                        if (sec < 0) return ok("Dauer ungültig (z. B. 90, 90s, 2m, 1m30s).");
+                        return ok(FloonsAuction.start(FloonsItemPicker.describe(p.getMainHandStack()), st, sec));
+                    }))))
             .then(ClientCommandManager.literal("end").executes(c -> ok(FloonsAuction.end(false))))
             .then(ClientCommandManager.literal("cancel").executes(c -> ok(FloonsAuction.end(true))))
             .then(ClientCommandManager.literal("extend")

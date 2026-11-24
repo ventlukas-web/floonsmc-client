@@ -10,6 +10,7 @@ Bauen (wie beim Toasty Client):
 
 AUKTION (Gebote = Zahlungen an dich, Mehrfachzahlungen addieren sich)
   /wa start <startgebot> <dauer> <item>   z. B. /wa start 500k 2m Elytra
+  /wa hand <startgebot> <dauer>           Item aus der Hand (Menü: Knöpfe Hand / Inv)
   /wa end | cancel | extend <s> | status | refund | history
   /wa test <spieler> <betrag>             Gebot simulieren, ohne Geld
   /wa pause | resume                      Auktion anhalten / fortsetzen
