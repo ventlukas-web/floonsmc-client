@@ -146,7 +146,7 @@ public final class FloonsAuctionHud {
     private static void queueCard(DrawContext ctx, TextRenderer tr, MinecraftClient mc, FloonsConfig c) {
         long in = FloonsAuction.queueStartsIn();
         String l1 = "Nächste Auktion: " + FloonsAuction.queue.get(0).item();
-        String l2 = (in >= 0 ? "startet in " + FloonsAuction.mmss(in) : "/wa queue next zum Starten") + "  ·  " + FloonsAuction.queue.size() + " in der Warteschlange";
+        String l2 = (in >= 0 ? "startet in " + FloonsAuction.mmss(in) : "/action queue next zum Starten") + "  ·  " + FloonsAuction.queue.size() + " in der Warteschlange";
         int pad = 6, w = Math.min(240, Math.max(tr.getWidth(l1) + 14, tr.getWidth(l2))), h = pad * 2 + 20, bw = w + pad * 2;
         float s = c.hudScale;
         float[] d = defaultPos(mc, c, bw * s, h * s);

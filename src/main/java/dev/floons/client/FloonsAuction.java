@@ -39,7 +39,7 @@ public final class FloonsAuction {
     private static int lastCountdown = -1;
     /** Sofortkauf-Preis und Mindestpreis der laufenden Auktion (0 = aus). */
     public static long buyNow, reserve;
-    /** Für die nächste Auktion vorgemerkt (per /wa buynow / reserve ohne laufende Auktion). */
+    /** Für die nächste Auktion vorgemerkt (per /action buynow / reserve ohne laufende Auktion). */
     public static long nextBuyNow, nextReserve;
     public static boolean manualPause;
     public static long startedAt;
@@ -54,7 +54,7 @@ public final class FloonsAuction {
     private static long queueStartAt;
     private static final int[] COUNTDOWN = {60, 30, 10, 5};
 
-    /** Letzte Auktion (für /wa refund nach dem Ende). */
+    /** Letzte Auktion (für /action refund nach dem Ende). */
     private static final Map<String, Long> lastBids = new LinkedHashMap<>();
     private static String lastWinner;
 
@@ -100,7 +100,7 @@ public final class FloonsAuction {
 
     // ---------- Steuerung ----------
     public static String start(String it, long start, int sec) {
-        if (active) return "Es läuft schon eine Auktion (/wa end oder /wa cancel).";
+        if (active) return "Es läuft schon eine Auktion (/action end oder /action cancel).";
         if (sec < 5) return "Dauer mindestens 5 Sekunden.";
         active = true; paused = false;
         item = it; startBid = start; best = start; bestName = null;
@@ -250,7 +250,7 @@ public final class FloonsAuction {
         pausedLeft = left(); paused = true;
     }
 
-    /** /wa pause: von Hand angehalten (Wiederbeitritt setzt nicht automatisch fort). */
+    /** /action pause: von Hand angehalten (Wiederbeitritt setzt nicht automatisch fort). */
     public static String pauseManual() {
         if (!active) return "Keine Auktion aktiv.";
         if (paused) return "Auktion ist schon pausiert.";

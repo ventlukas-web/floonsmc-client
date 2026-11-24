@@ -89,7 +89,7 @@ public class FloonsClient implements ClientModInitializer {
                 FloonsTheme.gradientText(ctx, tr, label, lx, 5);
             }));
         ClientCommandRegistrationCallback.EVENT.register((d, reg) -> {
-            d.register(auctionCommand("wa"));
+            d.register(auctionCommand("action"));
             d.register(auctionCommand("auction"));
             d.register(settingsCommand());
             FloonsGamble.register(d);
@@ -121,7 +121,7 @@ public class FloonsClient implements ClientModInitializer {
         if (!FloonsAuction.onPayment(player, amount)) FloonsGamble.onPayment(player, amount);
     }
 
-    // ---------- /wa ----------
+    // ---------- /action ----------
     private static int ok(String err) {
         if (err != null) { FloonsAuction.info(err); return 0; }
         return 1;
@@ -199,7 +199,7 @@ public class FloonsClient implements ClientModInitializer {
                     }))));
     }
 
-    /** /wa buynow|reserve <betrag|aus>: gilt für die laufende Auktion, sonst für die nächste. */
+    /** /action buynow|reserve <betrag|aus>: gilt für die laufende Auktion, sonst für die nächste. */
     private static String setPrice(String raw, boolean buy) {
         long v = raw.equalsIgnoreCase("aus") || raw.equalsIgnoreCase("off") ? 0 : FloonsAuction.parseInput(raw);
         if (v < 0) return "Betrag ungültig (z. B. 5m oder aus).";
@@ -214,17 +214,18 @@ public class FloonsClient implements ClientModInitializer {
     }
 
     private static void queueList() {
-        if (FloonsAuction.queue.isEmpty()) { FloonsAuction.info("Warteschlange ist leer. /wa queue add <start> <dauer> <item>"); return; }
+        if (FloonsAuction.queue.isEmpty()) { FloonsAuction.info("Warteschlange ist leer. /action queue add <start> <dauer> <item>"); return; }
         int i = 1;
         for (FloonsAuction.Queued q : FloonsAuction.queue)
             FloonsAuction.info((i++) + ". " + q.item() + "  ·  Start " + FloonsAuction.fmt(q.start()) + "  ·  " + FloonsAuction.mmss(q.sec() * 1000L));
     }
 
     private static void help() {
-        FloonsAuction.info("/wa start <startgebot> <dauer> <item>  – z. B. /wa start 500k 2m Elytra");
-        FloonsAuction.info("/wa end | cancel | extend <s> | pause | resume | status | refund | history | stats");
-        FloonsAuction.info("/wa buynow <betrag|aus> | reserve <betrag|aus> | queue add <start> <dauer> <item> | queue list|next|remove <nr>|clear");
-        FloonsAuction.info("/wa test <spieler> <betrag> – Gebot simulieren (kein Geld)");
+        FloonsAuction.info("/action start <startgebot> <dauer> <item>  – z. B. /action start 500k 2m Elytra");
+        FloonsAuction.info("Gleich: /auction … und /floons auction … (z. B. /floons auction hand 500k 2m)");
+        FloonsAuction.info("/action end | cancel | extend <s> | pause | resume | status | refund | history | stats");
+        FloonsAuction.info("/action buynow <betrag|aus> | reserve <betrag|aus> | queue add <start> <dauer> <item> | queue list|next|remove <nr>|clear");
+        FloonsAuction.info("/action test <spieler> <betrag> – Gebot simulieren (kein Geld)");
         FloonsAuction.info("Gamble: /win /lose /payback [spieler|all] · /gamble · /roll · /coinflip · /roulette · /calc");
         FloonsAuction.info("/floons menu oder Rechte Shift – Mod-Menü  ·  /floons – Einstellungen per Befehl");
     }
@@ -264,6 +265,8 @@ public class FloonsClient implements ClientModInitializer {
         for (String s : new String[]{"top_left", "top_right", "bottom_right", "mid_left", "mid_right"})
             corner.then(ClientCommandManager.literal(s).executes(c -> { k.hudCorner = s; k.save(); FloonsAuction.info("HUD-Position: " + s); return 1; }));
         return ClientCommandManager.literal("floons")
+            .then(auctionCommand("auction"))
+            .then(auctionCommand("auctions"))
             .then(ClientCommandManager.literal("menu").executes(c -> { FloonsGamble.pendingScreen = 1; return 1; }))
             .then(ClientCommandManager.literal("hud").executes(c -> { FloonsGamble.pendingScreen = 4; return 1; }))
             .then(ClientCommandManager.literal("lag").executes(c -> { for (String ln : FloonsProf.analyze()) FloonsAuction.info(ln); return 1; }))

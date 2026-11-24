@@ -9,16 +9,16 @@ Bauen (wie beim Toasty Client):
   Benötigt Fabric API.
 
 AUKTION (Gebote = Zahlungen an dich, Mehrfachzahlungen addieren sich)
-  /wa start <startgebot> <dauer> <item>   z. B. /wa start 500k 2m Elytra
-  /wa hand <startgebot> <dauer>           Item aus der Hand (Menü: Knöpfe Hand / Inv)
-  /wa end | cancel | extend <s> | status | refund | history
-  /wa test <spieler> <betrag>             Gebot simulieren, ohne Geld
-  /wa pause | resume                      Auktion anhalten / fortsetzen
-  /wa buynow <betrag|aus>                 Sofortkauf: Gesamtgebot erreicht -> sofort verkauft
-  /wa reserve <betrag|aus>                Mindestpreis: darunter wird nicht verkauft
-  /wa queue add <start> <dauer> <item>    Warteschlange, startet automatisch nacheinander
-  /wa queue list | next | remove <nr> | clear
-  /wa stats                               Erlös, Schnitt, teuerstes Item, bester Käufer
+  /action start <startgebot> <dauer> <item>   z. B. /action start 500k 2m Elytra
+  /action hand <startgebot> <dauer>           Item aus der Hand (Menü: Knöpfe Hand / Inv)
+  /action end | cancel | extend <s> | status | refund | history
+  /action test <spieler> <betrag>             Gebot simulieren, ohne Geld
+  /action pause | resume                      Auktion anhalten / fortsetzen
+  /action buynow <betrag|aus>                 Sofortkauf: Gesamtgebot erreicht -> sofort verkauft
+  /action reserve <betrag|aus>                Mindestpreis: darunter wird nicht verkauft
+  /action queue add <start> <dauer> <item>    Warteschlange, startet automatisch nacheinander
+  /action queue list | next | remove <nr> | clear
+  /action stats                               Erlös, Schnitt, teuerstes Item, bester Käufer
   - Neues Auktions-HUD: Logo, große Restzeit, Zeitbalken, nächstes Mindestgebot,
     Sofortkauf/Mindestpreis, Top 3, Live-Gebotsverlauf, Warteschlange; frei verschiebbar
   - Großer Countdown in der Bildschirmmitte (letzte 5 s), VERKAUFT-Banner mit Konfetti
@@ -63,4 +63,4 @@ STREAMER (Reiter Streamer: Twitch-Chat · Giveaway · Auktion · Streamer & Werb
   /werbung                               Werbe-Text in den Chat
   Giveaway-HUD: Preis, Zeitbalken, große Teilnehmerzahl, neue Teilnehmer live ([T] = Twitch),
   Glücksrad beim Ziehen, Gewinner-Banner mit Konfetti.
-  /auction funktioniert genauso wie /wa.
+  /auction und /floons auction (auch /floons auctions) funktionieren genauso wie /action.
