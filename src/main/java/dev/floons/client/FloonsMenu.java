@@ -26,7 +26,7 @@ public class FloonsMenu extends FloonsScreen {
         {"Auktion", "Einstellungen"},
         {"HUD", "Mehr HUDs", "PvP-Anzeigen", "Extras", "Crosshair", "Scoreboard", "Eigenes HUD"},
         {"Twitch-Chat", "Giveaway", "Auktion", "Streamer & Werbung"},
-        {"Wegpunkte", "Notizen", "Timer & Rechner"},
+        {"Tools", "Wegpunkte", "Notizen"},
         {"Commands"}
     };
     private static final String[][] PRESETS = {
@@ -145,7 +145,7 @@ public class FloonsMenu extends FloonsScreen {
             case "Eigenes HUD" -> custom(y);
             case "Wegpunkte" -> waypoints(y);
             case "Notizen" -> notes(y);
-            case "Timer & Rechner" -> timers(y);
+            case "Tools" -> timers(y);
             case "Commands" -> commands(y);
             default -> {}
         }
@@ -703,20 +703,30 @@ public class FloonsMenu extends FloonsScreen {
     }
 
     private void timers(int y) {
-        int half = (PW - 6) / 2;
+        int half = (PW - 6) / 2, x2 = left + half + 6;
+        button(() -> "Rechner öffnen (J)", () -> client.setScreen(new FloonsCalculatorScreen(this)), left, y, half, 18, true);
+        button(() -> "Roulette", () -> client.setScreen(new FloonsRouletteScreen(this)), x2, y, half, 18, true);
+        y += 22;
+        button(() -> "Screenshot ohne HUD (F9)", () -> FloonsVisuals.screenshot(true), left, y, half, 18);
+        button(() -> "Screenshot mit HUD", () -> FloonsVisuals.screenshot(false), x2, y, half, 18);
+        y += 22;
+        button(() -> "Münzwurf", () -> runCommand("/coinflip"), left, y, half, 18);
+        button(() -> "Würfeln 1–100", () -> runCommand("/roll 100"), x2, y, half, 18);
+        y += 26;
+        label("Stoppuhr & Timer", left, y);
+        y += 11;
         button(() -> FloonsTimers.swRunning() ? "Stoppuhr stoppen" : "Stoppuhr starten",
             () -> FloonsGamble.chat(FloonsTimers.stopwatch(FloonsTimers.swRunning() ? "stop" : "start")), left, y, half, 18, true);
-        button(() -> "Stoppuhr: Runde / Reset", () -> FloonsGamble.chat(FloonsTimers.stopwatch(FloonsTimers.swRunning() ? "lap" : "reset")),
-            left + half + 6, y, half, 18);
-        y += 21;
+        button(() -> FloonsTimers.swRunning() ? "Stoppuhr: Runde" : "Stoppuhr: Reset",
+            () -> FloonsGamble.chat(FloonsTimers.stopwatch(FloonsTimers.swRunning() ? "lap" : "reset")), x2, y, half, 18);
+        y += 22;
         button(() -> "Timer: 1 Minute", () -> { FloonsTimers.addTimer(60, "1 Minute"); FloonsGamble.chat("Timer gestartet: 60 s"); }, left, y, half, 18);
-        button(() -> "Timer: 5 Minuten", () -> { FloonsTimers.addTimer(300, "5 Minuten"); FloonsGamble.chat("Timer gestartet: 300 s"); }, left + half + 6, y, half, 18);
-        y += 21;
-        button(() -> "Timer löschen", () -> FloonsGamble.chat(FloonsTimers.cancelTimers() + " Timer gelöscht."), left, y, half, 18);
-        button(() -> "Rechner", () -> client.setScreen(new FloonsCalculatorScreen(this)), left + half + 6, y, half, 18, true);
-        y += 21;
-        button(() -> "Roulette", () -> client.setScreen(new FloonsRouletteScreen(this)), left, y, half, 18);
-        button(() -> "Münzwurf", () -> runCommand("/coinflip"), left + half + 6, y, half, 18);
+        button(() -> "Timer: 5 Minuten", () -> { FloonsTimers.addTimer(300, "5 Minuten"); FloonsGamble.chat("Timer gestartet: 300 s"); }, x2, y, half, 18);
+        y += 22;
+        button(() -> "Timer: 10 Minuten", () -> { FloonsTimers.addTimer(600, "10 Minuten"); FloonsGamble.chat("Timer gestartet: 600 s"); }, left, y, half, 18);
+        button(() -> "Timer löschen", () -> FloonsGamble.chat(FloonsTimers.cancelTimers() + " Timer gelöscht."), x2, y, half, 18);
+        y += 26;
+        label("Eigene Timer: /timer <sekunden> <name>  ·  Rechner versteht k/m/b, z. B. 2.5m*1.5", left, y);
     }
 
     // ---------- Commands ----------
@@ -740,7 +750,7 @@ public class FloonsMenu extends FloonsScreen {
         {"Einstellungen", "/floons minraise 10k"}, {"Einstellungen", "/floons antisnipe"}, {"Einstellungen", "/floons antisnipe 10 15"}, {"Einstellungen", "/floons scale 1"},
         {"Einstellungen", "/floons corner mid_right"}, {"Einstellungen", "/floons pattern <regex>"}, {"Einstellungen", "/floons debug"},
         {"Einstellungen", "/floons lag"}, {"Einstellungen", "/floons perf"}, {"Einstellungen", "/floons perf reset"}, {"Einstellungen", "/floons lite"},
-        {"Tools", "/roll 100"}, {"Tools", "/coinflip"}, {"Tools", "/roulette"}, {"Tools", "/calc"}, {"Tools", "/fullbright"}, {"Tools", "/glass"},
+        {"Tools", "/roll 100"}, {"Tools", "/coinflip"}, {"Tools", "/roulette"}, {"Tools", "/calc"}, {"Tools", "/fullbright"}, {"Tools", "/glass"}, {"Tools", "/shot"}, {"Tools", "/shot hud"},
         {"Tools", "/stopwatch start"}, {"Tools", "/stopwatch stop"}, {"Tools", "/stopwatch lap"}, {"Tools", "/stopwatch reset"},
         {"Tools", "/timer 60 Name"}, {"Tools", "/timer cancel"},
         {"Notizen", "/note add Text"}, {"Notizen", "/note list"}, {"Notizen", "/note remove 1"}, {"Notizen", "/note clear"},

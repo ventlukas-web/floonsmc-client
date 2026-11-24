@@ -74,6 +74,9 @@ public final class FloonsTools {
                     .executes(c -> { int s = com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c, "sekunden"); FloonsTimers.addTimer(s, s + " s"); chat("Timer gestartet: " + s + " s"); return 1; })
                     .then(ClientCommandManager.argument("name", StringArgumentType.greedyString())
                         .executes(c -> { int s = com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c, "sekunden"); String n = StringArgumentType.getString(c, "name"); FloonsTimers.addTimer(s, n); chat("Timer \"" + n + "\": " + s + " s"); return 1; }))));
+        d.register(ClientCommandManager.literal("shot")
+            .executes(c -> { FloonsVisuals.screenshot(true); return 1; })
+            .then(ClientCommandManager.literal("hud").executes(c -> { FloonsVisuals.screenshot(false); return 1; })));
         d.register(ClientCommandManager.literal("fullbright").executes(c -> {
             FloonsConfig cf = FloonsConfig.get(); cf.fullbright = !cf.fullbright; cf.save();
             chat("Fullbright " + (cf.fullbright ? "an" : "aus")); return 1;

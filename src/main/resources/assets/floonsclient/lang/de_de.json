@@ -3,5 +3,7 @@
   "key.category.floonsclient.main": "Floons Client",
   "key.floonsclient.hudedit": "HUD verschieben",
   "key.floonsclient.zoom": "Zoom",
-  "key.floonsclient.fullbright": "Fullbright"
+  "key.floonsclient.fullbright": "Fullbright",
+  "key.floonsclient.calc": "Rechner",
+  "key.floonsclient.shot": "Screenshot (ohne HUD)"
 }

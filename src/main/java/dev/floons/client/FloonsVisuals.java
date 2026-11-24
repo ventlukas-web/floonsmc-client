@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public final class FloonsVisuals {
     private FloonsVisuals() {}
 
-    public static KeyBinding zoomKey, fullbrightKey;
+    public static KeyBinding zoomKey, fullbrightKey, calcKey, shotKey;
     private static boolean zooming;
     private static int zoomOrig;
     private static double gammaOrig = -1;
@@ -24,6 +24,9 @@ public final class FloonsVisuals {
     public static void tick(MinecraftClient mc) {
         FloonsConfig cfg = FloonsConfig.get();
         fullbright(mc, cfg);
+        shotTick(mc);
+        while (calcKey != null && calcKey.wasPressed()) if (mc.currentScreen == null) mc.setScreen(new FloonsCalculatorScreen(null));
+        while (shotKey != null && shotKey.wasPressed()) screenshot(true);
         if (mc.player == null || mc.world == null) return;
         while (fullbrightKey != null && fullbrightKey.wasPressed()) {
             cfg.fullbright = !cfg.fullbright; cfg.save();
@@ -48,6 +51,33 @@ public final class FloonsVisuals {
                 gammaOrig = -1;
             }
         } catch (Throwable ignored) { }
+    }
+
+    // ---------- Screenshot-Tool ----------
+    private static int shotWait = -1;
+    private static boolean shotHudWas;
+
+    /** Screenshot im Spiel: clean = ohne HUD. Schliesst offene Menues vorher, damit sie nicht im Bild sind. */
+    public static void screenshot(boolean clean) {
+        MinecraftClient mc = MinecraftClient.getInstance();
+        if (shotWait >= 0 || mc.world == null) return;
+        if (mc.currentScreen != null) mc.setScreen(null);
+        shotHudWas = mc.options.hudHidden;
+        if (clean) mc.options.hudHidden = true;
+        shotWait = 5;
+    }
+
+    private static void shotTick(MinecraftClient mc) {
+        if (shotWait > 0) { shotWait--; return; }
+        if (shotWait != 0) return;
+        shotWait = -1;
+        try {
+            net.minecraft.client.util.ScreenshotRecorder.saveScreenshot(mc.runDirectory, mc.getFramebuffer(),
+                msg -> mc.execute(() -> mc.inGameHud.getChatHud().addMessage(msg)));
+        } catch (Throwable t) {
+            FloonsGamble.chat("Screenshot fehlgeschlagen: " + t.getClass().getSimpleName());
+        }
+        mc.options.hudHidden = shotHudWas;
     }
 
     // ---------- Anti-Leak (Chat) ----------

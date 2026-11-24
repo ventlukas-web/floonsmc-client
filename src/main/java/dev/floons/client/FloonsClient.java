@@ -67,6 +67,10 @@ public class FloonsClient implements ClientModInitializer {
             new KeyBinding("key.floonsclient.hudedit", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, cat));
         FloonsVisuals.zoomKey = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.floonsclient.zoom", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_C, cat));
+        FloonsVisuals.calcKey = KeyBindingHelper.registerKeyBinding(
+            new KeyBinding("key.floonsclient.calc", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_J, cat));
+        FloonsVisuals.shotKey = KeyBindingHelper.registerKeyBinding(
+            new KeyBinding("key.floonsclient.shot", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_F9, cat));
         FloonsVisuals.fullbrightKey = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.floonsclient.fullbright", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, cat));
         ClientLifecycleEvents.CLIENT_STARTED.register(c -> FloonsPerf.apply());
