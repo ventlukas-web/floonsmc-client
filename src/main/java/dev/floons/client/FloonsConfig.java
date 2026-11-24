@@ -56,6 +56,8 @@ public final class FloonsConfig {
     public boolean confetti = true;
     /** Gamble-HUD (aktuelles Gamble, Warteschlange, Profit). */
     public boolean gambleHud = true;
+    /** Roulette rechnet den offenen Einsatz automatisch ab (Gewinn x2 bzw. x36). */
+    public boolean rouletteSettle = true;
     public float hudScale = 1.0f;
     /** top_left, top_right, bottom_right, mid_left, mid_right */
     public String hudCorner = "mid_right";

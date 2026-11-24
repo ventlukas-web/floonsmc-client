@@ -251,7 +251,15 @@ public final class FloonsGamble {
             chat("Münzwurf: " + (heads ? "Kopf" : "Zahl"));
             return 1;
         }));
-        d.register(ClientCommandManager.literal("roulette").executes(c -> { pendingScreen = 8; return 1; }));
+        d.register(ClientCommandManager.literal("roulette")
+            .executes(c -> { FloonsRouletteScreen.target = null; pendingScreen = 8; return 1; })
+            .then(ClientCommandManager.literal("auto").executes(c -> {
+                FloonsConfig k2 = FloonsConfig.get(); k2.rouletteSettle = !k2.rouletteSettle; k2.save();
+                chat("Roulette rechnet offene Einsätze ab: " + (k2.rouletteSettle ? "an" : "aus")); return 1;
+            }))
+            .then(ClientCommandManager.argument("spieler", StringArgumentType.word()).executes(c -> {
+                FloonsRouletteScreen.target = StringArgumentType.getString(c, "spieler"); pendingScreen = 8; return 1;
+            })));
         d.register(ClientCommandManager.literal("calc").executes(c -> { pendingScreen = 2; return 1; }));
 
         FloonsConfig k = FloonsConfig.get();

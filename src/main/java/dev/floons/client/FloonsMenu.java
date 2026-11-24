@@ -258,7 +258,7 @@ public class FloonsMenu extends FloonsScreen {
             t("Stats-HUD", () -> c.gambleHud, v -> c.gambleHud = v),
             t("Zahlungs-HUD", () -> c.payHud, v -> c.payHud = v),
             t("Gewinn-Graph", () -> c.graphHud, v -> c.graphHud = v),
-            t("Top-Spieler", () -> c.topHud, v -> c.topHud = v),
+            t("Roulette rechnet ab", () -> c.rouletteSettle, v -> c.rouletteSettle = v),
         });
         button(() -> System.currentTimeMillis() < resetArmed ? "Wirklich zurücksetzen?" : "Statistik zurücksetzen", () -> {
             if (System.currentTimeMillis() < resetArmed) { FloonsStats.reset(); resetArmed = 0; FloonsGamble.chat("Statistik zurückgesetzt."); }
@@ -776,7 +776,7 @@ public class FloonsMenu extends FloonsScreen {
         {"Einstellungen", "/floons minraise 10k"}, {"Einstellungen", "/floons antisnipe"}, {"Einstellungen", "/floons antisnipe 10 15"}, {"Einstellungen", "/floons scale 1"},
         {"Einstellungen", "/floons corner mid_right"}, {"Einstellungen", "/floons pattern <regex>"}, {"Einstellungen", "/floons debug"},
         {"Einstellungen", "/floons lag"}, {"Einstellungen", "/floons perf"}, {"Einstellungen", "/floons perf reset"}, {"Einstellungen", "/floons lite"},
-        {"Tools", "/roll 100"}, {"Tools", "/coinflip"}, {"Tools", "/roulette"}, {"Tools", "/calc"}, {"Tools", "/fullbright"}, {"Tools", "/glass"}, {"Tools", "/shot"}, {"Tools", "/shot hud"},
+        {"Tools", "/roll 100"}, {"Tools", "/coinflip"}, {"Tools", "/roulette"}, {"Gamble", "/roulette Spieler"}, {"Gamble", "/roulette auto"}, {"Tools", "/calc"}, {"Tools", "/fullbright"}, {"Tools", "/glass"}, {"Tools", "/shot"}, {"Tools", "/shot hud"},
         {"Tools", "/stopwatch start"}, {"Tools", "/stopwatch stop"}, {"Tools", "/stopwatch lap"}, {"Tools", "/stopwatch reset"},
         {"Tools", "/timer 60 Name"}, {"Tools", "/timer cancel"},
         {"Notizen", "/note add Text"}, {"Notizen", "/note list"}, {"Notizen", "/note remove 1"}, {"Notizen", "/note clear"},

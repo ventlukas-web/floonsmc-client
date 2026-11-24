@@ -21,6 +21,8 @@ public class FloonsRouletteScreen extends FloonsScreen {
     private static final double TD = 5.5, WB0 = 14, WB_END = 3;   // Kugel laeuft bis TD im Aussenring
     private static final List<Integer> HISTORY = new ArrayList<>();
     private static int bet = 0, betNum = 17;
+    /** Spieler, dessen offener Einsatz abgerechnet wird (null = der älteste). */
+    public static String target;
 
     private final Screen parent;
     private enum St { IDLE, SPIN, DONE }
@@ -176,6 +178,12 @@ public class FloonsRouletteScreen extends FloonsScreen {
             if (HISTORY.size() > 16) HISTORY.remove(0);
             boolean w = wins(bet, result);
             FloonsGamble.chat("Roulette: " + result + (result == 0 ? " Grün" : isRed(result) ? " Rot" : " Schwarz") + " – " + (w ? "Wette gewonnen (×" + (int) mult() + ")" : "Wette verloren"));
+            // offenen Einsatz automatisch abrechnen (Gewinn = Einsatz x Roulette-Faktor)
+            if (FloonsConfig.get().rouletteSettle && !FloonsStats.pending.isEmpty()) {
+                String err = FloonsGamble.settle(target, w, w ? mult() : -1);
+                if (err != null) FloonsGamble.chat(err);
+                target = null;
+            }
             if (FloonsConfig.get().sound) {
                 FloonsGamble.playId("block.note_block.bell", 1f, result == 0 ? 0.6f : 1.2f);
                 FloonsGamble.playId(w ? "entity.player.levelup" : "block.note_block.bass", 1f, 1f);
