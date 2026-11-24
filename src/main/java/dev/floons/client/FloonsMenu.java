@@ -23,7 +23,7 @@ public class FloonsMenu extends FloonsScreen {
     private static final String[][] PAGES = {
         {"Design", "FPS"},
         {"Gamble"},
-        {"Auktion"},
+        {"Auktion", "Einstellungen"},
         {"HUD", "Mehr HUDs", "PvP-Anzeigen", "Extras", "Crosshair", "Scoreboard", "Eigenes HUD"},
         {"Wegpunkte", "Notizen", "Timer & Rechner"},
         {"Commands"}
@@ -131,6 +131,7 @@ public class FloonsMenu extends FloonsScreen {
             case "FPS" -> fps(y);
             case "Gamble" -> gamble(y);
             case "Auktion" -> auction(y);
+            case "Einstellungen" -> auctionSettings(y);
             case "HUD" -> hud(y);
             case "Mehr HUDs" -> moreHud(y);
             case "PvP-Anzeigen" -> pvp(y);
@@ -256,8 +257,19 @@ public class FloonsMenu extends FloonsScreen {
     }
 
     // ---------- Auktion ----------
+    private static String fBuy = "", fRes = "";
+
+    private void priceFields(int y) {
+        int half = (PW - 6) / 2;
+        label("Sofortkauf (leer = aus)", left, y);
+        label("Mindestpreis (leer = aus)", left + half + 6, y);
+        field(left, y + 10, half, fBuy, 16, s -> fBuy = s);
+        field(left + half + 6, y + 10, half, fRes, 16, s -> fRes = s);
+    }
+
+    private static long priceOf(String s) { return s.isBlank() ? 0 : FloonsAuction.parseInput(s); }
+
     private void auction(int y) {
-        FloonsConfig c = FloonsConfig.get();
         int half = (PW - 6) / 2, x2 = left + half + 6;
         if (!FloonsAuction.active) {
             label("Item", left, y); label("Start", left + half + 44, y); label("Dauer", left + half + 120, y);
@@ -266,35 +278,92 @@ public class FloonsMenu extends FloonsScreen {
             field(left + half + 44, y, 72, fStart, 16, s -> fStart = s);
             field(left + half + 120, y, PW - half - 120, fDur, 8, s -> fDur = s);
             y += 22;
+            priceFields(y);
+            y += 32;
             button(() -> "Auktion starten", () -> {
-                long st = FloonsAuction.parseInput(fStart.isBlank() ? "0" : fStart);
-                int sec = FloonsAuction.parseDuration(fDur);
-                if (fItem.isBlank()) { FloonsAuction.info("Erst ein Item eintragen."); return; }
-                if (st < 0) { FloonsAuction.info("Startgebot ungültig (z. B. 500k, 1.5m, 2000)."); return; }
-                if (sec < 0) { FloonsAuction.info("Dauer ungültig (z. B. 90, 90s, 2m, 1m30s)."); return; }
-                String err = FloonsAuction.start(fItem.trim(), st, sec);
-                if (err != null) FloonsAuction.info(err); else rebuild();
-            }, left, y, PW, 18, true);
+                String err = check();
+                if (err != null) { FloonsAuction.info(err); return; }
+                FloonsAuction.nextBuyNow = priceOf(fBuy); FloonsAuction.nextReserve = priceOf(fRes);
+                err = FloonsAuction.start(fItem.trim(), FloonsAuction.parseInput(fStart.isBlank() ? "0" : fStart), FloonsAuction.parseDuration(fDur));
+                if (err != null) FloonsAuction.info(err); else { fItem = ""; rebuild(); }
+            }, left, y, half, 18, true);
+            button(() -> "In Warteschlange", () -> {
+                String err = check();
+                if (err != null) { FloonsAuction.info(err); return; }
+                FloonsAuction.queue.add(new FloonsAuction.Queued(fItem.trim(), FloonsAuction.parseInput(fStart.isBlank() ? "0" : fStart),
+                    FloonsAuction.parseDuration(fDur), priceOf(fBuy), priceOf(fRes)));
+                fItem = ""; rebuild();
+            }, x2, y, half, 18);
+            y += 24;
+            label("Warteschlange (" + FloonsAuction.queue.size() + ")", left, y);
+            y += 11;
+            for (int i = 0; i < Math.min(3, FloonsAuction.queue.size()); i++) {
+                final int idx = i;
+                FloonsAuction.Queued q = FloonsAuction.queue.get(i);
+                label((i + 1) + ". " + q.item() + "  ·  " + FloonsAuction.fmt(q.start()) + "  ·  " + FloonsAuction.mmss(q.sec() * 1000L), left, y + 5);
+                button(() -> "X", () -> { if (idx < FloonsAuction.queue.size()) FloonsAuction.queue.remove(idx); rebuild(); }, left + PW - 22, y, 22, 18);
+                y += 20;
+            }
+            if (!FloonsAuction.queue.isEmpty()) {
+                button(() -> "Nächste starten", () -> { msg(FloonsAuction.startNext()); rebuild(); }, left, y, half, 18, true);
+                button(() -> "Warteschlange leeren", () -> { FloonsAuction.queue.clear(); rebuild(); }, x2, y, half, 18);
+            }
         } else {
-            y += 22;
+            y += 24;
             int bw = (PW - 12) / 4;
             button(() -> "Beenden", () -> { FloonsAuction.end(false); rebuild(); }, left, y, bw, 18, true);
             button(() -> "Abbrechen", () -> { FloonsAuction.end(true); rebuild(); }, left + (bw + 4), y, bw, 18);
-            button(() -> "+30s", () -> FloonsAuction.extend(30), left + 2 * (bw + 4), y, bw, 18);
-            button(() -> "+60s", () -> FloonsAuction.extend(60), left + 3 * (bw + 4), y, bw, 18);
+            button(() -> "+30s", () -> msg(FloonsAuction.extend(30)), left + 2 * (bw + 4), y, bw, 18);
+            button(() -> "+60s", () -> msg(FloonsAuction.extend(60)), left + 3 * (bw + 4), y, bw, 18);
+            y += 21;
+            button(() -> FloonsAuction.paused ? "Fortsetzen" : "Pausieren",
+                () -> msg(FloonsAuction.paused ? FloonsAuction.resumeManual() : FloonsAuction.pauseManual()), left, y, half, 18);
+            button(() -> "Rückzahlungen im Chat", () -> { FloonsAuction.refundList(); close(); }, x2, y, half, 18);
+            y += 23;
+            fBuy = FloonsAuction.buyNow > 0 ? String.valueOf(FloonsAuction.buyNow) : "";
+            fRes = FloonsAuction.reserve > 0 ? String.valueOf(FloonsAuction.reserve) : "";
+            priceFields(y);
+            y += 32;
+            button(() -> "Preise übernehmen", () -> {
+                long b = priceOf(fBuy), r = priceOf(fRes);
+                if (b < 0 || r < 0) { FloonsAuction.info("Betrag ungültig (z. B. 5m)."); return; }
+                FloonsAuction.buyNow = b; FloonsAuction.reserve = r;
+                if (b > 0) FloonsAuction.say("[Auktion] Sofortkauf für " + FloonsAuction.item + ": " + FloonsAuction.fmt(b));
+            }, left, y, half, 18, true);
+            button(() -> "Statistik im Chat", () -> { FloonsAuction.stats(); close(); }, x2, y, half, 18);
+            y += 23;
+            label("Warteschlange: " + FloonsAuction.queue.size() + (FloonsAuction.queue.isEmpty() ? "" : "  ·  danach " + FloonsAuction.queue.get(0).item()), left, y);
         }
-        y += 25;
+    }
+
+    private static String check() {
+        if (fItem.isBlank()) return "Erst ein Item eintragen.";
+        if (FloonsAuction.parseInput(fStart.isBlank() ? "0" : fStart) < 0) return "Startgebot ungültig (z. B. 500k, 1.5m, 2000).";
+        int sec = FloonsAuction.parseDuration(fDur);
+        if (sec < 5) return "Dauer ungültig (mindestens 5 Sekunden, z. B. 90s, 2m).";
+        if (priceOf(fBuy) < 0 || priceOf(fRes) < 0) return "Sofortkauf/Mindestpreis ungültig (z. B. 5m oder leer).";
+        return null;
+    }
+
+    private void auctionSettings(int y) {
+        FloonsConfig c = FloonsConfig.get();
+        int half = (PW - 6) / 2, x2 = left + half + 6;
         y = toggles(y, new Object[][]{
-            t("Ansagen", () -> c.announce, v -> c.announce = v),
-            t("Countdown", () -> c.countdown, v -> c.countdown = v),
+            t("Ansagen im Chat", () -> c.announce, v -> c.announce = v),
+            t("Countdown-Ansagen", () -> c.countdown, v -> c.countdown = v),
             t("Ton", () -> c.sound, v -> c.sound = v),
             t("Auktions-HUD", () -> c.hud, v -> c.hud = v),
+            t("Großer Countdown", () -> c.bigCountdown, v -> c.bigCountdown = v),
+            t("Gebotsverlauf", () -> c.bidFeed, v -> c.bidFeed = v),
+            t("Warteschlange automatisch", () -> c.autoQueue, v -> c.autoQueue = v),
         });
         cycleLong("Mindest-Erhöhung", new long[]{1, 1_000, 10_000, 100_000, 1_000_000, 10_000_000},
             () -> c.minRaise, v -> c.minRaise = v, FloonsAuction::fmt, left, y, half);
         cycleLong("Anti-Snipe", new long[]{0, 5, 10, 15, 30, 60},
             () -> (long) c.antiSnipe, v -> c.antiSnipe = (int) (long) v, v -> v > 0 ? v + "s" : "aus", x2, y, half);
         y += 21;
+        cycleLong("Pause zwischen Auktionen", new long[]{3, 5, 10, 20, 30, 60},
+            () -> (long) c.queueGapSec, v -> c.queueGapSec = (int) (long) v, v -> v + "s", left, y, half);
         String[] corners = {"mid_right", "top_right", "top_left", "mid_left", "bottom_right"};
         String[] names = {"Mitte rechts", "oben rechts", "oben links", "Mitte links", "unten rechts"};
         button(() -> {
@@ -303,9 +372,14 @@ public class FloonsMenu extends FloonsScreen {
         }, () -> {
             int i = 0;
             for (int k = 0; k < corners.length; k++) if (corners[k].equals(c.hudCorner)) i = k;
-            c.hudCorner = corners[(i + 1) % corners.length]; c.save();
-        }, left, y, half, 18);
-        button(() -> "Rückzahlungen im Chat", () -> { FloonsAuction.refundList(); close(); }, x2, y, half, 18);
+            c.hudCorner = corners[(i + 1) % corners.length]; c.hudPos.remove("auction"); c.save();
+        }, x2, y, half, 18);
+        y += 21;
+        button(() -> "HUD frei verschieben", () -> client.setScreen(new FloonsHudEditor(this)), left, y, half, 18, true);
+        button(() -> "Auktions-Statistik", () -> { FloonsAuction.stats(); close(); }, x2, y, half, 18);
+        y += 24;
+        label("Gebote = /pay an dich, Zahlungen derselben Person addieren sich.", left, y);
+        label("Sofortkauf beendet sofort, Mindestpreis verhindert Verkauf darunter.", left, y + 11);
     }
 
     // ---------- Visuals ----------
@@ -533,6 +607,9 @@ public class FloonsMenu extends FloonsScreen {
         {"Gamble", "/gamble warn 30"}, {"Gamble", "/gamble limit 250k"}, {"Gamble", "/gamble hud"}, {"Gamble", "/gamble effects"}, {"Gamble", "/gamble confetti"},
         {"Auktion", "/wa start 500k 2m Item"}, {"Auktion", "/wa end"}, {"Auktion", "/wa cancel"}, {"Auktion", "/wa extend 30"},
         {"Auktion", "/wa status"}, {"Auktion", "/wa refund"}, {"Auktion", "/wa history"}, {"Auktion", "/wa test Spieler 1k"},
+        {"Auktion", "/wa pause"}, {"Auktion", "/wa resume"}, {"Auktion", "/wa buynow 5m"}, {"Auktion", "/wa reserve 1m"}, {"Auktion", "/wa stats"},
+        {"Auktion", "/wa queue add 500k 2m Item"}, {"Auktion", "/wa queue list"}, {"Auktion", "/wa queue next"}, {"Auktion", "/wa queue remove 1"}, {"Auktion", "/wa queue clear"},
+        {"Einstellungen", "/floons autoqueue"}, {"Einstellungen", "/floons bigcountdown"}, {"Einstellungen", "/floons feed"},
         {"Einstellungen", "/floons"}, {"Einstellungen", "/floons menu"}, {"Einstellungen", "/floons hud"}, {"Einstellungen", "/floons watermark"},
         {"Einstellungen", "/floons announce"}, {"Einstellungen", "/floons countdown"}, {"Einstellungen", "/floons sound"},
         {"Einstellungen", "/floons minraise 10k"}, {"Einstellungen", "/floons antisnipe 15"}, {"Einstellungen", "/floons scale 1"},
@@ -595,7 +672,7 @@ public class FloonsMenu extends FloonsScreen {
     protected void extra(DrawContext ctx, int mouseX, int mouseY) {
         for (Label l : labels) ctx.drawTextWithShadow(textRenderer, l.text(), l.x(), l.y(), l.color());
         String pgName = PAGES[tab][Math.floorMod(page[tab], PAGES[tab].length)];
-        int y = top + 46;
+        int y = top + 46 + (PAGES[tab].length > 1 ? 22 : 0);
         if (pgName.equals("Auktion") && FloonsAuction.active) {
             String l1 = FloonsAuction.item + "  ·  noch " + FloonsAuction.mmss(FloonsAuction.left()) + (FloonsAuction.paused ? " (Pause)" : "");
             String l2 = (FloonsAuction.bestName == null ? "kein Gebot (Start " + FloonsAuction.fmt(FloonsAuction.startBid) + ")"

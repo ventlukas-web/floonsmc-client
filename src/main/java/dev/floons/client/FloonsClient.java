@@ -73,7 +73,7 @@ public class FloonsClient implements ClientModInitializer {
         ClientSendMessageEvents.COMMAND.register(FloonsGamble::onOwnCommand);
         ClientReceiveMessageEvents.GAME.register((msg, overlay) -> { if (!overlay) onChat(msg.getString()); });
         ClientPlayConnectionEvents.DISCONNECT.register((h, mc) -> FloonsAuction.pause());
-        ClientPlayConnectionEvents.JOIN.register((h, s, mc) -> mc.execute(FloonsAuction::resume));
+        ClientPlayConnectionEvents.JOIN.register((h, s, mc) -> mc.execute(FloonsAuction::resumeAfterJoin));
         // Wasserzeichen in allen Menues (oben rechts, damit der Chat unten links frei bleibt)
         ScreenEvents.AFTER_INIT.register((client, screen, w, h) ->
             ScreenEvents.afterRender(screen).register((s, ctx, mx, my, delta) -> {
@@ -140,6 +140,36 @@ public class FloonsClient implements ClientModInitializer {
                 .then(ClientCommandManager.argument("sekunden", IntegerArgumentType.integer(1, 3600))
                     .executes(c -> ok(FloonsAuction.extend(IntegerArgumentType.getInteger(c, "sekunden"))))))
             .then(ClientCommandManager.literal("refund").executes(c -> { FloonsAuction.refundList(); return 1; }))
+            .then(ClientCommandManager.literal("pause").executes(c -> ok(FloonsAuction.pauseManual())))
+            .then(ClientCommandManager.literal("resume").executes(c -> ok(FloonsAuction.resumeManual())))
+            .then(ClientCommandManager.literal("stats").executes(c -> { FloonsAuction.stats(); return 1; }))
+            .then(ClientCommandManager.literal("buynow")
+                .then(ClientCommandManager.argument("betrag", StringArgumentType.word()).executes(c -> ok(setPrice(StringArgumentType.getString(c, "betrag"), true)))))
+            .then(ClientCommandManager.literal("reserve")
+                .then(ClientCommandManager.argument("betrag", StringArgumentType.word()).executes(c -> ok(setPrice(StringArgumentType.getString(c, "betrag"), false)))))
+            .then(ClientCommandManager.literal("queue")
+                .executes(c -> { queueList(); return 1; })
+                .then(ClientCommandManager.literal("list").executes(c -> { queueList(); return 1; }))
+                .then(ClientCommandManager.literal("clear").executes(c -> { int n = FloonsAuction.queue.size(); FloonsAuction.queue.clear(); return ok(n + " Auktionen aus der Warteschlange entfernt."); }))
+                .then(ClientCommandManager.literal("next").executes(c -> ok(FloonsAuction.startNext())))
+                .then(ClientCommandManager.literal("remove")
+                    .then(ClientCommandManager.argument("nr", IntegerArgumentType.integer(1)).executes(c -> {
+                        int i = IntegerArgumentType.getInteger(c, "nr") - 1;
+                        if (i >= FloonsAuction.queue.size()) return ok("Keine Auktion Nr. " + (i + 1) + ".");
+                        FloonsAuction.queue.remove(i); return ok("Entfernt.");
+                    })))
+                .then(ClientCommandManager.literal("add")
+                    .then(ClientCommandManager.argument("startgebot", StringArgumentType.word())
+                        .then(ClientCommandManager.argument("dauer", StringArgumentType.word())
+                            .then(ClientCommandManager.argument("item", StringArgumentType.greedyString()).executes(c -> {
+                                long st = FloonsAuction.parseInput(StringArgumentType.getString(c, "startgebot"));
+                                int sec = FloonsAuction.parseDuration(StringArgumentType.getString(c, "dauer"));
+                                if (st < 0) return ok("Startgebot ungültig (z. B. 500k, 1.5m, 2000).");
+                                if (sec < 5) return ok("Dauer ungültig (mindestens 5 Sekunden, z. B. 90s, 2m).");
+                                String it = StringArgumentType.getString(c, "item");
+                                FloonsAuction.queue.add(new FloonsAuction.Queued(it, st, sec, 0, 0));
+                                return ok("In der Warteschlange (" + FloonsAuction.queue.size() + "): " + it);
+                            }))))))
             .then(ClientCommandManager.literal("status").executes(c -> { status(); return 1; }))
             .then(ClientCommandManager.literal("history").executes(c -> { history(); return 1; }))
             .then(ClientCommandManager.literal("test")
@@ -152,9 +182,31 @@ public class FloonsClient implements ClientModInitializer {
                     }))));
     }
 
+    /** /wa buynow|reserve <betrag|aus>: gilt für die laufende Auktion, sonst für die nächste. */
+    private static String setPrice(String raw, boolean buy) {
+        long v = raw.equalsIgnoreCase("aus") || raw.equalsIgnoreCase("off") ? 0 : FloonsAuction.parseInput(raw);
+        if (v < 0) return "Betrag ungültig (z. B. 5m oder aus).";
+        String what = buy ? "Sofortkauf" : "Mindestpreis";
+        if (FloonsAuction.active) {
+            if (buy) FloonsAuction.buyNow = v; else FloonsAuction.reserve = v;
+            if (buy && v > 0) FloonsAuction.say("[Auktion] Sofortkauf für " + FloonsAuction.item + ": " + FloonsAuction.fmt(v));
+            return what + (v > 0 ? ": " + FloonsAuction.fmt(v) : " aus") + " (laufende Auktion).";
+        }
+        if (buy) FloonsAuction.nextBuyNow = v; else FloonsAuction.nextReserve = v;
+        return what + (v > 0 ? ": " + FloonsAuction.fmt(v) : " aus") + " (gilt für die nächste Auktion).";
+    }
+
+    private static void queueList() {
+        if (FloonsAuction.queue.isEmpty()) { FloonsAuction.info("Warteschlange ist leer. /wa queue add <start> <dauer> <item>"); return; }
+        int i = 1;
+        for (FloonsAuction.Queued q : FloonsAuction.queue)
+            FloonsAuction.info((i++) + ". " + q.item() + "  ·  Start " + FloonsAuction.fmt(q.start()) + "  ·  " + FloonsAuction.mmss(q.sec() * 1000L));
+    }
+
     private static void help() {
         FloonsAuction.info("/wa start <startgebot> <dauer> <item>  – z. B. /wa start 500k 2m Elytra");
-        FloonsAuction.info("/wa end | cancel | extend <s> | status | refund | history");
+        FloonsAuction.info("/wa end | cancel | extend <s> | pause | resume | status | refund | history | stats");
+        FloonsAuction.info("/wa buynow <betrag|aus> | reserve <betrag|aus> | queue add <start> <dauer> <item> | queue list|next|remove <nr>|clear");
         FloonsAuction.info("/wa test <spieler> <betrag> – Gebot simulieren (kein Geld)");
         FloonsAuction.info("Gamble: /win /lose /payback [spieler|all] · /gamble · /roll · /coinflip · /roulette · /calc");
         FloonsAuction.info("/floons menu oder Rechte Shift – Mod-Menü  ·  /floons – Einstellungen per Befehl");
@@ -219,6 +271,9 @@ public class FloonsClient implements ClientModInitializer {
             .then(toggle("sound", "Ton", () -> k.sound, v -> k.sound = v))
             .then(toggle("hud", "HUD", () -> k.hud, v -> k.hud = v))
             .then(toggle("watermark", "Wasserzeichen", () -> k.watermark, v -> k.watermark = v))
+            .then(toggle("autoqueue", "Warteschlange automatisch", () -> k.autoQueue, v -> k.autoQueue = v))
+            .then(toggle("bigcountdown", "Großer Countdown", () -> k.bigCountdown, v -> k.bigCountdown = v))
+            .then(toggle("feed", "Gebotsverlauf im HUD", () -> k.bidFeed, v -> k.bidFeed = v))
             .then(ClientCommandManager.literal("debug").executes(c -> {
                 debug = !debug; FloonsAuction.info("Debug (nicht erkannte $-Nachrichten zeigen): " + onOff(debug)); return 1;
             }))

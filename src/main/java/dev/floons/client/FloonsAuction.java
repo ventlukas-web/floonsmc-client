@@ -37,6 +37,21 @@ public final class FloonsAuction {
     public static long flashUntil;
     public static final Map<String, Long> bids = new LinkedHashMap<>();
     private static int lastCountdown = -1;
+    /** Sofortkauf-Preis und Mindestpreis der laufenden Auktion (0 = aus). */
+    public static long buyNow, reserve;
+    /** Für die nächste Auktion vorgemerkt (per /wa buynow / reserve ohne laufende Auktion). */
+    public static long nextBuyNow, nextReserve;
+    public static boolean manualPause;
+    public static long startedAt;
+
+    /** Live-Gebotsverlauf (neueste zuerst). */
+    public record Bid(String name, long amount, long total, long at, boolean top) {}
+    public static final List<Bid> feed = new ArrayList<>();
+
+    /** Warteschlange: nächste Auktionen. */
+    public record Queued(String item, long start, int sec, long buyNow, long reserve) {}
+    public static final List<Queued> queue = new ArrayList<>();
+    private static long queueStartAt;
     private static final int[] COUNTDOWN = {60, 30, 10, 5};
 
     /** Letzte Auktion (für /wa refund nach dem Ende). */
@@ -68,7 +83,7 @@ public final class FloonsAuction {
     }
 
     // ---------- Chat ----------
-    static void say(String s) {
+    public static void say(String s) {
         MinecraftClient mc = MinecraftClient.getInstance();
         if (mc.player == null) return;
         if (FloonsConfig.get().announce && mc.player.networkHandler != null) mc.player.networkHandler.sendChatMessage(s);
@@ -89,11 +104,18 @@ public final class FloonsAuction {
         if (sec < 5) return "Dauer mindestens 5 Sekunden.";
         active = true; paused = false;
         item = it; startBid = start; best = start; bestName = null;
-        bids.clear();
+        bids.clear(); feed.clear();
+        buyNow = nextBuyNow; reserve = nextReserve; nextBuyNow = 0; nextReserve = 0;
+        manualPause = false;
         durationMs = sec * 1000L;
-        endAt = System.currentTimeMillis() + durationMs;
+        startedAt = System.currentTimeMillis();
+        endAt = startedAt + durationMs;
         lastCountdown = sec;
-        say("[Auktion] " + item + " | Start " + fmt(start) + " | " + mmss(durationMs) + " | Bieten: /pay an mich, Zahlungen addieren sich");
+        queueStartAt = 0;
+        say("[Auktion] " + item + " | Start " + fmt(start) + " | " + mmss(durationMs)
+            + (buyNow > 0 ? " | Sofortkauf " + fmt(buyNow) : "") + (reserve > 0 ? " | Mindestpreis" : "")
+            + " | Bieten: /pay an mich, Zahlungen addieren sich");
+        FloonsNotify.push("Auktion gestartet", item, FloonsTheme.BLUE);
         return null;
     }
 
@@ -129,12 +151,24 @@ public final class FloonsAuction {
         if (bestName == null) {
             say("[Auktion] " + item + " beendet – keine Gebote.");
             refundList();
+            scheduleNext();
+            return null;
+        }
+        if (reserve > 0 && best < reserve) {
+            e.winner = null; e.amount = 0; saveHistory();
+            lastWinner = null;
+            say("[Auktion] " + item + " nicht verkauft – Mindestpreis nicht erreicht. Alle Gebote werden zurückgezahlt.");
+            FloonsHud.overlay(false, "NICHT VERKAUFT", item + "  ·  Mindestpreis " + fmt(reserve));
+            refundList();
+            scheduleNext();
             return null;
         }
         say("[Auktion] " + item + " geht an " + bestName + " für " + fmt(best) + "!");
+        FloonsHud.overlay(true, "VERKAUFT", item + "  ·  " + bestName + "  ·  " + fmt(best));
         long over = bids.getOrDefault(bestName, 0L) - best;
         if (over > 0) info(bestName + " hat " + fmt(over) + " mehr gezahlt als nötig.");
         refundList();
+        scheduleNext();
         return null;
     }
 
@@ -172,6 +206,15 @@ public final class FloonsAuction {
         long total = bids.merge(player, amount, Long::sum);
         FloonsConfig c = FloonsConfig.get();
         long need = bestName == null ? startBid : best + Math.max(1, c.minRaise);
+        boolean top = player.equals(bestName) || total >= need;
+        feed.add(0, new Bid(player, amount, total, System.currentTimeMillis(), top));
+        while (feed.size() > 8) feed.remove(feed.size() - 1);
+        if (buyNow > 0 && total >= buyNow) {
+            best = total; bestName = player;
+            say("[Auktion] SOFORTKAUF! " + player + " zahlt " + fmt(total) + " für " + item);
+            end(false);
+            return true;
+        }
         if (player.equals(bestName)) {
             best = total;
             info(player + " erhöht sein eigenes Gebot auf " + fmt(total) + ".");
@@ -207,6 +250,45 @@ public final class FloonsAuction {
         pausedLeft = left(); paused = true;
     }
 
+    /** /wa pause: von Hand angehalten (Wiederbeitritt setzt nicht automatisch fort). */
+    public static String pauseManual() {
+        if (!active) return "Keine Auktion aktiv.";
+        if (paused) return "Auktion ist schon pausiert.";
+        pause(); manualPause = true;
+        say("[Auktion] " + item + " pausiert (noch " + mmss(left()) + ").");
+        return null;
+    }
+
+    public static String resumeManual() {
+        if (!active) return "Keine Auktion aktiv.";
+        if (!paused) return "Auktion läuft bereits.";
+        manualPause = false;
+        resume();
+        say("[Auktion] " + item + " läuft weiter: noch " + mmss(left()) + ".");
+        return null;
+    }
+
+    /** Beim Wiederbeitritt: nur fortsetzen, wenn nicht von Hand pausiert. */
+    public static void resumeAfterJoin() { if (!manualPause) resume(); }
+
+    // ---------- Warteschlange ----------
+    private static void scheduleNext() {
+        if (!queue.isEmpty() && FloonsConfig.get().autoQueue) {
+            queueStartAt = System.currentTimeMillis() + Math.max(3, FloonsConfig.get().queueGapSec) * 1000L;
+            info("Nächste Auktion in " + Math.max(3, FloonsConfig.get().queueGapSec) + "s: " + queue.get(0).item());
+        }
+    }
+
+    public static String startNext() {
+        if (active) return "Es läuft schon eine Auktion.";
+        if (queue.isEmpty()) return "Warteschlange ist leer.";
+        Queued q = queue.remove(0);
+        nextBuyNow = q.buyNow(); nextReserve = q.reserve();
+        return start(q.item(), q.start(), q.sec());
+    }
+
+    public static long queueStartsIn() { return queueStartAt == 0 ? -1 : Math.max(0, queueStartAt - System.currentTimeMillis()); }
+
     public static void resume() {
         if (!active || !paused) return;
         endAt = System.currentTimeMillis() + pausedLeft; paused = false;
@@ -214,6 +296,11 @@ public final class FloonsAuction {
     }
 
     public static void tick() {
+        if (!active && queueStartAt > 0 && System.currentTimeMillis() >= queueStartAt) {
+            queueStartAt = 0;
+            String err = startNext();
+            if (err != null) info(err);
+        }
         if (!active || paused) return;
         long l = left();
         if (l <= 0) { end(false); return; }
@@ -226,6 +313,24 @@ public final class FloonsAuction {
                 break;
             }
         }
+    }
+
+    // ---------- Statistik ----------
+    public static void stats() {
+        List<Entry> h = history();
+        long sold = 0, sum = 0, maxV = 0; String maxItem = "–";
+        Map<String, Long> buyers = new LinkedHashMap<>();
+        for (Entry e : h) {
+            if (e.winner == null) continue;
+            sold++; sum += e.amount;
+            if (e.amount > maxV) { maxV = e.amount; maxItem = e.item; }
+            buyers.merge(e.winner, e.amount, Long::sum);
+        }
+        info("Auktionen: " + h.size() + " | verkauft " + sold + " | Erlös " + fmt(sum) + (sold > 0 ? " | Schnitt " + fmt(sum / sold) : ""));
+        if (sold > 0) info("Teuerstes: " + maxItem + " für " + fmt(maxV));
+        String topB = null; long topV = 0;
+        for (var b : buyers.entrySet()) if (b.getValue() > topV) { topV = b.getValue(); topB = b.getKey(); }
+        if (topB != null) info("Bester Käufer: " + topB + " (" + fmt(topV) + ")");
     }
 
     // ---------- Anzeige-Daten ----------

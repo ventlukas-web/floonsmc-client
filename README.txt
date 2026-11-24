@@ -12,6 +12,15 @@ AUKTION (Gebote = Zahlungen an dich, Mehrfachzahlungen addieren sich)
   /wa start <startgebot> <dauer> <item>   z. B. /wa start 500k 2m Elytra
   /wa end | cancel | extend <s> | status | refund | history
   /wa test <spieler> <betrag>             Gebot simulieren, ohne Geld
+  /wa pause | resume                      Auktion anhalten / fortsetzen
+  /wa buynow <betrag|aus>                 Sofortkauf: Gesamtgebot erreicht -> sofort verkauft
+  /wa reserve <betrag|aus>                Mindestpreis: darunter wird nicht verkauft
+  /wa queue add <start> <dauer> <item>    Warteschlange, startet automatisch nacheinander
+  /wa queue list | next | remove <nr> | clear
+  /wa stats                               Erlös, Schnitt, teuerstes Item, bester Käufer
+  - Neues Auktions-HUD: Logo, große Restzeit, Zeitbalken, nächstes Mindestgebot,
+    Sofortkauf/Mindestpreis, Top 3, Live-Gebotsverlauf, Warteschlange; frei verschiebbar
+  - Großer Countdown in der Bildschirmmitte (letzte 5 s), VERKAUFT-Banner mit Konfetti
   - HUD mit Zeitbalken, Höchstgebot, Meistbietendem, Top 3, Gesamt
   - Anti-Snipe: Gebot kurz vor Schluss verlängert die Zeit
   - Countdown-Ansagen bei 60/30/10/5 s

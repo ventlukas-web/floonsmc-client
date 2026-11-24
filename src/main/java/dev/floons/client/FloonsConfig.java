@@ -50,6 +50,13 @@ public final class FloonsConfig {
     public float hudScale = 1.0f;
     /** top_left, top_right, bottom_right, mid_left, mid_right */
     public String hudCorner = "mid_right";
+    /** Warteschlange: nächste Auktion automatisch starten, mit Pause dazwischen (Sekunden). */
+    public boolean autoQueue = true;
+    public int queueGapSec = 10;
+    /** Große Countdown-Zahl in der Bildschirmmitte in den letzten Sekunden. */
+    public boolean bigCountdown = true;
+    /** Live-Gebotsverlauf im Auktions-HUD. */
+    public boolean bidFeed = true;
 
     // ---------- Design ----------
     public String color1 = "#38BDF8";
