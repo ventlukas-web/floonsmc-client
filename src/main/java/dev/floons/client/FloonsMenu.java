@@ -19,12 +19,13 @@ import java.util.function.Supplier;
  */
 public class FloonsMenu extends FloonsScreen {
     private static final int W = 384, H = 280, PW = W - 20;
-    private static final String[] TABS = {"General", "Gamble", "Auktion", "Visuals", "Tools", "Commands"};
+    private static final String[] TABS = {"General", "Gamble", "Auktion", "Visuals", "Streamer", "Tools", "Commands"};
     private static final String[][] PAGES = {
         {"Design", "FPS"},
         {"Gamble"},
         {"Auktion", "Einstellungen"},
         {"HUD", "Mehr HUDs", "PvP-Anzeigen", "Extras", "Crosshair", "Scoreboard", "Eigenes HUD"},
+        {"Twitch-Chat", "Giveaway", "Auktion", "Streamer & Werbung"},
         {"Wegpunkte", "Notizen", "Timer & Rechner"},
         {"Commands"}
     };
@@ -132,6 +133,9 @@ public class FloonsMenu extends FloonsScreen {
             case "Gamble" -> gamble(y);
             case "Auktion" -> auction(y);
             case "Einstellungen" -> auctionSettings(y);
+            case "Twitch-Chat" -> twitchPage(y);
+            case "Giveaway" -> giveawayPage(y);
+            case "Streamer & Werbung" -> streamerPage(y);
             case "HUD" -> hud(y);
             case "Mehr HUDs" -> moreHud(y);
             case "PvP-Anzeigen" -> pvp(y);
@@ -259,12 +263,41 @@ public class FloonsMenu extends FloonsScreen {
     // ---------- Auktion ----------
     private static String fBuy = "", fRes = "";
 
-    private void priceFields(int y) {
+    private static final long[] PRICE_PRESETS = {0, 100_000, 500_000, 1_000_000, 5_000_000, 10_000_000, 50_000_000, 100_000_000, 1_000_000_000};
+
+    private static long nextPreset(long cur) {
+        for (long p : PRICE_PRESETS) if (p > cur) return p;
+        return 0;
+    }
+
+    /** Sofortkauf/Mindestpreis: Feld zum Eintippen + Auswahl-Knopf, der durch feste Werte schaltet. live = gilt sofort für die laufende Auktion. */
+    private void priceFields(int y, boolean live) {
+        int half = (PW - 6) / 2, fw = half - 50;
+        label("Sofortkauf", left, y);
+        label("Mindestpreis", left + half + 6, y);
+        field(left, y + 10, fw, fBuy, 16, s -> fBuy = s);
+        button(() -> { long v = priceOf(fBuy); return v > 0 ? FloonsAuction.fmt(v) : "aus"; }, () -> {
+            long v = nextPreset(Math.max(0, priceOf(fBuy)));
+            fBuy = v > 0 ? String.valueOf(v) : "";
+            if (live) { FloonsAuction.buyNow = v; if (v > 0) FloonsAuction.say("[Auktion] Sofortkauf für " + FloonsAuction.item + ": " + FloonsAuction.fmt(v)); }
+            rebuild();
+        }, left + fw + 4, y + 10, 46, 18, true);
+        field(left + half + 6, y + 10, fw, fRes, 16, s -> fRes = s);
+        button(() -> { long v = priceOf(fRes); return v > 0 ? FloonsAuction.fmt(v) : "aus"; }, () -> {
+            long v = nextPreset(Math.max(0, priceOf(fRes)));
+            fRes = v > 0 ? String.valueOf(v) : "";
+            if (live) FloonsAuction.reserve = v;
+            rebuild();
+        }, left + half + 6 + fw + 4, y + 10, 46, 18, true);
+    }
+
+    private void minRaiseRow(int y) {
+        FloonsConfig c = FloonsConfig.get();
         int half = (PW - 6) / 2;
-        label("Sofortkauf (leer = aus)", left, y);
-        label("Mindestpreis (leer = aus)", left + half + 6, y);
-        field(left, y + 10, half, fBuy, 16, s -> fBuy = s);
-        field(left + half + 6, y + 10, half, fRes, 16, s -> fRes = s);
+        cycleLong("Mindest-Erhöhung", new long[]{1, 1_000, 10_000, 50_000, 100_000, 500_000, 1_000_000, 10_000_000},
+            () -> c.minRaise, v -> c.minRaise = v, FloonsAuction::fmt, left, y, half);
+        cycleLong("Anti-Snipe", new long[]{0, 5, 10, 15, 30, 60},
+            () -> (long) c.antiSnipe, v -> c.antiSnipe = (int) (long) v, v -> v > 0 ? v + "s" : "aus", left + half + 6, y, half);
     }
 
     private static long priceOf(String s) { return s.isBlank() ? 0 : FloonsAuction.parseInput(s); }
@@ -278,8 +311,10 @@ public class FloonsMenu extends FloonsScreen {
             field(left + half + 44, y, 72, fStart, 16, s -> fStart = s);
             field(left + half + 120, y, PW - half - 120, fDur, 8, s -> fDur = s);
             y += 22;
-            priceFields(y);
+            priceFields(y, false);
             y += 32;
+            minRaiseRow(y);
+            y += 21;
             button(() -> "Auktion starten", () -> {
                 String err = check();
                 if (err != null) { FloonsAuction.info(err); return; }
@@ -297,7 +332,7 @@ public class FloonsMenu extends FloonsScreen {
             y += 24;
             label("Warteschlange (" + FloonsAuction.queue.size() + ")", left, y);
             y += 11;
-            for (int i = 0; i < Math.min(3, FloonsAuction.queue.size()); i++) {
+            for (int i = 0; i < Math.min(2, FloonsAuction.queue.size()); i++) {
                 final int idx = i;
                 FloonsAuction.Queued q = FloonsAuction.queue.get(i);
                 label((i + 1) + ". " + q.item() + "  ·  " + FloonsAuction.fmt(q.start()) + "  ·  " + FloonsAuction.mmss(q.sec() * 1000L), left, y + 5);
@@ -322,8 +357,10 @@ public class FloonsMenu extends FloonsScreen {
             y += 23;
             fBuy = FloonsAuction.buyNow > 0 ? String.valueOf(FloonsAuction.buyNow) : "";
             fRes = FloonsAuction.reserve > 0 ? String.valueOf(FloonsAuction.reserve) : "";
-            priceFields(y);
+            priceFields(y, true);
             y += 32;
+            minRaiseRow(y);
+            y += 21;
             button(() -> "Preise übernehmen", () -> {
                 long b = priceOf(fBuy), r = priceOf(fRes);
                 if (b < 0 || r < 0) { FloonsAuction.info("Betrag ungültig (z. B. 5m)."); return; }
@@ -380,6 +417,82 @@ public class FloonsMenu extends FloonsScreen {
         y += 24;
         label("Gebote = /pay an dich, Zahlungen derselben Person addieren sich.", left, y);
         label("Sofortkauf beendet sofort, Mindestpreis verhindert Verkauf darunter.", left, y + 11);
+    }
+
+    // ---------- Streamer ----------
+    private static String gPrize = "", gDur = "60";
+
+    private void twitchPage(int y) {
+        FloonsConfig c = FloonsConfig.get();
+        int half = (PW - 6) / 2;
+        label("Twitch-Kanal (Name)", left, y);
+        field(left, y + 10, PW, c.twitchChannel, 40, s -> { c.twitchChannel = s.trim(); c.save(); });
+        y += 32;
+        toggle("Twitch-Chat", () -> c.twitch, v -> c.twitch = v, left, y, half);
+        button(() -> "Zeilen: " + c.twitchLines, () -> { c.twitchLines = c.twitchLines >= 15 ? 3 : c.twitchLines + 1; c.save(); }, left + half + 6, y, half, 18);
+        y += 21;
+        button(() -> "HUD verschieben", () -> client.setScreen(new FloonsHudEditor(this)), left, y, half, 18, true);
+        button(() -> "Status: " + FloonsTwitch.state, () -> {}, left + half + 6, y, half, 18);
+        y += 26;
+        label("Liest den Chat anonym mit (kein Login nötig) und zeigt ihn im HUD.", left, y);
+        label("Nur wenn Twitch-Chat an ist, verbindet sich die Mod mit Twitch.", left, y + 11);
+        label("Zuschauer können damit auch bei Giveaways mitmachen.", left, y + 22);
+    }
+
+    private void giveawayPage(int y) {
+        FloonsConfig c = FloonsConfig.get();
+        int half = (PW - 6) / 2, x2 = left + half + 6;
+        if (!FloonsStreamer.gwOn) {
+            y += 0;
+            label("Preis", left, y); label("Dauer", left + PW - 90, y);
+            field(left, y + 10, PW - 96, gPrize, 60, s -> gPrize = s);
+            field(left + PW - 90, y + 10, 90, gDur, 8, s -> gDur = s);
+            y += 32;
+        } else y += 24;
+        label("Stichwort", left, y);
+        field(left, y + 10, half, c.giveawayKeyword, 20, s -> { if (!s.isBlank()) { c.giveawayKeyword = s.trim(); c.save(); } });
+        button(() -> "Gewinner: " + c.giveawayWinners, () -> { c.giveawayWinners = c.giveawayWinners >= 5 ? 1 : c.giveawayWinners + 1; c.save(); }, x2, y + 10, half, 18);
+        y += 32;
+        toggle("Teilnahme über Twitch", () -> c.giveawayTwitch, v -> c.giveawayTwitch = v, left, y, half);
+        toggle("Giveaway-HUD", () -> c.giveawayHud, v -> c.giveawayHud = v, x2, y, half);
+        y += 23;
+        if (!FloonsStreamer.gwOn) {
+            button(() -> "Giveaway starten", () -> {
+                int sec = FloonsAuction.parseDuration(gDur);
+                if (gPrize.isBlank()) { FloonsGamble.chat("Erst einen Preis eintragen."); return; }
+                if (sec < 5) { FloonsGamble.chat("Dauer ungültig (mindestens 5 Sekunden, z. B. 60, 2m)."); return; }
+                msg(FloonsStreamer.start(sec, gPrize.trim())); rebuild();
+            }, left, y, half, 18, true);
+            button(() -> "Neu ziehen (Reroll)", () -> msg(FloonsStreamer.reroll()), x2, y, half, 18);
+        } else {
+            button(() -> "Jetzt ziehen", () -> { msg(FloonsStreamer.draw()); rebuild(); }, left, y, half, 18, true);
+            button(() -> "Abbrechen", () -> { msg(FloonsStreamer.cancel()); rebuild(); }, x2, y, half, 18);
+        }
+        y += 21;
+        button(() -> "Teilnehmer im Chat", () -> { runCommand("/giveaway list"); }, left, y, half, 18);
+        button(() -> "HUD verschieben", () -> client.setScreen(new FloonsHudEditor(this)), x2, y, half, 18);
+        y += 25;
+        label("Teilnahme: Stichwort im Spiel-Chat (und im Twitch-Chat).", left, y);
+        label("Beim Ziehen dreht sich ein Glücksrad, der Gewinner wird angesagt.", left, y + 11);
+    }
+
+    private void streamerPage(int y) {
+        FloonsConfig c = FloonsConfig.get();
+        int half = (PW - 6) / 2;
+        toggle("Streamer-Modus", () -> c.streamer, v -> c.streamer = v, left, y, half);
+        toggle("Koordinaten verstecken", () -> c.streamerHideXyz, v -> c.streamerHideXyz = v, left + half + 6, y, half);
+        y += 24;
+        label("Dein Name in Chat und HUD wird ersetzt durch:", left, y);
+        field(left, y + 10, PW, c.streamerName, 32, s -> { c.streamerName = s; c.save(); });
+        y += 34;
+        label("Werbung – Twitch-Kanal (leer = Kanal vom Twitch-Chat)", left, y);
+        field(left, y + 10, PW, c.adChannel == null ? "" : c.adChannel, 40, s -> { c.adChannel = s.trim(); c.save(); });
+        y += 34;
+        label("Werbe-Text ({kanal} wird durch den Kanal ersetzt)", left, y);
+        field(left, y + 10, PW, c.adText == null ? "" : c.adText, 200, s -> { c.adText = s; c.save(); });
+        y += 34;
+        button(() -> "Werbung senden", FloonsStreamer::sendAd, left, y, PW, 18, true);
+        label("Sendet die Nachricht sofort in den Chat. Auch: /werbung", left, y + 23);
     }
 
     // ---------- Visuals ----------
@@ -609,6 +722,9 @@ public class FloonsMenu extends FloonsScreen {
         {"Auktion", "/wa status"}, {"Auktion", "/wa refund"}, {"Auktion", "/wa history"}, {"Auktion", "/wa test Spieler 1k"},
         {"Auktion", "/wa pause"}, {"Auktion", "/wa resume"}, {"Auktion", "/wa buynow 5m"}, {"Auktion", "/wa reserve 1m"}, {"Auktion", "/wa stats"},
         {"Auktion", "/wa queue add 500k 2m Item"}, {"Auktion", "/wa queue list"}, {"Auktion", "/wa queue next"}, {"Auktion", "/wa queue remove 1"}, {"Auktion", "/wa queue clear"},
+        {"Streamer", "/giveaway start 60 Preis"}, {"Streamer", "/giveaway end"}, {"Streamer", "/giveaway cancel"}, {"Streamer", "/giveaway reroll"},
+        {"Streamer", "/giveaway list"}, {"Streamer", "/giveaway keyword join"}, {"Streamer", "/giveaway winners 1"}, {"Streamer", "/giveaway twitch"},
+        {"Streamer", "/twitch Kanal"}, {"Streamer", "/twitch off"}, {"Streamer", "/werbung"},
         {"Einstellungen", "/floons autoqueue"}, {"Einstellungen", "/floons bigcountdown"}, {"Einstellungen", "/floons feed"},
         {"Einstellungen", "/floons"}, {"Einstellungen", "/floons menu"}, {"Einstellungen", "/floons hud"}, {"Einstellungen", "/floons watermark"},
         {"Einstellungen", "/floons announce"}, {"Einstellungen", "/floons countdown"}, {"Einstellungen", "/floons sound"},
@@ -687,6 +803,11 @@ public class FloonsMenu extends FloonsScreen {
                 + String.format(Locale.ROOT, "%.1f%% Winrate", FloonsStats.winrate());
             ctx.drawTextWithShadow(textRenderer, l1, left, y, cur == null ? FloonsTheme.MUTED : FloonsTheme.BLUE);
             ctx.drawTextWithShadow(textRenderer, l2, left, y + 11, FloonsStats.profit() >= 0 ? FloonsTheme.GOOD : FloonsTheme.BAD);
+        } else if (pgName.equals("Giveaway") && FloonsStreamer.gwOn) {
+            String l1 = FloonsStreamer.prize + "  ·  noch " + FloonsAuction.mmss(FloonsStreamer.left());
+            String l2 = FloonsStreamer.entrants.size() + " Teilnehmer  ·  Stichwort: " + FloonsConfig.get().giveawayKeyword;
+            ctx.drawTextWithShadow(textRenderer, l1, left, y, FloonsTheme.TEXT);
+            ctx.drawTextWithShadow(textRenderer, l2, left, y + 11, FloonsTheme.GOOD);
         } else if (pgName.equals("Crosshair")) {
             FloonsCrosshair.draw(ctx, left + PW - 20, top + 30, FloonsConfig.get());
         }

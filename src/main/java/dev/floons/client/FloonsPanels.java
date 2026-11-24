@@ -68,6 +68,7 @@ public final class FloonsPanels {
         if (cfg.potionHud) potions(ctx, tr, mc, cfg);
         if (cfg.sessionHud) session(ctx, tr, mc, cfg);
         if (cfg.notesHud) notes(ctx, tr, mc, cfg);
+        if (cfg.twitch) twitch(ctx, tr, mc, cfg);
         if (cfg.notify) FloonsNotify.render(ctx, tr, mc);
     }
 
@@ -402,5 +403,27 @@ public final class FloonsPanels {
             rows.add(new Row(s[0], "", s[1], col));
         }
         return rows;
+    }
+    private static void twitch(DrawContext ctx, TextRenderer tr, MinecraftClient mc, FloonsConfig cfg) {
+        List<FloonsTwitch.Msg> m = FloonsTwitch.last(Math.max(3, Math.min(15, cfg.twitchLines)));
+        int w = 220, pad = 6, h = 17 + Math.max(1, m.size()) * 11 + pad;
+        float[] pos = FloonsHud.place("twitch", 6, mc.getWindow().getScaledHeight() / 2f, (w + pad * 2) * cfg.hudScale, h * cfg.hudScale, mc);
+        ctx.getMatrices().pushMatrix();
+        ctx.getMatrices().translate(pos[0], pos[1]);
+        ctx.getMatrices().scale(cfg.hudScale, cfg.hudScale);
+        FloonsTheme.panel(ctx, 0, 0, w + pad * 2, h);
+        FloonsLogo.draw(ctx, pad, 4, 9);
+        FloonsTheme.gradientText(ctx, tr, "Twitch-Chat", pad + 12, 5);
+        String st = FloonsTwitch.state;
+        ctx.drawTextWithShadow(tr, st, w + pad - tr.getWidth(st), 5, FloonsTheme.MUTED);
+        int y = 17;
+        if (m.isEmpty()) ctx.drawTextWithShadow(tr, cfg.twitchChannel.isBlank() ? "Kanal/Video im Menü setzen" : "warte auf Nachrichten …", pad, y, FloonsTheme.MUTED);
+        for (var e : m) {
+            String name = e.user() + ": ";
+            ctx.drawTextWithShadow(tr, name, pad, y, e.color());
+            ctx.drawTextWithShadow(tr, tr.trimToWidth(e.text(), Math.max(10, w - tr.getWidth(name))), pad + tr.getWidth(name), y, FloonsTheme.TEXT);
+            y += 11;
+        }
+        ctx.getMatrices().popMatrix();
     }
 }

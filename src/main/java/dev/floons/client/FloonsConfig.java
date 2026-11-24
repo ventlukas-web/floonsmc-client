@@ -85,6 +85,16 @@ public final class FloonsConfig {
     public boolean hitMarker = false, hitSound = false, lowHpWarn = false, cooldownBar = false;
     public boolean streamer = false, streamerHideXyz = true;
     public String streamerName = "Floons";
+    // Twitch & Giveaway
+    public boolean twitch = false;
+    public String twitchChannel = "";
+    public int twitchLines = 8;
+    public String adChannel = "";
+    public String adText = "Schaut bei mir auf Twitch vorbei: twitch.tv/{kanal}";
+    public String giveawayKeyword = "join";
+    public int giveawayWinners = 1;
+    public boolean giveawayTwitch = true;
+    public boolean giveawayHud = true;
     // Scoreboard (rechte Seite)
     public boolean sbCustom = false, sbNumbers = false, sbBorderOn = true, sbTheme = true;
     public int sbRadius = 6, sbAlpha = 170;

@@ -1,7 +1,7 @@
 Floons Client 1.0.0 – Fabric-Mod für WindSMP (Minecraft 1.21.11)
 
-KEIN AUTO-UPDATE: Die Mod baut keine einzige Netzwerkverbindung auf, prüft nie auf
-neue Versionen und lädt nichts herunter. Neue Version = .jar selbst austauschen.
+KEIN AUTO-UPDATE: Die Mod prüft nie auf neue Versionen und lädt nichts herunter.
+Einzige Verbindung: der Twitch-Chat, und nur wenn du ihn einschaltest. Neue Version = .jar selbst austauschen.
 
 Bauen (wie beim Toasty Client):
   Repo ventlukas-web/floonsmc-client: jeder Push baut die .jar per GitHub Actions
@@ -54,3 +54,12 @@ Zahlungserkennung: gleiches Muster wie im Toasty Client
   You received $<betrag> from <spieler>
 
 Wasserzeichen: "Floons Client" oben rechts in allen Menüs (/floons watermark schaltet um).
+
+STREAMER (Reiter Streamer: Twitch-Chat · Giveaway · Auktion · Streamer & Werbung)
+  /twitch <kanal> | off                  Twitch-Chat im HUD (anonym, ohne Login)
+  /giveaway start <dauer> <preis>        Teilnahme per Stichwort im Spiel- und Twitch-Chat
+  /giveaway end | cancel | reroll | list | keyword <wort> | winners <n> | twitch
+  /werbung                               Werbe-Text in den Chat
+  Giveaway-HUD: Preis, Zeitbalken, große Teilnehmerzahl, neue Teilnehmer live ([T] = Twitch),
+  Glücksrad beim Ziehen, Gewinner-Banner mit Konfetti.
+  /auction funktioniert genauso wie /wa.

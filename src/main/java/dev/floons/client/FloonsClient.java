@@ -30,7 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Floons Client – WindSMP-Mod. Bewusst OHNE Auto-Update und ohne jede Netzwerkverbindung:
+ * Floons Client – WindSMP-Mod. Bewusst OHNE Auto-Update (einzige Verbindung: Twitch-Chat, nur wenn eingeschaltet):
  * neue Versionen kommen nur, wenn du die .jar selbst austauschst.
  */
 public class FloonsClient implements ClientModInitializer {
@@ -48,10 +48,13 @@ public class FloonsClient implements ClientModInitializer {
         FloonsCrosshair.register();
         FloonsMisc.register();
         FloonsVisuals.register();
+        FloonsStreamer.register();
+        FloonsTwitch.start();
         HudElementRegistry.replaceElement(VanillaHudElements.SCOREBOARD,
             orig -> (ctx, tick) -> FloonsScoreboard.render(ctx, tick, () -> orig.render(ctx, tick)));
         HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, Identifier.of(ID, "hud"), FloonsHud::render);
         HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, Identifier.of(ID, "auction"), FloonsAuctionHud::render);
+        HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, Identifier.of(ID, "giveaway"), FloonsGiveawayHud::render);
         KeyBinding.Category cat = KeyBinding.Category.create(Identifier.of(ID, "main"));
         menuKey = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.floonsclient.menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, cat));
@@ -68,6 +71,7 @@ public class FloonsClient implements ClientModInitializer {
             FloonsAuction.tick();
             FloonsGamble.tick(mc);
             FloonsTimers.tick();
+            FloonsStreamer.tick();
             FloonsVisuals.tick(mc);
         });
         ClientSendMessageEvents.COMMAND.register(FloonsGamble::onOwnCommand);
@@ -85,10 +89,12 @@ public class FloonsClient implements ClientModInitializer {
                 FloonsTheme.gradientText(ctx, tr, label, lx, 5);
             }));
         ClientCommandRegistrationCallback.EVENT.register((d, reg) -> {
-            d.register(auctionCommand());
+            d.register(auctionCommand("wa"));
+            d.register(auctionCommand("auction"));
             d.register(settingsCommand());
             FloonsGamble.register(d);
             FloonsTools.register(d);
+            FloonsStreamer.registerCommands(d);
         });
     }
 
@@ -121,8 +127,8 @@ public class FloonsClient implements ClientModInitializer {
         return 1;
     }
 
-    private static LiteralArgumentBuilder<FabricClientCommandSource> auctionCommand() {
-        return ClientCommandManager.literal("wa")
+    private static LiteralArgumentBuilder<FabricClientCommandSource> auctionCommand(String name) {
+        return ClientCommandManager.literal(name)
             .executes(c -> { help(); return 1; })
             .then(ClientCommandManager.literal("start")
                 .then(ClientCommandManager.argument("startgebot", StringArgumentType.word())

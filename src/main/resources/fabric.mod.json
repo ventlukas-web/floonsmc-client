@@ -3,7 +3,7 @@
   "id": "floonsclient",
   "version": "1.0.0",
   "name": "Floons Client",
-  "description": "Floons Client für WindSMP: Auktionen hosten mit Live-HUD. Kein Auto-Update, keine Netzwerkverbindungen.",
+  "description": "Floons Client für WindSMP: Auktionen, Giveaways, Gamble, HUDs. Kein Auto-Update.",
   "authors": [
     "6po"
   ],
