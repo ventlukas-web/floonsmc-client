@@ -1,0 +1,1533 @@
+{
+ "model": {
+  "type": "minecraft:select",
+  "property": "minecraft:component",
+  "component": "minecraft:custom_name",
+  "cases": [
+   {
+    "when": "1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_1"
+    }
+   },
+   {
+    "when": {
+     "text": "1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_1"
+    }
+   },
+   {
+    "when": {
+     "text": "1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_1"
+    }
+   },
+   {
+    "when": {
+     "text": "1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_1"
+    }
+   },
+   {
+    "when": "2",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_2"
+    }
+   },
+   {
+    "when": {
+     "text": "2",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_2"
+    }
+   },
+   {
+    "when": {
+     "text": "2",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_2"
+    }
+   },
+   {
+    "when": {
+     "text": "2",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_2"
+    }
+   },
+   {
+    "when": "3",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_3"
+    }
+   },
+   {
+    "when": {
+     "text": "3",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_3"
+    }
+   },
+   {
+    "when": {
+     "text": "3",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_3"
+    }
+   },
+   {
+    "when": {
+     "text": "3",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_3"
+    }
+   },
+   {
+    "when": "4",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_4"
+    }
+   },
+   {
+    "when": {
+     "text": "4",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_4"
+    }
+   },
+   {
+    "when": {
+     "text": "4",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_4"
+    }
+   },
+   {
+    "when": {
+     "text": "4",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_4"
+    }
+   },
+   {
+    "when": "5",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_5"
+    }
+   },
+   {
+    "when": {
+     "text": "5",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_5"
+    }
+   },
+   {
+    "when": {
+     "text": "5",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_5"
+    }
+   },
+   {
+    "when": {
+     "text": "5",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_5"
+    }
+   },
+   {
+    "when": "6",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_6"
+    }
+   },
+   {
+    "when": {
+     "text": "6",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_6"
+    }
+   },
+   {
+    "when": {
+     "text": "6",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_6"
+    }
+   },
+   {
+    "when": {
+     "text": "6",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_6"
+    }
+   },
+   {
+    "when": "7",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_7"
+    }
+   },
+   {
+    "when": {
+     "text": "7",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_7"
+    }
+   },
+   {
+    "when": {
+     "text": "7",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_7"
+    }
+   },
+   {
+    "when": {
+     "text": "7",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_7"
+    }
+   },
+   {
+    "when": "8",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_8"
+    }
+   },
+   {
+    "when": {
+     "text": "8",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_8"
+    }
+   },
+   {
+    "when": {
+     "text": "8",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_8"
+    }
+   },
+   {
+    "when": {
+     "text": "8",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_8"
+    }
+   },
+   {
+    "when": "9",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_9"
+    }
+   },
+   {
+    "when": {
+     "text": "9",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_9"
+    }
+   },
+   {
+    "when": {
+     "text": "9",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_9"
+    }
+   },
+   {
+    "when": {
+     "text": "9",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_9"
+    }
+   },
+   {
+    "when": "10",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_10"
+    }
+   },
+   {
+    "when": {
+     "text": "10",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_10"
+    }
+   },
+   {
+    "when": {
+     "text": "10",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_10"
+    }
+   },
+   {
+    "when": {
+     "text": "10",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_10"
+    }
+   },
+   {
+    "when": "11",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_11"
+    }
+   },
+   {
+    "when": {
+     "text": "11",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_11"
+    }
+   },
+   {
+    "when": {
+     "text": "11",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_11"
+    }
+   },
+   {
+    "when": {
+     "text": "11",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_11"
+    }
+   },
+   {
+    "when": "12",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_12"
+    }
+   },
+   {
+    "when": {
+     "text": "12",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_12"
+    }
+   },
+   {
+    "when": {
+     "text": "12",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_12"
+    }
+   },
+   {
+    "when": {
+     "text": "12",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_12"
+    }
+   },
+   {
+    "when": "13",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_13"
+    }
+   },
+   {
+    "when": {
+     "text": "13",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_13"
+    }
+   },
+   {
+    "when": {
+     "text": "13",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_13"
+    }
+   },
+   {
+    "when": {
+     "text": "13",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_13"
+    }
+   },
+   {
+    "when": "14",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_14"
+    }
+   },
+   {
+    "when": {
+     "text": "14",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_14"
+    }
+   },
+   {
+    "when": {
+     "text": "14",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_14"
+    }
+   },
+   {
+    "when": {
+     "text": "14",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_14"
+    }
+   },
+   {
+    "when": "15",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_15"
+    }
+   },
+   {
+    "when": {
+     "text": "15",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_15"
+    }
+   },
+   {
+    "when": {
+     "text": "15",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_15"
+    }
+   },
+   {
+    "when": {
+     "text": "15",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_15"
+    }
+   },
+   {
+    "when": "16",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_16"
+    }
+   },
+   {
+    "when": {
+     "text": "16",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_16"
+    }
+   },
+   {
+    "when": {
+     "text": "16",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_16"
+    }
+   },
+   {
+    "when": {
+     "text": "16",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_16"
+    }
+   },
+   {
+    "when": "17",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_17"
+    }
+   },
+   {
+    "when": {
+     "text": "17",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_17"
+    }
+   },
+   {
+    "when": {
+     "text": "17",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_17"
+    }
+   },
+   {
+    "when": {
+     "text": "17",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_17"
+    }
+   },
+   {
+    "when": "18",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_18"
+    }
+   },
+   {
+    "when": {
+     "text": "18",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_18"
+    }
+   },
+   {
+    "when": {
+     "text": "18",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_18"
+    }
+   },
+   {
+    "when": {
+     "text": "18",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_18"
+    }
+   },
+   {
+    "when": "19",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_19"
+    }
+   },
+   {
+    "when": {
+     "text": "19",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_19"
+    }
+   },
+   {
+    "when": {
+     "text": "19",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_19"
+    }
+   },
+   {
+    "when": {
+     "text": "19",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_19"
+    }
+   },
+   {
+    "when": "20",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_20"
+    }
+   },
+   {
+    "when": {
+     "text": "20",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_20"
+    }
+   },
+   {
+    "when": {
+     "text": "20",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_20"
+    }
+   },
+   {
+    "when": {
+     "text": "20",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_num_20"
+    }
+   },
+   {
+    "when": "1.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_1_1"
+    }
+   },
+   {
+    "when": {
+     "text": "1.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_1_1"
+    }
+   },
+   {
+    "when": {
+     "text": "1.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_1_1"
+    }
+   },
+   {
+    "when": {
+     "text": "1.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_1_1"
+    }
+   },
+   {
+    "when": "2.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_2_1"
+    }
+   },
+   {
+    "when": {
+     "text": "2.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_2_1"
+    }
+   },
+   {
+    "when": {
+     "text": "2.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_2_1"
+    }
+   },
+   {
+    "when": {
+     "text": "2.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_2_1"
+    }
+   },
+   {
+    "when": "3.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_3_1"
+    }
+   },
+   {
+    "when": {
+     "text": "3.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_3_1"
+    }
+   },
+   {
+    "when": {
+     "text": "3.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_3_1"
+    }
+   },
+   {
+    "when": {
+     "text": "3.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_3_1"
+    }
+   },
+   {
+    "when": "4.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_4_1"
+    }
+   },
+   {
+    "when": {
+     "text": "4.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_4_1"
+    }
+   },
+   {
+    "when": {
+     "text": "4.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_4_1"
+    }
+   },
+   {
+    "when": {
+     "text": "4.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_4_1"
+    }
+   },
+   {
+    "when": "5.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_5_1"
+    }
+   },
+   {
+    "when": {
+     "text": "5.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_5_1"
+    }
+   },
+   {
+    "when": {
+     "text": "5.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_5_1"
+    }
+   },
+   {
+    "when": {
+     "text": "5.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_5_1"
+    }
+   },
+   {
+    "when": "6.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_6_1"
+    }
+   },
+   {
+    "when": {
+     "text": "6.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_6_1"
+    }
+   },
+   {
+    "when": {
+     "text": "6.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_6_1"
+    }
+   },
+   {
+    "when": {
+     "text": "6.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_6_1"
+    }
+   },
+   {
+    "when": "7.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_7_1"
+    }
+   },
+   {
+    "when": {
+     "text": "7.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_7_1"
+    }
+   },
+   {
+    "when": {
+     "text": "7.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_7_1"
+    }
+   },
+   {
+    "when": {
+     "text": "7.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_7_1"
+    }
+   },
+   {
+    "when": "8.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_8_1"
+    }
+   },
+   {
+    "when": {
+     "text": "8.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_8_1"
+    }
+   },
+   {
+    "when": {
+     "text": "8.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_8_1"
+    }
+   },
+   {
+    "when": {
+     "text": "8.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_8_1"
+    }
+   },
+   {
+    "when": "9.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_9_1"
+    }
+   },
+   {
+    "when": {
+     "text": "9.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_9_1"
+    }
+   },
+   {
+    "when": {
+     "text": "9.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_9_1"
+    }
+   },
+   {
+    "when": {
+     "text": "9.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_9_1"
+    }
+   },
+   {
+    "when": "10.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_10_1"
+    }
+   },
+   {
+    "when": {
+     "text": "10.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_10_1"
+    }
+   },
+   {
+    "when": {
+     "text": "10.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_10_1"
+    }
+   },
+   {
+    "when": {
+     "text": "10.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_10_1"
+    }
+   },
+   {
+    "when": "11.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_11_1"
+    }
+   },
+   {
+    "when": {
+     "text": "11.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_11_1"
+    }
+   },
+   {
+    "when": {
+     "text": "11.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_11_1"
+    }
+   },
+   {
+    "when": {
+     "text": "11.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_11_1"
+    }
+   },
+   {
+    "when": "12.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_12_1"
+    }
+   },
+   {
+    "when": {
+     "text": "12.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_12_1"
+    }
+   },
+   {
+    "when": {
+     "text": "12.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_12_1"
+    }
+   },
+   {
+    "when": {
+     "text": "12.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_12_1"
+    }
+   },
+   {
+    "when": "13.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_13_1"
+    }
+   },
+   {
+    "when": {
+     "text": "13.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_13_1"
+    }
+   },
+   {
+    "when": {
+     "text": "13.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_13_1"
+    }
+   },
+   {
+    "when": {
+     "text": "13.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_13_1"
+    }
+   },
+   {
+    "when": "14.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_14_1"
+    }
+   },
+   {
+    "when": {
+     "text": "14.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_14_1"
+    }
+   },
+   {
+    "when": {
+     "text": "14.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_14_1"
+    }
+   },
+   {
+    "when": {
+     "text": "14.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_14_1"
+    }
+   },
+   {
+    "when": "15.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_15_1"
+    }
+   },
+   {
+    "when": {
+     "text": "15.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_15_1"
+    }
+   },
+   {
+    "when": {
+     "text": "15.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_15_1"
+    }
+   },
+   {
+    "when": {
+     "text": "15.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_15_1"
+    }
+   },
+   {
+    "when": "16.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_16_1"
+    }
+   },
+   {
+    "when": {
+     "text": "16.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_16_1"
+    }
+   },
+   {
+    "when": {
+     "text": "16.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_16_1"
+    }
+   },
+   {
+    "when": {
+     "text": "16.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_16_1"
+    }
+   },
+   {
+    "when": "17.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_17_1"
+    }
+   },
+   {
+    "when": {
+     "text": "17.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_17_1"
+    }
+   },
+   {
+    "when": {
+     "text": "17.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_17_1"
+    }
+   },
+   {
+    "when": {
+     "text": "17.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_17_1"
+    }
+   },
+   {
+    "when": "18.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_18_1"
+    }
+   },
+   {
+    "when": {
+     "text": "18.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_18_1"
+    }
+   },
+   {
+    "when": {
+     "text": "18.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_18_1"
+    }
+   },
+   {
+    "when": {
+     "text": "18.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_18_1"
+    }
+   },
+   {
+    "when": "19.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_19_1"
+    }
+   },
+   {
+    "when": {
+     "text": "19.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_19_1"
+    }
+   },
+   {
+    "when": {
+     "text": "19.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_19_1"
+    }
+   },
+   {
+    "when": {
+     "text": "19.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_19_1"
+    }
+   },
+   {
+    "when": "20.1",
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_20_1"
+    }
+   },
+   {
+    "when": {
+     "text": "20.1",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_20_1"
+    }
+   },
+   {
+    "when": {
+     "text": "20.1",
+     "italic": true
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_20_1"
+    }
+   },
+   {
+    "when": {
+     "text": "20.1",
+     "color": "white",
+     "italic": false
+    },
+    "model": {
+     "type": "minecraft:model",
+     "model": "floonsclient:item/map_20_1"
+    }
+   }
+  ],
+  "fallback": {
+   "type": "minecraft:model",
+   "model": "minecraft:item/paper"
+  }
+ }
+}

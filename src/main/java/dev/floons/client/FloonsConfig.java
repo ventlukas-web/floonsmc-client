@@ -49,7 +49,55 @@ public final class FloonsConfig {
     public boolean gambleHud = true;
     public float hudScale = 1.0f;
     /** top_left, top_right, bottom_right, mid_left, mid_right */
-    public String hudCorner = "top_right";
+    public String hudCorner = "mid_right";
+
+    // ---------- Design ----------
+    public String color1 = "#38BDF8";
+    public String color2 = "#5EEAD4";
+    public int bgOpacity = 208;
+    public String themeBase = "#0B1620";
+
+    // ---------- HUDs (wie Toasty Client) ----------
+    public boolean keystrokes = true, coords = true, showFps = false, ping = false, speed = false, clock = false, moduleList = true;
+    public boolean payHud = true, notesHud = true, notify = true, satBorder = true;
+    public java.util.Map<String, float[]> hudPos = new java.util.HashMap<>();
+    public static class Wp { public String name = "", dim = ""; public int x, y, z; }
+    public boolean wpOn = true;
+    public java.util.List<Wp> waypoints = new java.util.ArrayList<>();
+    public java.util.List<String> notes = new java.util.ArrayList<>();
+    public boolean customHud = false;
+    public String customTitle = "Mein HUD";
+    public java.util.List<String> customLines = new java.util.ArrayList<>(java.util.List.of("XYZ: {x} {y} {z}", "FPS: {fps}", "Profit: {profit}"));
+    public boolean comboHud = false, memHud = false, vitalsHud = false;
+    public boolean topHud = false, graphHud = false;
+    public boolean compassHud = false, armorWarn = true;
+    public int armorWarnPct = 10;
+    public boolean armorHud = false, potionHud = false, sessionHud = false;
+    public boolean cpsHud = false, reachHud = false, pvpItems = false;
+    public int hitSoundIdx = 0;
+    public boolean hitMarker = false, hitSound = false, lowHpWarn = false, cooldownBar = false;
+    public boolean streamer = false, streamerHideXyz = true;
+    public String streamerName = "Floons";
+    // Scoreboard (rechte Seite)
+    public boolean sbCustom = false, sbNumbers = false, sbBorderOn = true, sbTheme = true;
+    public int sbRadius = 6, sbAlpha = 170;
+    public float sbScale = 1.0f;
+    public String sbBg = "#0B1620", sbBorder = "#38BDF8", sbText = "#FFFFFF";
+    // Visuals
+    public boolean fullbright = false, noFog = false, antiLeak = false, autoSprint = false;
+    public String leakWords = "";
+    // FPS (aendert nur normale Spieloptionen, alte Werte werden gemerkt)
+    public boolean perfParticles = false, perfShadows = false, perfDistance = false;
+    public boolean perfClouds = false, perfBlend = false, perfAo = false, perfFps = false;
+    public java.util.Map<String, String> orig = new java.util.HashMap<>();
+    public String origParticles = null;
+    public Boolean origShadows = null;
+    public Integer origView = null, origSim = null;
+    public Double origScaling = null;
+    // Crosshair
+    public boolean chOn = false, chDot = true, chOutline = true;
+    public int chStyle = 1, chLen = 6, chGap = 3, chThick = 1, chColorIdx = 1;
+    public String chHex = "";
 
     public static FloonsConfig get() {
         if (inst == null) {
@@ -57,6 +105,7 @@ public final class FloonsConfig {
                 if (Files.exists(FILE)) inst = GSON.fromJson(Files.readString(FILE), FloonsConfig.class);
             } catch (Exception ignored) {}
             if (inst == null) inst = new FloonsConfig();
+            if (inst.orig == null) inst.orig = new java.util.HashMap<>();
             inst.save();
         }
         return inst;

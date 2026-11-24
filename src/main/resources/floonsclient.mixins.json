@@ -1,0 +1,8 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "dev.floons.client.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": ["SimpleOptionAccessor", "FogRendererMixin"],
+  "injectors": { "defaultRequire": 0 }
+}

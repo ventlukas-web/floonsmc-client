@@ -57,7 +57,7 @@ public final class FloonsGamble {
         }
         FloonsStats.income += amount;
         FloonsStats.lastPayer = player;
-        FloonsGambleHud.flash(FloonsTheme.PURPLE);
+        FloonsHud.flash(FloonsTheme.PURPLE);
     }
 
     // ---------- /win /lose /payback ----------
@@ -143,8 +143,8 @@ public final class FloonsGamble {
 
     private static void effect(boolean win, String player, long amount) {
         FloonsConfig cfg = FloonsConfig.get();
-        FloonsGambleHud.flash(win ? FloonsTheme.GOOD : FloonsTheme.BAD);
-        if (cfg.effects) FloonsGambleHud.overlay(win, win ? "GEWONNEN" : "VERLOREN", player + "  ·  " + FloonsStats.fmt(amount));
+        FloonsHud.flash(win ? FloonsTheme.GOOD : FloonsTheme.BAD);
+        if (cfg.effects) FloonsHud.overlay(win, win ? "GEWONNEN" : "VERLOREN", player + "  ·  " + FloonsStats.fmt(amount));
         if (cfg.sound) playId(win ? "entity.player.levelup" : "entity.villager.no");
     }
 
@@ -203,7 +203,7 @@ public final class FloonsGamble {
             effect(true, p, amount);
         } else {
             FloonsStats.recordPayout(p, amount);
-            FloonsGambleHud.flash(FloonsTheme.GOOD);
+            FloonsHud.flash(FloonsTheme.GOOD);
         }
     }
 
@@ -220,6 +220,7 @@ public final class FloonsGamble {
         FloonsStats.checkLimit();
         payTick();
         if (pendingScreen == 1) { pendingScreen = 0; mc.setScreen(new FloonsMenu(null)); }
+        if (pendingScreen == 4) { pendingScreen = 0; mc.setScreen(new FloonsHudEditor(null)); }
         if (pendingScreen == 2) { pendingScreen = 0; mc.setScreen(new FloonsCalculatorScreen(null)); }
         if (pendingScreen == 8) { pendingScreen = 0; mc.setScreen(new FloonsRouletteScreen(null)); }
     }

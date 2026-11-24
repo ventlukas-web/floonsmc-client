@@ -1,0 +1,8 @@
+{
+  "pack": {
+    "description": "Floons - Anti-Leak: Praktisch jeder Block (Erze, Stein, Holz, Erde, Pflanzen ...) als Netherite-Block",
+    "pack_format": 75,
+    "min_format": 75,
+    "max_format": 75
+  }
+}

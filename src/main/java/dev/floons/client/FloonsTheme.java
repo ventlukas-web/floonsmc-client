@@ -25,6 +25,15 @@ public final class FloonsTheme {
         return 0xFF000000 | Integer.parseInt(s, 16);
     }
 
+    public static void reload(FloonsConfig c) {
+        Integer a = parseHex(c.color1), b = parseHex(c.color2);
+        if (a != null) PURPLE = a;
+        if (b != null) BLUE = b;
+        int op = Math.max(32, Math.min(255, c.bgOpacity));
+        Integer base = parseHex(c.themeBase);
+        BG = alpha(lerp(base != null ? base : 0xFF0B1620, PURPLE, 0.10f), op);
+    }
+
     public static String toHex(int argb) { return String.format("#%06X", argb & 0xFFFFFF); }
 
 

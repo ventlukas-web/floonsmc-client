@@ -1,4 +1,7 @@
 {
   "key.floonsclient.menu": "Open Floons Menu",
-  "key.category.floonsclient.main": "Floons Client"
+  "key.category.floonsclient.main": "Floons Client",
+  "key.floonsclient.hudedit": "Move HUD",
+  "key.floonsclient.zoom": "Zoom",
+  "key.floonsclient.fullbright": "Fullbright"
 }

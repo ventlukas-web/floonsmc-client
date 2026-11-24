@@ -8,6 +8,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
@@ -35,22 +36,39 @@ import java.util.regex.Pattern;
 public class FloonsClient implements ClientModInitializer {
     public static final String ID = "floonsclient";
     private static boolean debug;
-    public static KeyBinding menuKey;
+    public static KeyBinding menuKey, hudEditKey;
     private static Pattern compiled;
     private static String compiledSrc;
 
     @Override
     public void onInitializeClient() {
-        FloonsConfig.get();
-        HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, Identifier.of(ID, "auction"), FloonsHud::render);
-        HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, Identifier.of(ID, "gamble"), FloonsGambleHud::render);
+        FloonsTheme.reload(FloonsConfig.get());
+        FloonsGlass.register();
+        FloonsPvp.register();
+        FloonsCrosshair.register();
+        FloonsMisc.register();
+        FloonsVisuals.register();
+        HudElementRegistry.replaceElement(VanillaHudElements.SCOREBOARD,
+            orig -> (ctx, tick) -> FloonsScoreboard.render(ctx, tick, () -> orig.render(ctx, tick)));
+        HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, Identifier.of(ID, "hud"), FloonsHud::render);
+        HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, Identifier.of(ID, "auction"), FloonsAuctionHud::render);
         KeyBinding.Category cat = KeyBinding.Category.create(Identifier.of(ID, "main"));
         menuKey = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.floonsclient.menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, cat));
+        hudEditKey = KeyBindingHelper.registerKeyBinding(
+            new KeyBinding("key.floonsclient.hudedit", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, cat));
+        FloonsVisuals.zoomKey = KeyBindingHelper.registerKeyBinding(
+            new KeyBinding("key.floonsclient.zoom", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_C, cat));
+        FloonsVisuals.fullbrightKey = KeyBindingHelper.registerKeyBinding(
+            new KeyBinding("key.floonsclient.fullbright", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, cat));
+        ClientLifecycleEvents.CLIENT_STARTED.register(c -> FloonsPerf.apply());
         ClientTickEvents.END_CLIENT_TICK.register(mc -> {
             while (menuKey.wasPressed()) if (mc.currentScreen == null) mc.setScreen(new FloonsMenu(null));
+            while (hudEditKey.wasPressed()) if (mc.currentScreen == null) mc.setScreen(new FloonsHudEditor(null));
             FloonsAuction.tick();
             FloonsGamble.tick(mc);
+            FloonsTimers.tick();
+            FloonsVisuals.tick(mc);
         });
         ClientSendMessageEvents.COMMAND.register(FloonsGamble::onOwnCommand);
         ClientReceiveMessageEvents.GAME.register((msg, overlay) -> { if (!overlay) onChat(msg.getString()); });
@@ -68,6 +86,7 @@ public class FloonsClient implements ClientModInitializer {
             d.register(auctionCommand());
             d.register(settingsCommand());
             FloonsGamble.register(d);
+            FloonsTools.register(d);
         });
     }
 
@@ -175,6 +194,17 @@ public class FloonsClient implements ClientModInitializer {
             corner.then(ClientCommandManager.literal(s).executes(c -> { k.hudCorner = s; k.save(); FloonsAuction.info("HUD-Position: " + s); return 1; }));
         return ClientCommandManager.literal("floons")
             .then(ClientCommandManager.literal("menu").executes(c -> { FloonsGamble.pendingScreen = 1; return 1; }))
+            .then(ClientCommandManager.literal("hud").executes(c -> { FloonsGamble.pendingScreen = 4; return 1; }))
+            .then(ClientCommandManager.literal("lag").executes(c -> { for (String ln : FloonsProf.analyze()) FloonsAuction.info(ln); return 1; }))
+            .then(ClientCommandManager.literal("perf")
+                .executes(c -> { for (String ln : FloonsProf.report()) FloonsAuction.info(ln); return 1; })
+                .then(ClientCommandManager.literal("reset").executes(c -> { FloonsProf.reset(); FloonsAuction.info("Messung neu gestartet."); return 1; })))
+            .then(ClientCommandManager.literal("lite").executes(c -> {
+                FloonsConfig cf = FloonsConfig.get();
+                cf.gambleHud = false; cf.keystrokes = false; cf.coords = false; cf.moduleList = false; cf.payHud = false;
+                cf.watermark = false; cf.effects = false; cf.confetti = false; cf.save();
+                FloonsAuction.info("Lite-Modus: HUDs und Effekte aus."); return 1;
+            }))
             .executes(c -> {
                 FloonsAuction.info("Ansagen " + onOff(k.announce) + " | Countdown " + onOff(k.countdown) + " | Ton " + onOff(k.sound) + " | HUD " + onOff(k.hud));
                 FloonsAuction.info("Mindest-Erhöhung " + FloonsAuction.fmt(k.minRaise) + " | Anti-Snipe " + (k.antiSnipe > 0 ? k.antiSnipe + "s" : "aus")
