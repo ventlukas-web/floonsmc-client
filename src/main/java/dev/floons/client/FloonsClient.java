@@ -55,6 +55,11 @@ public class FloonsClient implements ClientModInitializer {
         HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, Identifier.of(ID, "hud"), FloonsHud::render);
         HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, Identifier.of(ID, "auction"), FloonsAuctionHud::render);
         HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, Identifier.of(ID, "giveaway"), FloonsGiveawayHud::render);
+        // Info-Pillen: im Spiel als HUD, in Menues ueber dem Menue (siehe unten)
+        HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, Identifier.of(ID, "pills"), (ctx, tick) -> {
+            var mc = net.minecraft.client.MinecraftClient.getInstance();
+            if (mc.currentScreen == null && !mc.options.hudHidden) FloonsNotify.render(ctx, mc.textRenderer, mc);
+        });
         KeyBinding.Category cat = KeyBinding.Category.create(Identifier.of(ID, "main"));
         menuKey = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.floonsclient.menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, cat));
@@ -81,6 +86,7 @@ public class FloonsClient implements ClientModInitializer {
         // Wasserzeichen in allen Menues (oben rechts, damit der Chat unten links frei bleibt)
         ScreenEvents.AFTER_INIT.register((client, screen, w, h) ->
             ScreenEvents.afterRender(screen).register((s, ctx, mx, my, delta) -> {
+                FloonsNotify.render(ctx, client.textRenderer, client);
                 if (!FloonsConfig.get().watermark) return;
                 if (s instanceof FloonsScreen) return; // Floons-Menues haben Logo + Titel selbst
                 var tr = client.textRenderer;

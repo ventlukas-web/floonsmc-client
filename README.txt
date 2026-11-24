@@ -49,6 +49,7 @@ GAMBLE (wie Toasty Client; läuft keine Auktion, ist jede Zahlung ein Einsatz)
   /gamble  stats | list | reset | min <b> | max <b|aus> | multiplier <x> | autopay | delay <ms>
            warn <s> | limit <b|aus> | hud | effects | confetti
   /roll [max]  /coinflip  /roulette  /calc
+  Info-Pillen: jede neue Info fliegt unten rechts als Pille rein (Design: Toasts an/aus).
   Gamble-HUD "Floons Client" oben links: aktuelles Gamble, Warteschlange, Profit, Winrate.
   GEWONNEN/VERLOREN-Banner, Konfetti, Töne, Warte- und Verlust-Limit-Warnung.
 

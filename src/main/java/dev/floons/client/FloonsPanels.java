@@ -69,7 +69,6 @@ public final class FloonsPanels {
         if (cfg.sessionHud) session(ctx, tr, mc, cfg);
         if (cfg.notesHud) notes(ctx, tr, mc, cfg);
         if (cfg.twitch) twitch(ctx, tr, mc, cfg);
-        if (cfg.notify) FloonsNotify.render(ctx, tr, mc);
     }
 
     private static void panel(DrawContext ctx, TextRenderer tr, MinecraftClient mc, FloonsConfig cfg, String id, String title,

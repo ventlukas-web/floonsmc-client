@@ -90,7 +90,30 @@ public final class FloonsAuction {
         else info(s);
     }
 
-    public static void info(String s) { info(Text.literal(s).formatted(Formatting.AQUA)); }
+    /** Neue Info: als Pille unten rechts (reinfliegend); lange Texte zusätzlich im Chat. */
+    public static void info(String s) {
+        FloonsConfig c = FloonsConfig.get();
+        if (c.notify && s.length() <= 90) { FloonsNotify.push(pillTitle(s), pillMsg(s), pillColor(s)); return; }
+        info(Text.literal(s).formatted(Formatting.AQUA));
+    }
+
+    /** "Titel: Rest" wird zu Titel + Text, sonst "Floons" als Titel. */
+    private static String pillTitle(String s) {
+        int i = s.indexOf(": ");
+        return i > 0 && i <= 28 ? s.substring(0, i) : "Floons";
+    }
+
+    private static String pillMsg(String s) {
+        int i = s.indexOf(": ");
+        return i > 0 && i <= 28 ? s.substring(i + 2) : s;
+    }
+
+    private static int pillColor(String s) {
+        String l = s.toLowerCase();
+        if (l.contains("ungültig") || l.contains("keine ") || l.contains("kein ") || l.contains("nicht") || l.contains("fehl")) return FloonsTheme.BAD;
+        if (l.contains("gewinn") || l.contains("gesetzt") || l.contains("gespeichert") || l.contains("gestartet") || l.contains(": an")) return FloonsTheme.GOOD;
+        return FloonsTheme.BLUE;
+    }
 
     public static void info(Text t) {
         MinecraftClient mc = MinecraftClient.getInstance();
