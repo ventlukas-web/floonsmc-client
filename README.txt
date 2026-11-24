@@ -17,7 +17,7 @@ AUKTION (Gebote = Zahlungen an dich, Mehrfachzahlungen addieren sich)
   - Countdown-Ansagen bei 60/30/10/5 s
   - Am Ende: Rückzahlungsliste mit [Zurückzahlen]-Knopf (trägt /pay nur ein, Enter drückst du selbst)
   - Verlauf der letzten 50 Auktionen (config/floonsclient-history.json)
-  /floons  announce | countdown | sound | hud | debug | minraise <b> | antisnipe <s>
+  /floons  announce | countdown | sound | hud | watermark | debug | minraise <b> | antisnipe <s>
          scale <0.5-3> | corner <top_left|top_right|bottom_right|mid_left|mid_right> | pattern <regex>
 
 GAMBLE (wie Toasty Client; läuft keine Auktion, ist jede Zahlung ein Einsatz)
@@ -29,8 +29,10 @@ GAMBLE (wie Toasty Client; läuft keine Auktion, ist jede Zahlung ein Einsatz)
   /gamble  stats | list | reset | min <b> | max <b|aus> | multiplier <x> | autopay | delay <ms>
            warn <s> | limit <b|aus> | hud | effects | confetti
   /roll [max]  /coinflip  /roulette  /calc
-  Gamble-HUD oben links: aktuelles Gamble, Warteschlange, Profit, Winrate.
+  Gamble-HUD "Floons Client" oben links: aktuelles Gamble, Warteschlange, Profit, Winrate.
   GEWONNEN/VERLOREN-Banner, Konfetti, Töne, Warte- und Verlust-Limit-Warnung.
 
 Zahlungserkennung: gleiches Muster wie im Toasty Client
   You received $<betrag> from <spieler>
+
+Wasserzeichen: "Floons Client" oben rechts in allen Menüs (/floons watermark schaltet um).

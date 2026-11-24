@@ -26,6 +26,8 @@ public final class FloonsConfig {
     /** Ton bei neuem Höchstgebot. */
     public boolean sound = true;
     public boolean hud = true;
+    /** Wasserzeichen "Floons Client" oben rechts in allen Menüs. */
+    public boolean watermark = true;
 
     // ---------- Gamble (wie Toasty Client) ----------
     /** Auszahlungs-Faktor bei /win (2.0 = doppelter Einsatz). */

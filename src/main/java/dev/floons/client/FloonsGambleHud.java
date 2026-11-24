@@ -84,7 +84,7 @@ public final class FloonsGambleHud {
         rows.add(new String[]{"Profit", FloonsStats.fmt(FloonsStats.profit())});
         rows.add(new String[]{"Winrate", String.format(Locale.ROOT, "%.1f%%  (W%d/L%d)", FloonsStats.winrate(), FloonsStats.wins, FloonsStats.losses)});
 
-        String title = "Gamble";
+        String title = "Floons Client";
         int w = tr.getWidth(title);
         for (String[] r : rows) w = Math.max(w, tr.getWidth(r[0]) + 14 + tr.getWidth(r[1]));
         int pad = 6, h = 16 + rows.size() * 11 + pad;

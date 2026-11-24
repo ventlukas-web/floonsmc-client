@@ -14,6 +14,7 @@ import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.util.Identifier;
 
 import java.text.SimpleDateFormat;
@@ -43,6 +44,14 @@ public class FloonsClient implements ClientModInitializer {
         ClientReceiveMessageEvents.GAME.register((msg, overlay) -> { if (!overlay) onChat(msg.getString()); });
         ClientPlayConnectionEvents.DISCONNECT.register((h, mc) -> FloonsAuction.pause());
         ClientPlayConnectionEvents.JOIN.register((h, s, mc) -> mc.execute(FloonsAuction::resume));
+        // Wasserzeichen in allen Menues (oben rechts, damit der Chat unten links frei bleibt)
+        ScreenEvents.AFTER_INIT.register((client, screen, w, h) ->
+            ScreenEvents.afterRender(screen).register((s, ctx, mx, my, delta) -> {
+                if (!FloonsConfig.get().watermark) return;
+                var tr = client.textRenderer;
+                String label = "Floons Client";
+                FloonsTheme.gradientText(ctx, tr, label, s.width - tr.getWidth(label) - 5, 5);
+            }));
         ClientCommandRegistrationCallback.EVENT.register((d, reg) -> {
             d.register(auctionCommand());
             d.register(settingsCommand());
@@ -157,13 +166,14 @@ public class FloonsClient implements ClientModInitializer {
                 FloonsAuction.info("Ansagen " + onOff(k.announce) + " | Countdown " + onOff(k.countdown) + " | Ton " + onOff(k.sound) + " | HUD " + onOff(k.hud));
                 FloonsAuction.info("Mindest-Erhöhung " + FloonsAuction.fmt(k.minRaise) + " | Anti-Snipe " + (k.antiSnipe > 0 ? k.antiSnipe + "s" : "aus")
                     + " | HUD " + k.hudCorner + " x" + k.hudScale);
-                FloonsAuction.info("/floons announce|countdown|sound|hud|debug  ·  minraise <betrag>  ·  antisnipe <s>  ·  scale <0.5-3>  ·  corner <pos>  ·  pattern <regex>");
+                FloonsAuction.info("/floons announce|countdown|sound|hud|watermark|debug  ·  minraise <betrag>  ·  antisnipe <s>  ·  scale <0.5-3>  ·  corner <pos>  ·  pattern <regex>");
                 return 1;
             })
             .then(toggle("announce", "Öffentliche Ansagen", () -> k.announce, v -> k.announce = v))
             .then(toggle("countdown", "Countdown", () -> k.countdown, v -> k.countdown = v))
             .then(toggle("sound", "Ton", () -> k.sound, v -> k.sound = v))
             .then(toggle("hud", "HUD", () -> k.hud, v -> k.hud = v))
+            .then(toggle("watermark", "Wasserzeichen", () -> k.watermark, v -> k.watermark = v))
             .then(ClientCommandManager.literal("debug").executes(c -> {
                 debug = !debug; FloonsAuction.info("Debug (nicht erkannte $-Nachrichten zeigen): " + onOff(debug)); return 1;
             }))
