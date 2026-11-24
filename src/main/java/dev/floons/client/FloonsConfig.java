@@ -22,7 +22,10 @@ public final class FloonsConfig {
     /** Mindest-Erhöhung über dem aktuellen Höchstgebot. */
     public long minRaise = 1;
     /** Anti-Snipe: Höchstgebot in den letzten X Sekunden verlängert auf X Sekunden (0 = aus). */
-    public int antiSnipe = 15;
+    /** Anti-Snipe: kommt in den letzten antiSnipeWindow Sekunden mehr Geld, geht die Zeit wieder auf antiSnipeTo Sekunden. */
+    public boolean antiSnipeOn = true;
+    public int antiSnipeWindow = 10;
+    public int antiSnipeTo = 15;
     /** Ton bei neuem Höchstgebot. */
     public boolean sound = true;
     public boolean hud = true;

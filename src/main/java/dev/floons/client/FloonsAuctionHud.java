@@ -58,6 +58,11 @@ public final class FloonsAuctionHud {
             boolean met = hasBid && FloonsAuction.best >= FloonsAuction.reserve;
             rows.add(new Row("Mindestpreis", met ? "erreicht" : "noch nicht", met ? FloonsTheme.GOOD : FloonsTheme.BAD));
         }
+        if (c.antiSnipeOn) {
+            boolean hit = now < FloonsAuction.snipeFlashUntil;
+            rows.add(new Row("Anti-Snipe", hit ? "+ Zeit! wieder " + c.antiSnipeTo + "s" : "letzte " + c.antiSnipeWindow + "s → " + c.antiSnipeTo + "s",
+                hit ? FloonsTheme.BAD : FloonsTheme.MUTED));
+        }
         List<Map.Entry<String, Long>> top = FloonsAuction.top();
         int n = Math.min(3, top.size());
         for (int i = 0; i < n; i++)

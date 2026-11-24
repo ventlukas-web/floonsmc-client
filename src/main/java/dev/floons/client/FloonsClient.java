@@ -281,7 +281,7 @@ public class FloonsClient implements ClientModInitializer {
             }))
             .executes(c -> {
                 FloonsAuction.info("Ansagen " + onOff(k.announce) + " | Countdown " + onOff(k.countdown) + " | Ton " + onOff(k.sound) + " | HUD " + onOff(k.hud));
-                FloonsAuction.info("Mindest-Erhöhung " + FloonsAuction.fmt(k.minRaise) + " | Anti-Snipe " + (k.antiSnipe > 0 ? k.antiSnipe + "s" : "aus")
+                FloonsAuction.info("Mindest-Erhöhung " + FloonsAuction.fmt(k.minRaise) + " | Anti-Snipe " + (k.antiSnipeOn ? "letzte " + k.antiSnipeWindow + "s -> " + k.antiSnipeTo + "s" : "aus")
                     + " | HUD " + k.hudCorner + " x" + k.hudScale);
                 FloonsAuction.info("/floons announce|countdown|sound|hud|watermark|debug  ·  minraise <betrag>  ·  antisnipe <s>  ·  scale <0.5-3>  ·  corner <pos>  ·  pattern <regex>");
                 return 1;
@@ -304,10 +304,17 @@ public class FloonsClient implements ClientModInitializer {
                     k.minRaise = v; k.save(); FloonsAuction.info("Mindest-Erhöhung: " + FloonsAuction.fmt(v)); return 1;
                 })))
             .then(ClientCommandManager.literal("antisnipe")
-                .then(ClientCommandManager.argument("sekunden", IntegerArgumentType.integer(0, 300)).executes(c -> {
-                    k.antiSnipe = IntegerArgumentType.getInteger(c, "sekunden"); k.save();
-                    FloonsAuction.info("Anti-Snipe: " + (k.antiSnipe > 0 ? k.antiSnipe + "s" : "aus")); return 1;
-                })))
+                .executes(c -> {
+                    k.antiSnipeOn = !k.antiSnipeOn; k.save();
+                    FloonsAuction.info("Anti-Snipe: " + (k.antiSnipeOn ? "an (letzte " + k.antiSnipeWindow + "s -> " + k.antiSnipeTo + "s)" : "aus")); return 1;
+                })
+                .then(ClientCommandManager.argument("fenster", IntegerArgumentType.integer(1, 120))
+                    .then(ClientCommandManager.argument("auf", IntegerArgumentType.integer(2, 300)).executes(c -> {
+                        int w = IntegerArgumentType.getInteger(c, "fenster"), a = IntegerArgumentType.getInteger(c, "auf");
+                        if (a <= w) { FloonsAuction.info("\"auf\" muss größer sein als das Fenster (z. B. 10 15)."); return 0; }
+                        k.antiSnipeWindow = w; k.antiSnipeTo = a; k.antiSnipeOn = true; k.save();
+                        FloonsAuction.info("Anti-Snipe an: Gebot in den letzten " + w + "s -> wieder " + a + "s"); return 1;
+                    }))))
             .then(ClientCommandManager.literal("scale")
                 .then(ClientCommandManager.argument("wert", FloatArgumentType.floatArg(0.5f, 3f)).executes(c -> {
                     k.hudScale = FloatArgumentType.getFloat(c, "wert"); k.save(); FloonsAuction.info("HUD-Größe: " + k.hudScale); return 1;

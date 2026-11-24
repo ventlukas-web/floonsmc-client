@@ -23,11 +23,12 @@ AUKTION (Gebote = Zahlungen an dich, Mehrfachzahlungen addieren sich)
     Sofortkauf/Mindestpreis, Top 3, Live-Gebotsverlauf, Warteschlange; frei verschiebbar
   - Großer Countdown in der Bildschirmmitte (letzte 5 s), VERKAUFT-Banner mit Konfetti
   - HUD mit Zeitbalken, Höchstgebot, Meistbietendem, Top 3, Gesamt
-  - Anti-Snipe: Gebot kurz vor Schluss verlängert die Zeit
+  - Anti-Snipe (an/aus): mehr Geld in den letzten 10 s -> Zeit wieder auf 15 s
+    /floons antisnipe (an/aus) · /floons antisnipe <fenster> <auf>, z. B. 10 15
   - Countdown-Ansagen bei 60/30/10/5 s
   - Am Ende: Rückzahlungsliste mit [Zurückzahlen]-Knopf (trägt /pay nur ein, Enter drückst du selbst)
   - Verlauf der letzten 50 Auktionen (config/floonsclient-history.json)
-  /floons  announce | countdown | sound | hud | watermark | debug | minraise <b> | antisnipe <s>
+  /floons  announce | countdown | sound | hud | watermark | debug | minraise <b> | antisnipe [fenster auf]
          scale <0.5-3> | corner <top_left|top_right|bottom_right|mid_left|mid_right> | pattern <regex>
 
 MENÜ: Rechte Shift oder /floons menu

@@ -219,18 +219,14 @@ public final class FloonsAuction {
             best = total;
             info(player + " erhöht sein eigenes Gebot auf " + fmt(total) + ".");
             flashUntil = System.currentTimeMillis() + 800;
+            String snipe = antiSnipe();
+            if (!snipe.isEmpty()) say("[Auktion] " + player + " erhöht auf " + fmt(total) + snipe);
             return true;
         }
         if (total >= need) {
             best = total; bestName = player;
             flashUntil = System.currentTimeMillis() + 800;
-            String snipe = "";
-            if (c.antiSnipe > 0 && !paused && left() < c.antiSnipe * 1000L) {
-                long add = c.antiSnipe * 1000L - left();
-                endAt += add; durationMs += add;
-                lastCountdown = c.antiSnipe + 1;
-                snipe = " | Anti-Snipe: noch " + c.antiSnipe + "s";
-            }
+            String snipe = antiSnipe();
             say("[Auktion] Höchstgebot " + fmt(total) + " von " + player + snipe);
             MinecraftClient mc = MinecraftClient.getInstance();
             if (c.sound && mc.player != null) mc.player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 0.6f, 1.4f);
@@ -238,6 +234,21 @@ public final class FloonsAuction {
             info(player + " steht bei " + fmt(total) + " – zu wenig, nötig: " + fmt(need) + ".");
         }
         return true;
+    }
+
+    /** Mehr Geld in den letzten X Sekunden -> Restzeit wieder auf Y Sekunden. @return Zusatz für die Ansage oder "". */
+    public static long snipeFlashUntil;
+    private static String antiSnipe() {
+        FloonsConfig c = FloonsConfig.get();
+        if (!c.antiSnipeOn || paused) return "";
+        long window = Math.max(1, c.antiSnipeWindow) * 1000L, to = Math.max(c.antiSnipeWindow + 1, c.antiSnipeTo) * 1000L;
+        long l = left();
+        if (l >= window) return "";
+        long add = to - l;
+        endAt += add; durationMs += add;
+        lastCountdown = (int) (to / 1000) + 1;
+        snipeFlashUntil = System.currentTimeMillis() + 2000;
+        return " | Anti-Snipe: wieder " + (to / 1000) + "s";
     }
 
     // ---------- Zeit ----------

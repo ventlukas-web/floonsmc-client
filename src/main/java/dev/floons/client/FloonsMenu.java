@@ -296,8 +296,7 @@ public class FloonsMenu extends FloonsScreen {
         int half = (PW - 6) / 2;
         cycleLong("Mindest-Erhöhung", new long[]{1, 1_000, 10_000, 50_000, 100_000, 500_000, 1_000_000, 10_000_000},
             () -> c.minRaise, v -> c.minRaise = v, FloonsAuction::fmt, left, y, half);
-        cycleLong("Anti-Snipe", new long[]{0, 5, 10, 15, 30, 60},
-            () -> (long) c.antiSnipe, v -> c.antiSnipe = (int) (long) v, v -> v > 0 ? v + "s" : "aus", left + half + 6, y, half);
+        toggle("Anti-Snipe (" + c.antiSnipeWindow + "s→" + c.antiSnipeTo + "s)", () -> c.antiSnipeOn, v -> c.antiSnipeOn = v, left + half + 6, y, half);
     }
 
     private static long priceOf(String s) { return s.isBlank() ? 0 : FloonsAuction.parseInput(s); }
@@ -402,8 +401,14 @@ public class FloonsMenu extends FloonsScreen {
         });
         cycleLong("Mindest-Erhöhung", new long[]{1, 1_000, 10_000, 100_000, 1_000_000, 10_000_000},
             () -> c.minRaise, v -> c.minRaise = v, FloonsAuction::fmt, left, y, half);
-        cycleLong("Anti-Snipe", new long[]{0, 5, 10, 15, 30, 60},
-            () -> (long) c.antiSnipe, v -> c.antiSnipe = (int) (long) v, v -> v > 0 ? v + "s" : "aus", x2, y, half);
+        toggle("Anti-Snipe", () -> c.antiSnipeOn, v -> c.antiSnipeOn = v, x2, y, half);
+        y += 21;
+        cycleLong("Anti-Snipe: Gebot in letzten", new long[]{5, 10, 15, 20, 30},
+            () -> (long) c.antiSnipeWindow, v -> { c.antiSnipeWindow = (int) (long) v; if (c.antiSnipeTo <= c.antiSnipeWindow) c.antiSnipeTo = c.antiSnipeWindow + 5; },
+            v -> v + "s", left, y, half);
+        cycleLong("→ Zeit wieder auf", new long[]{10, 15, 20, 30, 45, 60},
+            () -> (long) c.antiSnipeTo, v -> { long nv = v; if (nv <= c.antiSnipeWindow) nv = c.antiSnipeWindow + 5; c.antiSnipeTo = (int) nv; },
+            v -> v + "s", x2, y, half);
         y += 21;
         cycleLong("Pause zwischen Auktionen", new long[]{3, 5, 10, 20, 30, 60},
             () -> (long) c.queueGapSec, v -> c.queueGapSec = (int) (long) v, v -> v + "s", left, y, half);
@@ -420,9 +425,7 @@ public class FloonsMenu extends FloonsScreen {
         y += 21;
         button(() -> "HUD frei verschieben", () -> client.setScreen(new FloonsHudEditor(this)), left, y, half, 18, true);
         button(() -> "Auktions-Statistik", () -> { FloonsAuction.stats(); close(); }, x2, y, half, 18);
-        y += 24;
-        label("Gebote = /pay an dich, Zahlungen derselben Person addieren sich.", left, y);
-        label("Sofortkauf beendet sofort, Mindestpreis verhindert Verkauf darunter.", left, y + 11);
+
     }
 
     // ---------- Streamer ----------
@@ -734,7 +737,7 @@ public class FloonsMenu extends FloonsScreen {
         {"Einstellungen", "/floons autoqueue"}, {"Einstellungen", "/floons bigcountdown"}, {"Einstellungen", "/floons feed"},
         {"Einstellungen", "/floons"}, {"Einstellungen", "/floons menu"}, {"Einstellungen", "/floons hud"}, {"Einstellungen", "/floons watermark"},
         {"Einstellungen", "/floons announce"}, {"Einstellungen", "/floons countdown"}, {"Einstellungen", "/floons sound"},
-        {"Einstellungen", "/floons minraise 10k"}, {"Einstellungen", "/floons antisnipe 15"}, {"Einstellungen", "/floons scale 1"},
+        {"Einstellungen", "/floons minraise 10k"}, {"Einstellungen", "/floons antisnipe"}, {"Einstellungen", "/floons antisnipe 10 15"}, {"Einstellungen", "/floons scale 1"},
         {"Einstellungen", "/floons corner mid_right"}, {"Einstellungen", "/floons pattern <regex>"}, {"Einstellungen", "/floons debug"},
         {"Einstellungen", "/floons lag"}, {"Einstellungen", "/floons perf"}, {"Einstellungen", "/floons perf reset"}, {"Einstellungen", "/floons lite"},
         {"Tools", "/roll 100"}, {"Tools", "/coinflip"}, {"Tools", "/roulette"}, {"Tools", "/calc"}, {"Tools", "/fullbright"}, {"Tools", "/glass"},
