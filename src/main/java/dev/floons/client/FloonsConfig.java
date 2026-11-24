@@ -33,6 +33,8 @@ public final class FloonsConfig {
     public boolean watermark = true;
     /** Hauptmenue: Beitreten-Button + Vanilla-Buttons im Floons-Design. */
     public boolean joinButton = true, niceButtons = true;
+    /** HUD-Elemente im offenen Chat mit der Maus verschieben. */
+    public boolean chatDrag = true;
     public String serverName = "WindSMP";
     public String serverIp = "windsmp.net";
 

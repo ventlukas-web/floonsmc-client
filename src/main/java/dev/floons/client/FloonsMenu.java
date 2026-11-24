@@ -151,6 +151,11 @@ public class FloonsMenu extends FloonsScreen {
             case "Commands" -> commands(y);
             default -> {}
         }
+        if (TABS[tab].equals("Visuals")) {
+            FloonsConfig cc = FloonsConfig.get();
+            button(() -> "HUD verschieben", () -> client.setScreen(new FloonsHudEditor(this)), left, top + H - 24, 120, 18, true);
+            button(() -> "Im Chat ziehen: " + onOff(cc.chatDrag), () -> { cc.chatDrag = !cc.chatDrag; cc.save(); }, left + PW - 140, top + H - 24, 140, 18);
+        }
         button(() -> "Schließen", this::close, left + PW / 2 - 50, top + H - 24, 100, 18);
     }
 
