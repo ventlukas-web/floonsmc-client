@@ -271,7 +271,7 @@ public class FloonsRouletteScreen extends FloonsScreen {
         }
 
         // Seitenpanel
-        FloonsTheme.panel(ctx, px - 10, y0 - 6, 170, 212, 0xE0);
+        FloonsTheme.solidPanel(ctx, px - 10, y0 - 6, 170, 212);
         FloonsTheme.gradientText(ctx, textRenderer, "Roulette", px, y0 + 4);
         super.render(ctx, mx, my, delta);
         String betTxt = bet >= 6 ? "Zahl " + betNum + " (×36)" : BETS[bet] + " (×2)";

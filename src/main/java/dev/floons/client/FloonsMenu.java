@@ -160,7 +160,7 @@ public class FloonsMenu extends FloonsScreen {
         label("Farbe 2 (#RRGGBB)", left + half + 6, y);
         field(left, y + 10, half, c.color1, 7, s -> { Integer v = FloonsTheme.parseHex(s); if (v != null) { c.color1 = FloonsTheme.toHex(v); c.save(); FloonsTheme.reload(c); } });
         field(left + half + 6, y + 10, half, c.color2, 7, s -> { Integer v = FloonsTheme.parseHex(s); if (v != null) { c.color2 = FloonsTheme.toHex(v); c.save(); FloonsTheme.reload(c); } });
-        y += 32;
+        y += 34;
         button(() -> "Vorlage: " + PRESETS[presetIdx % PRESETS.length][0], () -> {
             presetIdx = (presetIdx + 1) % PRESETS.length;
             String[] p = PRESETS[presetIdx];
@@ -236,17 +236,17 @@ public class FloonsMenu extends FloonsScreen {
             () -> (long) c.payDelayMs, v -> c.payDelayMs = (int) (long) v, v -> v + " ms", left, y, half);
         cycleLong("Warte-Warnung", new long[]{0, 15, 30, 60, 120},
             () -> (long) c.waitWarnSec, v -> c.waitWarnSec = (int) (long) v, v -> v > 0 ? v + "s" : "aus", left + half + 6, y, half);
-        y += 23;
+        y += 27;
         int fw = (PW - 8) / 3;
         label("Min-Einsatz", left, y); label("Max-Einsatz", left + fw + 4, y); label("Verlust-Limit", left + 2 * (fw + 4), y);
-        y += 10;
+        y += 11;
         field(left, y, fw, c.minBet > 0 ? String.valueOf(c.minBet) : "", 16, s -> {
             long v = s.isBlank() ? 0 : FloonsAuction.parseInput(s); if (v >= 0) { c.minBet = v; c.save(); } });
         field(left + fw + 4, y, fw, c.maxBet == Long.MAX_VALUE ? "" : String.valueOf(c.maxBet), 16, s -> {
             long v = s.isBlank() ? Long.MAX_VALUE : FloonsAuction.parseInput(s); if (v >= 0) { c.maxBet = v; c.save(); } });
         field(left + 2 * (fw + 4), y, fw, c.lossLimit > 0 ? String.valueOf(c.lossLimit) : "", 16, s -> {
             long v = s.isBlank() ? 0 : FloonsAuction.parseInput(s); if (v >= 0) { c.lossLimit = v; c.save(); } });
-        y += 24;
+        y += 25;
         y = toggles(y, new Object[][]{
             t("Stats-HUD", () -> c.gambleHud, v -> c.gambleHud = v),
             t("Zahlungs-HUD", () -> c.payHud, v -> c.payHud = v),
@@ -315,9 +315,9 @@ public class FloonsMenu extends FloonsScreen {
             button(() -> "Inv", () -> client.setScreen(new FloonsItemPicker(this, it -> fItem = it)), left + half + 8, y, 32, 18, true);
             field(left + half + 44, y, 72, fStart, 16, s -> fStart = s);
             field(left + half + 120, y, PW - half - 120, fDur, 8, s -> fDur = s);
-            y += 22;
+            y += 25;
             priceFields(y, false);
-            y += 32;
+            y += 34;
             minRaiseRow(y);
             y += 21;
             button(() -> "Auktion starten", () -> {
@@ -334,7 +334,7 @@ public class FloonsMenu extends FloonsScreen {
                     FloonsAuction.parseDuration(fDur), priceOf(fBuy), priceOf(fRes)));
                 fItem = ""; rebuild();
             }, x2, y, half, 18);
-            y += 24;
+            y += 27;
             label("Warteschlange (" + FloonsAuction.queue.size() + ")", left, y);
             y += 11;
             for (int i = 0; i < Math.min(2, FloonsAuction.queue.size()); i++) {
@@ -359,11 +359,11 @@ public class FloonsMenu extends FloonsScreen {
             button(() -> FloonsAuction.paused ? "Fortsetzen" : "Pausieren",
                 () -> msg(FloonsAuction.paused ? FloonsAuction.resumeManual() : FloonsAuction.pauseManual()), left, y, half, 18);
             button(() -> "Rückzahlungen im Chat", () -> { FloonsAuction.refundList(); close(); }, x2, y, half, 18);
-            y += 23;
+            y += 27;
             fBuy = FloonsAuction.buyNow > 0 ? String.valueOf(FloonsAuction.buyNow) : "";
             fRes = FloonsAuction.reserve > 0 ? String.valueOf(FloonsAuction.reserve) : "";
             priceFields(y, true);
-            y += 32;
+            y += 34;
             minRaiseRow(y);
             y += 21;
             button(() -> "Preise übernehmen", () -> {
@@ -373,7 +373,7 @@ public class FloonsMenu extends FloonsScreen {
                 if (b > 0) FloonsAuction.say("[Auktion] Sofortkauf für " + FloonsAuction.item + ": " + FloonsAuction.fmt(b));
             }, left, y, half, 18, true);
             button(() -> "Statistik im Chat", () -> { FloonsAuction.stats(); close(); }, x2, y, half, 18);
-            y += 23;
+            y += 26;
             label("Warteschlange: " + FloonsAuction.queue.size() + (FloonsAuction.queue.isEmpty() ? "" : "  ·  danach " + FloonsAuction.queue.get(0).item()), left, y);
         }
     }
@@ -436,7 +436,7 @@ public class FloonsMenu extends FloonsScreen {
         int half = (PW - 6) / 2;
         label("Twitch-Kanal (Name)", left, y);
         field(left, y + 10, PW, c.twitchChannel, 40, s -> { c.twitchChannel = s.trim(); c.save(); });
-        y += 32;
+        y += 34;
         toggle("Twitch-Chat", () -> c.twitch, v -> c.twitch = v, left, y, half);
         button(() -> "Zeilen: " + c.twitchLines, () -> { c.twitchLines = c.twitchLines >= 15 ? 3 : c.twitchLines + 1; c.save(); }, left + half + 6, y, half, 18);
         y += 21;
@@ -456,12 +456,12 @@ public class FloonsMenu extends FloonsScreen {
             label("Preis", left, y); label("Dauer", left + PW - 90, y);
             field(left, y + 10, PW - 96, gPrize, 60, s -> gPrize = s);
             field(left + PW - 90, y + 10, 90, gDur, 8, s -> gDur = s);
-            y += 32;
-        } else y += 24;
+            y += 34;
+        } else y += 26;
         label("Stichwort", left, y);
         field(left, y + 10, half, c.giveawayKeyword, 20, s -> { if (!s.isBlank()) { c.giveawayKeyword = s.trim(); c.save(); } });
         button(() -> "Gewinner: " + c.giveawayWinners, () -> { c.giveawayWinners = c.giveawayWinners >= 5 ? 1 : c.giveawayWinners + 1; c.save(); }, x2, y + 10, half, 18);
-        y += 32;
+        y += 34;
         toggle("Teilnahme über Twitch", () -> c.giveawayTwitch, v -> c.giveawayTwitch = v, left, y, half);
         toggle("Giveaway-HUD", () -> c.giveawayHud, v -> c.giveawayHud = v, x2, y, half);
         y += 23;
@@ -501,7 +501,7 @@ public class FloonsMenu extends FloonsScreen {
         field(left, y + 10, PW, c.adText == null ? "" : c.adText, 200, s -> { c.adText = s; c.save(); });
         y += 34;
         button(() -> "Werbung senden", FloonsStreamer::sendAd, left, y, PW, 18, true);
-        label("Sendet die Nachricht sofort in den Chat. Auch: /werbung", left, y + 23);
+        label("Sendet die Nachricht sofort in den Chat. Auch: /werbung", left, y + 25);
     }
 
     // ---------- Visuals ----------
@@ -581,13 +581,13 @@ public class FloonsMenu extends FloonsScreen {
         button(() -> "Unsichtbares Glas: " + onOff(FloonsGlass.isOn()), () -> {
             if (!FloonsGlass.toggle()) FloonsGamble.chat("Glas-Pack nicht gefunden.");
         }, left + half + 6, y, half, 18);
-        y += 21;
+        y += 25;
         label("Anti-Leak zeigt jeden Block als Netherite und filtert den Chat.", left, y);
         label("Packs laden Texturen neu (kurzer Ruckler). Zoom: Taste C.", left, y + 11);
-        y += 26;
+        y += 28;
         label("Anti-Leak: gesperrte Wörter (Komma getrennt)", left, y);
         field(left, y + 10, PW, c.leakWords, 300, s -> { c.leakWords = s; c.save(); });
-        label("Sperrt auch Koordinaten, IPs und deinen PC-Namen.", left, y + 32);
+        label("Sperrt auch Koordinaten, IPs und deinen PC-Namen.", left, y + 33);
     }
 
     private void crosshair(int y) {
@@ -630,10 +630,10 @@ public class FloonsMenu extends FloonsScreen {
         y += 21;
         stepper(() -> "Deckkraft: " + (c.sbAlpha * 100 / 255) + " %", () -> { c.sbAlpha = Math.max(0, c.sbAlpha - 15); c.save(); },
             () -> { c.sbAlpha = Math.min(255, c.sbAlpha + 15); c.save(); }, y);
-        y += 23;
+        y += 27;
         int fw = (PW - 8) / 3;
         label("Hintergrund", left, y); label("Rand", left + fw + 4, y); label("Text", left + 2 * (fw + 4), y);
-        y += 10;
+        y += 11;
         field(left, y, fw, c.sbBg, 7, s -> { if (FloonsTheme.parseHex(s) != null) { c.sbBg = s; c.save(); } });
         field(left + fw + 4, y, fw, c.sbBorder, 7, s -> { if (FloonsTheme.parseHex(s) != null) { c.sbBorder = s; c.save(); } });
         field(left + 2 * (fw + 4), y, fw, c.sbText, 7, s -> { if (FloonsTheme.parseHex(s) != null) { c.sbText = s; c.save(); } });
@@ -784,9 +784,9 @@ public class FloonsMenu extends FloonsScreen {
     @Override
     public void renderBackground(DrawContext ctx, int mouseX, int mouseY, float delta) {
         ctx.fillGradient(0, 0, width, height,
-            FloonsTheme.alpha(FloonsTheme.lerp(0xFF05030C, FloonsTheme.PURPLE, 0.15f), 0xC0),
-            FloonsTheme.alpha(FloonsTheme.lerp(0xFF05030C, FloonsTheme.BLUE, 0.18f), 0xC0));
-        FloonsTheme.panel(ctx, left - 10, top, W, H);
+            FloonsTheme.alpha(FloonsTheme.lerp(0xFF05030C, FloonsTheme.PURPLE, 0.15f), 0xE0),
+            FloonsTheme.alpha(FloonsTheme.lerp(0xFF05030C, FloonsTheme.BLUE, 0.18f), 0xE0));
+        FloonsTheme.solidPanel(ctx, left - 10, top, W, H);
         FloonsLogo.draw(ctx, left, top + 6, 12);
         FloonsTheme.gradientText(ctx, textRenderer, "Floons Client", left + 16, top + 8);
         String v = "v1.0.0 · kein Auto-Update";

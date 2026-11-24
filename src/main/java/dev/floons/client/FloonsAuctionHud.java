@@ -22,6 +22,7 @@ public final class FloonsAuctionHud {
         FloonsConfig c = FloonsConfig.get();
         MinecraftClient mc = MinecraftClient.getInstance();
         if (mc.options.hudHidden || !c.hud) return;
+        if (FloonsClient.hideHud()) return;
         TextRenderer tr = mc.textRenderer;
         if (FloonsAuction.active) {
             card(ctx, tr, mc, c);

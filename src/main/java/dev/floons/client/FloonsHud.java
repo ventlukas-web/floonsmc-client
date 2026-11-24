@@ -69,6 +69,7 @@ public class FloonsHud {
         BOUNDS.clear();
         if (sbb != null) BOUNDS.put("scoreboard", sbb);
         if (mc.options.hudHidden) return;
+        if (FloonsClient.hideHud()) return;
         FloonsConfig cfg = FloonsConfig.get();
         TextRenderer tr = mc.textRenderer;
 

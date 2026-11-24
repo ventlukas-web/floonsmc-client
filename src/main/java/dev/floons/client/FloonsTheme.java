@@ -238,6 +238,13 @@ public final class FloonsTheme {
         cloud(ctx, x, y, w, h, 255);
     }
 
+    /** Deckendes Panel fuer Menues: nichts dahinter scheint durch. */
+    public static void solidPanel(DrawContext ctx, int x, int y, int w, int h) {
+        int r = Math.max(3, Math.min(h >= 60 ? 12 : 8, Math.min(w, h) / 2));
+        roundRectExact(ctx, x, y, w, h, r, 0xFF000000 | lerp(0xFF0A111A, PURPLE, 0.08f));
+        cloud(ctx, x, y, w, h, 255);
+    }
+
     private static void cloud(DrawContext ctx, int x, int y, int w, int h, int bgAlpha) {
         int r = Math.max(3, Math.min(h >= 60 ? 12 : 8, Math.min(w, h) / 2));
         int a = Math.max(60, Math.min(0xC8, (int) (((BG >>> 24) * bgAlpha / 255) * 0.78f)));

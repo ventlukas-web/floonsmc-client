@@ -82,6 +82,7 @@ public class FloonsClient implements ClientModInitializer {
         ScreenEvents.AFTER_INIT.register((client, screen, w, h) ->
             ScreenEvents.afterRender(screen).register((s, ctx, mx, my, delta) -> {
                 if (!FloonsConfig.get().watermark) return;
+                if (s instanceof FloonsScreen) return; // Floons-Menues haben Logo + Titel selbst
                 var tr = client.textRenderer;
                 String label = "Floons Client";
                 int lx = s.width - tr.getWidth(label) - 5;
@@ -96,6 +97,12 @@ public class FloonsClient implements ClientModInitializer {
             FloonsTools.register(d);
             FloonsStreamer.registerCommands(d);
         });
+    }
+
+    /** Waehrend ein Floons-Menue offen ist (ausser HUD-Editor), werden die HUDs nicht gezeichnet, damit nichts durchscheint. */
+    public static boolean hideHud() {
+        var sc = net.minecraft.client.MinecraftClient.getInstance().currentScreen;
+        return sc instanceof FloonsScreen && !(sc instanceof FloonsHudEditor);
     }
 
     // ---------- Zahlungen erkennen ----------
