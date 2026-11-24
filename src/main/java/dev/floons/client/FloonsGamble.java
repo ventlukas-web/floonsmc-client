@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 public final class FloonsGamble {
     private FloonsGamble() {}
 
-    static int pendingScreen = 0; // 2 = Rechner, 8 = Roulette (nach dem Schließen des Chats öffnen)
+    static int pendingScreen = 0; // 1 = Menü, 2 = Rechner, 8 = Roulette (nach dem Schließen des Chats öffnen)
 
     // ---------- Hilfen ----------
     public static void chat(String text) { FloonsAuction.info(text); }
@@ -219,6 +219,7 @@ public final class FloonsGamble {
         FloonsStats.checkWait();
         FloonsStats.checkLimit();
         payTick();
+        if (pendingScreen == 1) { pendingScreen = 0; mc.setScreen(new FloonsMenu(null)); }
         if (pendingScreen == 2) { pendingScreen = 0; mc.setScreen(new FloonsCalculatorScreen(null)); }
         if (pendingScreen == 8) { pendingScreen = 0; mc.setScreen(new FloonsRouletteScreen(null)); }
     }

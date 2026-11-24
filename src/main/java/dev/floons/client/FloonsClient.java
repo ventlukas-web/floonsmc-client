@@ -15,7 +15,11 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,6 +35,7 @@ import java.util.regex.Pattern;
 public class FloonsClient implements ClientModInitializer {
     public static final String ID = "floonsclient";
     private static boolean debug;
+    public static KeyBinding menuKey;
     private static Pattern compiled;
     private static String compiledSrc;
 
@@ -39,7 +44,14 @@ public class FloonsClient implements ClientModInitializer {
         FloonsConfig.get();
         HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, Identifier.of(ID, "auction"), FloonsHud::render);
         HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, Identifier.of(ID, "gamble"), FloonsGambleHud::render);
-        ClientTickEvents.END_CLIENT_TICK.register(mc -> { FloonsAuction.tick(); FloonsGamble.tick(mc); });
+        KeyBinding.Category cat = KeyBinding.Category.create(Identifier.of(ID, "main"));
+        menuKey = KeyBindingHelper.registerKeyBinding(
+            new KeyBinding("key.floonsclient.menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, cat));
+        ClientTickEvents.END_CLIENT_TICK.register(mc -> {
+            while (menuKey.wasPressed()) if (mc.currentScreen == null) mc.setScreen(new FloonsMenu(null));
+            FloonsAuction.tick();
+            FloonsGamble.tick(mc);
+        });
         ClientSendMessageEvents.COMMAND.register(FloonsGamble::onOwnCommand);
         ClientReceiveMessageEvents.GAME.register((msg, overlay) -> { if (!overlay) onChat(msg.getString()); });
         ClientPlayConnectionEvents.DISCONNECT.register((h, mc) -> FloonsAuction.pause());
@@ -124,7 +136,7 @@ public class FloonsClient implements ClientModInitializer {
         FloonsAuction.info("/wa end | cancel | extend <s> | status | refund | history");
         FloonsAuction.info("/wa test <spieler> <betrag> – Gebot simulieren (kein Geld)");
         FloonsAuction.info("Gamble: /win /lose /payback [spieler|all] · /gamble · /roll · /coinflip · /roulette · /calc");
-        FloonsAuction.info("/floons – Auktions-Einstellungen");
+        FloonsAuction.info("/floons menu oder Rechte Shift – Mod-Menü  ·  /floons – Einstellungen per Befehl");
     }
 
     private static void status() {
@@ -162,6 +174,7 @@ public class FloonsClient implements ClientModInitializer {
         for (String s : new String[]{"top_left", "top_right", "bottom_right", "mid_left", "mid_right"})
             corner.then(ClientCommandManager.literal(s).executes(c -> { k.hudCorner = s; k.save(); FloonsAuction.info("HUD-Position: " + s); return 1; }));
         return ClientCommandManager.literal("floons")
+            .then(ClientCommandManager.literal("menu").executes(c -> { FloonsGamble.pendingScreen = 1; return 1; }))
             .executes(c -> {
                 FloonsAuction.info("Ansagen " + onOff(k.announce) + " | Countdown " + onOff(k.countdown) + " | Ton " + onOff(k.sound) + " | HUD " + onOff(k.hud));
                 FloonsAuction.info("Mindest-Erhöhung " + FloonsAuction.fmt(k.minRaise) + " | Anti-Snipe " + (k.antiSnipe > 0 ? k.antiSnipe + "s" : "aus")

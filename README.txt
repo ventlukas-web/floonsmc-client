@@ -20,6 +20,8 @@ AUKTION (Gebote = Zahlungen an dich, Mehrfachzahlungen addieren sich)
   /floons  announce | countdown | sound | hud | watermark | debug | minraise <b> | antisnipe <s>
          scale <0.5-3> | corner <top_left|top_right|bottom_right|mid_left|mid_right> | pattern <regex>
 
+MENÜ: Rechte Shift oder /floons menu (Reiter Auktion, Gamble, Allgemein)
+
 GAMBLE (wie Toasty Client; läuft keine Auktion, ist jede Zahlung ein Einsatz)
   /win [spieler|all] [multiplikator]   Gewinn auszahlen (Einsatz x Multiplikator, Auto-Pay)
   /lose [spieler|all]                  Einsatz behalten
