@@ -80,7 +80,9 @@ public class FloonsClient implements ClientModInitializer {
                 if (!FloonsConfig.get().watermark) return;
                 var tr = client.textRenderer;
                 String label = "Floons Client";
-                FloonsTheme.gradientText(ctx, tr, label, s.width - tr.getWidth(label) - 5, 5);
+                int lx = s.width - tr.getWidth(label) - 5;
+                FloonsLogo.draw(ctx, lx - 13, 4, 10);
+                FloonsTheme.gradientText(ctx, tr, label, lx, 5);
             }));
         ClientCommandRegistrationCallback.EVENT.register((d, reg) -> {
             d.register(auctionCommand());

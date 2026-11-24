@@ -112,7 +112,7 @@ public class FloonsHud {
         rows.add(new String[]{"Offen", String.valueOf(FloonsStats.pending.size() + FloonsStats.queuedCount())});
 
         String title = "Floons Client";
-        int w = tr.getWidth(title);
+        int w = tr.getWidth(title) + 12;
         for (String[] r : rows) w = Math.max(w, tr.getWidth(r[0]) + 14 + tr.getWidth(r[1]));
         int pad = 6, h = 16 + rows.size() * 11 + pad;
 
@@ -121,7 +121,8 @@ public class FloonsHud {
         ctx.getMatrices().translate(pos[0], pos[1]);
         ctx.getMatrices().scale(cfg.hudScale, cfg.hudScale);
         FloonsTheme.panel(ctx, 0, 0, w + pad * 2, h);
-        FloonsTheme.gradientText(ctx, tr, title, pad, 6);
+        FloonsLogo.draw(ctx, pad, 5, 9);
+        FloonsTheme.gradientText(ctx, tr, title, pad + 12, 6);
         int y = 18;
         for (String[] r : rows) {
             int vc = FloonsTheme.TEXT;

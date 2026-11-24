@@ -585,7 +585,8 @@ public class FloonsMenu extends FloonsScreen {
             FloonsTheme.alpha(FloonsTheme.lerp(0xFF05030C, FloonsTheme.PURPLE, 0.15f), 0xC0),
             FloonsTheme.alpha(FloonsTheme.lerp(0xFF05030C, FloonsTheme.BLUE, 0.18f), 0xC0));
         FloonsTheme.panel(ctx, left - 10, top, W, H);
-        FloonsTheme.gradientText(ctx, textRenderer, "Floons Client", left, top + 8);
+        FloonsLogo.draw(ctx, left, top + 6, 12);
+        FloonsTheme.gradientText(ctx, textRenderer, "Floons Client", left + 16, top + 8);
         String v = "v1.0.0 · kein Auto-Update";
         ctx.drawTextWithShadow(textRenderer, v, left + PW - textRenderer.getWidth(v), top + 8, FloonsTheme.MUTED);
     }
