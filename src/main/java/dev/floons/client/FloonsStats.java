@@ -35,7 +35,7 @@ public class FloonsStats {
             long since = Math.max(pendingAt.get(n), lastWarn.getOrDefault(n, 0L));
             if (now - since < cfg.waitWarnSec * 1000L) continue;
             lastWarn.put(n, now);
-            FloonsNotify.push("Wartet seit " + clock(waitedSec(n)), n + " · " + fmt(pending.get(n)), 0xFFFBBF24);
+            FloonsNotify.push("Offene Zahlung", n + " hat vor " + clock(waitedSec(n)) + " " + fmt(pending.get(n)) + " geschickt", 0xFFFBBF24);
             if (cfg.sound) FloonsGamble.playId("block.note_block.bell");
         }
     }
