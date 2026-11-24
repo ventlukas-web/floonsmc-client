@@ -1,0 +1,40 @@
+name: Build Wind Client
+on:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Zip entpacken (nur wind-client.zip im Repo noetig)
+        run: |
+          if [ -f wind-client.zip ]; then unzip -oq wind-client.zip && cp -rf wind-client/. . ; fi
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 9.2.1
+      - name: Neueste Versionen fuer 1.21.11 holen
+        run: |
+          YARN=$(curl -s https://meta.fabricmc.net/v2/versions/yarn/1.21.11 | jq -r '.[0].version')
+          LOADER=$(curl -s https://meta.fabricmc.net/v2/versions/loader | jq -r '[.[]|select(.stable)][0].version')
+          FAPI=$(curl -s -G 'https://api.modrinth.com/v2/project/fabric-api/version' \
+            --data-urlencode 'game_versions=["1.21.11"]' --data-urlencode 'loaders=["fabric"]' | jq -r '.[0].version_number')
+          echo "yarn=$YARN loader=$LOADER fabric-api=$FAPI"
+          sed -i "s/^yarn_mappings=.*/yarn_mappings=$YARN/; s/^loader_version=.*/loader_version=$LOADER/; s/^fabric_version=.*/fabric_version=$FAPI/" gradle.properties
+      - run: gradle build --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wind-client-jar
+          path: build/libs/wind-client-*[0-9].jar
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest build/libs/wind-client-*[0-9].jar --title "Wind Client" --notes "Neueste Version des Wind Clients. Kein Auto-Update: .jar selbst herunterladen und in den mods-Ordner legen."

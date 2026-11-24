@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "windclient",
+  "version": "1.0.0",
+  "name": "Wind Client",
+  "description": "Wind Client für WindSMP: Auktionen hosten mit Live-HUD. Kein Auto-Update, keine Netzwerkverbindungen.",
+  "authors": ["6po"],
+  "environment": "client",
+  "entrypoints": {
+    "client": ["dev.wind.client.WindClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.17.0",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
