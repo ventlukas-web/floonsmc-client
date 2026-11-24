@@ -17,6 +17,13 @@ public final class FloonsLogo {
         0xB2C8DD, 0xB2C8DD, 0xB2C8DD, 0xB2C8DD, 0x264C9F, 0xB2C8DD, 0xB2C8DD, 0xB2C8DD,
     };
 
+    private static final net.minecraft.text.Style GLYPH = net.minecraft.text.Style.EMPTY
+        .withFont(new net.minecraft.text.StyleSpriteSource.Font(net.minecraft.util.Identifier.of("floonsclient", "logo")))
+        .withColor(0xFFFFFF);
+
+    /** Der Kopf als Text-Zeichen (fuer Chat-Praefix usw.). */
+    public static net.minecraft.text.MutableText glyph() { return net.minecraft.text.Text.literal("\uE000").setStyle(GLYPH); }
+
     /** Zeichnet den Kopf mit Kantenlaenge size (GUI-Pixel) an x/y. */
     public static void draw(DrawContext ctx, int x, int y, int size) {
         for (int j = 0; j < 8; j++) {

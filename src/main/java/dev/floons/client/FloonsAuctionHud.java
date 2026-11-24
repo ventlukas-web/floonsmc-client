@@ -35,7 +35,7 @@ public final class FloonsAuctionHud {
         rows.add(new String[]{"Gesamt", FloonsAuction.fmt(FloonsAuction.total()) + "  (" + FloonsAuction.bids.size() + " Bieter)"});
 
         String title = "Auktion: " + FloonsAuction.item;
-        int w = Math.min(220, Math.max(120, tr.getWidth(title)));
+        int w = Math.min(232, Math.max(132, tr.getWidth(title) + 12));
         for (String[] r : rows) w = Math.max(w, tr.getWidth(r[0]) + 14 + tr.getWidth(r[1]));
         int pad = 6;
         int h = pad + 10 + 6 + 4 + rows.size() * 11 + pad - 2;
@@ -64,8 +64,9 @@ public final class FloonsAuctionHud {
         ctx.fill(0, 0, 1, h, edge);
         ctx.fill(bw - 1, 0, bw, h, edge);
 
-        String t = tr.getWidth(title) > w ? tr.trimToWidth(title, w - 6) + "…" : title;
-        ctx.drawTextWithShadow(tr, t, pad, pad, ACCENT);
+        String t = tr.getWidth(title) + 12 > w ? tr.trimToWidth(title, w - 18) + "…" : title;
+        FloonsLogo.draw(ctx, pad, pad - 1, 9);
+        ctx.drawTextWithShadow(tr, t, pad + 12, pad, ACCENT);
 
         // Fortschrittsbalken (verbleibende Zeit)
         int by = pad + 12;

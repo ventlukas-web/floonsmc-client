@@ -80,7 +80,7 @@ public final class FloonsAuction {
     public static void info(Text t) {
         MinecraftClient mc = MinecraftClient.getInstance();
         if (mc.player == null) return;
-        mc.player.sendMessage(Text.literal("[Floons] ").formatted(Formatting.DARK_AQUA).append(t), false);
+        mc.player.sendMessage(Text.empty().append(FloonsLogo.glyph()).append(Text.literal(" [Floons] ").formatted(Formatting.DARK_AQUA)).append(t), false);
     }
 
     // ---------- Steuerung ----------
