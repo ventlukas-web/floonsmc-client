@@ -1,4 +1,4 @@
-package dev.wind.client;
+package dev.floons.client;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -7,11 +7,11 @@ import net.fabricmc.loader.api.FabricLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/** Einstellungen in config/windclient.json. */
-public final class WindConfig {
+/** Einstellungen in config/floonsclient.json. */
+public final class FloonsConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("windclient.json");
-    private static WindConfig inst;
+    private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("floonsclient.json");
+    private static FloonsConfig inst;
 
     /** Zahlungsnachricht von WindSMP (gleiches Muster wie im Toasty Client). Gruppen: amount, suffix, player. */
     public String pattern = "^You received \\$(?<amount>[0-9][0-9.,]*)\\s*(?<suffix>[KkMmBbTt]?) from (?<player>\\.?[A-Za-z0-9_]{1,16})\\.?$";
@@ -49,12 +49,12 @@ public final class WindConfig {
     /** top_left, top_right, bottom_right, mid_left, mid_right */
     public String hudCorner = "top_right";
 
-    public static WindConfig get() {
+    public static FloonsConfig get() {
         if (inst == null) {
             try {
-                if (Files.exists(FILE)) inst = GSON.fromJson(Files.readString(FILE), WindConfig.class);
+                if (Files.exists(FILE)) inst = GSON.fromJson(Files.readString(FILE), FloonsConfig.class);
             } catch (Exception ignored) {}
-            if (inst == null) inst = new WindConfig();
+            if (inst == null) inst = new FloonsConfig();
             inst.save();
         }
         return inst;

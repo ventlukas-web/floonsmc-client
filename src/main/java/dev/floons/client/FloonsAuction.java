@@ -1,4 +1,4 @@
-package dev.wind.client;
+package dev.floons.client;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,8 +24,8 @@ import java.util.Map;
  * Auktion hosten: Gebote sind erkannte Zahlungen an dich.
  * Mehrfachzahlungen derselben Person addieren sich zu einem Gesamtgebot.
  */
-public final class WindAuction {
-    private WindAuction() {}
+public final class FloonsAuction {
+    private FloonsAuction() {}
 
     // ---------- Zustand ----------
     public static boolean active;
@@ -50,7 +50,7 @@ public final class WindAuction {
         public int bidders;
     }
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path HIST = FabricLoader.getInstance().getConfigDir().resolve("windclient-history.json");
+    private static final Path HIST = FabricLoader.getInstance().getConfigDir().resolve("floonsclient-history.json");
     private static List<Entry> history;
 
     public static List<Entry> history() {
@@ -71,7 +71,7 @@ public final class WindAuction {
     static void say(String s) {
         MinecraftClient mc = MinecraftClient.getInstance();
         if (mc.player == null) return;
-        if (WindConfig.get().announce && mc.player.networkHandler != null) mc.player.networkHandler.sendChatMessage(s);
+        if (FloonsConfig.get().announce && mc.player.networkHandler != null) mc.player.networkHandler.sendChatMessage(s);
         else info(s);
     }
 
@@ -80,7 +80,7 @@ public final class WindAuction {
     public static void info(Text t) {
         MinecraftClient mc = MinecraftClient.getInstance();
         if (mc.player == null) return;
-        mc.player.sendMessage(Text.literal("[Wind] ").formatted(Formatting.DARK_AQUA).append(t), false);
+        mc.player.sendMessage(Text.literal("[Floons] ").formatted(Formatting.DARK_AQUA).append(t), false);
     }
 
     // ---------- Steuerung ----------
@@ -170,7 +170,7 @@ public final class WindAuction {
     public static boolean onPayment(String player, long amount) {
         if (!active) return false;
         long total = bids.merge(player, amount, Long::sum);
-        WindConfig c = WindConfig.get();
+        FloonsConfig c = FloonsConfig.get();
         long need = bestName == null ? startBid : best + Math.max(1, c.minRaise);
         if (player.equals(bestName)) {
             best = total;
@@ -217,7 +217,7 @@ public final class WindAuction {
         if (!active || paused) return;
         long l = left();
         if (l <= 0) { end(false); return; }
-        if (!WindConfig.get().countdown) return;
+        if (!FloonsConfig.get().countdown) return;
         int s = (int) ((l + 999) / 1000);
         for (int c : COUNTDOWN) {
             if (s <= c && lastCountdown > c) {

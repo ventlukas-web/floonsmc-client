@@ -1,4 +1,4 @@
-package dev.wind.client;
+package dev.floons.client;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -10,31 +10,31 @@ import java.util.List;
 import java.util.Map;
 
 /** Live-HUD der laufenden Auktion. */
-public final class WindHud {
-    private WindHud() {}
+public final class FloonsHud {
+    private FloonsHud() {}
 
     static final int BG = 0xB0101820, LINE = 0x4060D0F0, ACCENT = 0xFF5FD7F5, TEXT = 0xFFEAF6FF,
         MUTED = 0xFF9FB4C4, GOOD = 0xFF6EE7A8, WARN = 0xFFFF8A5C, BAR_BG = 0x60FFFFFF;
 
     public static void render(DrawContext ctx, RenderTickCounter tick) {
-        WindConfig c = WindConfig.get();
-        if (!c.hud || !WindAuction.active) return;
+        FloonsConfig c = FloonsConfig.get();
+        if (!c.hud || !FloonsAuction.active) return;
         MinecraftClient mc = MinecraftClient.getInstance();
         if (mc.options.hudHidden) return;
         TextRenderer tr = mc.textRenderer;
 
-        long left = WindAuction.left();
+        long left = FloonsAuction.left();
         boolean urgent = left < 10_000;
         List<String[]> rows = new ArrayList<>();
-        rows.add(new String[]{"Zeit", WindAuction.paused ? "Pause" : WindAuction.mmss(left)});
-        rows.add(new String[]{"Höchstgebot", WindAuction.bestName == null ? WindAuction.fmt(WindAuction.startBid) + " (Start)" : WindAuction.fmt(WindAuction.best)});
-        rows.add(new String[]{"Meistbietender", WindAuction.bestName == null ? "–" : WindAuction.bestName});
-        List<Map.Entry<String, Long>> top = WindAuction.top();
+        rows.add(new String[]{"Zeit", FloonsAuction.paused ? "Pause" : FloonsAuction.mmss(left)});
+        rows.add(new String[]{"Höchstgebot", FloonsAuction.bestName == null ? FloonsAuction.fmt(FloonsAuction.startBid) + " (Start)" : FloonsAuction.fmt(FloonsAuction.best)});
+        rows.add(new String[]{"Meistbietender", FloonsAuction.bestName == null ? "–" : FloonsAuction.bestName});
+        List<Map.Entry<String, Long>> top = FloonsAuction.top();
         for (int i = 0; i < Math.min(3, top.size()); i++)
-            rows.add(new String[]{(i + 1) + ". " + top.get(i).getKey(), WindAuction.fmt(top.get(i).getValue())});
-        rows.add(new String[]{"Gesamt", WindAuction.fmt(WindAuction.total()) + "  (" + WindAuction.bids.size() + " Bieter)"});
+            rows.add(new String[]{(i + 1) + ". " + top.get(i).getKey(), FloonsAuction.fmt(top.get(i).getValue())});
+        rows.add(new String[]{"Gesamt", FloonsAuction.fmt(FloonsAuction.total()) + "  (" + FloonsAuction.bids.size() + " Bieter)"});
 
-        String title = "Auktion: " + WindAuction.item;
+        String title = "Auktion: " + FloonsAuction.item;
         int w = Math.min(220, Math.max(120, tr.getWidth(title)));
         for (String[] r : rows) w = Math.max(w, tr.getWidth(r[0]) + 14 + tr.getWidth(r[1]));
         int pad = 6;
@@ -56,9 +56,9 @@ public final class WindHud {
         ctx.getMatrices().translate(x, y);
         ctx.getMatrices().scale(s, s);
 
-        boolean flash = System.currentTimeMillis() < WindAuction.flashUntil;
+        boolean flash = System.currentTimeMillis() < FloonsAuction.flashUntil;
         ctx.fill(0, 0, bw, h, BG);
-        int edge = flash ? GOOD : (urgent && !WindAuction.paused ? WARN : LINE);
+        int edge = flash ? GOOD : (urgent && !FloonsAuction.paused ? WARN : LINE);
         ctx.fill(0, 0, bw, 1, edge);
         ctx.fill(0, h - 1, bw, h, edge);
         ctx.fill(0, 0, 1, h, edge);
@@ -70,7 +70,7 @@ public final class WindHud {
         // Fortschrittsbalken (verbleibende Zeit)
         int by = pad + 12;
         ctx.fill(pad, by, pad + w, by + 3, BAR_BG);
-        float frac = WindAuction.durationMs <= 0 ? 0 : Math.min(1f, left / (float) WindAuction.durationMs);
+        float frac = FloonsAuction.durationMs <= 0 ? 0 : Math.min(1f, left / (float) FloonsAuction.durationMs);
         ctx.fill(pad, by, pad + Math.round(w * frac), by + 3, urgent ? WARN : ACCENT);
 
         int ry = by + 8;

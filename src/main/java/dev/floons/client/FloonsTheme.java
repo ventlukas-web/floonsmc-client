@@ -1,20 +1,20 @@
-package dev.wind.client;
+package dev.floons.client;
 
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 
-/** Wind-Design: Himmelblau / Türkis. */
-public final class WindTheme {
+/** Floons-Design: Himmelblau / Türkis. */
+public final class FloonsTheme {
     /** Hauptfarbe (Standard Lila) und Zweitfarbe (Standard Hellblau) - einstellbar im Design-Tab. */
-    public static int PURPLE = 0xFF38BDF8; // Wind: Himmelblau
-    public static int BLUE = 0xFF5EEAD4; // Wind: Türkis
+    public static int PURPLE = 0xFF38BDF8; // Floons: Himmelblau
+    public static int BLUE = 0xFF5EEAD4; // Floons: Türkis
     public static int BG = 0xD00B1620;
     public static final int TEXT = 0xFFF3EEFF;
     public static final int MUTED = 0xFFB8B5E6;
     public static final int GOOD = 0xFF86EFAC;
     public static final int BAD = 0xFFFDA4AF;
 
-    private WindTheme() {}
+    private FloonsTheme() {}
 
     /** "#RRGGBB" (mit oder ohne #) -> ARGB, sonst null. */
     public static Integer parseHex(String s) {

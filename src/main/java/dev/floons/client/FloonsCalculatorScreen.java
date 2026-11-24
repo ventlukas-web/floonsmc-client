@@ -1,4 +1,4 @@
-package dev.wind.client;
+package dev.floons.client;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Rechner (Standardtaste J). Versteht k/m/b/t, z. B. "2.5m * 1.5 + 300k". */
-public class WindCalculatorScreen extends WindScreen {
+public class FloonsCalculatorScreen extends FloonsScreen {
     private static final int W = 192, CW = 36, CH = 22, G = 3;
     private static final List<String> history = new ArrayList<>();
     private static String keep = "";
@@ -18,7 +18,7 @@ public class WindCalculatorScreen extends WindScreen {
     private TextFieldWidget input;
     private int left, top;
 
-    public WindCalculatorScreen(Screen parent) {
+    public FloonsCalculatorScreen(Screen parent) {
         super(Text.literal("Rechner"));
         this.parent = parent;
     }
@@ -31,7 +31,7 @@ public class WindCalculatorScreen extends WindScreen {
         input = new TextFieldWidget(textRenderer, left + 8, top + 6, W - 16, 12, Text.empty());
         input.setDrawsBackground(false);
         final int fl = left, ft = top, fw = W;
-        addDrawable((dc, mx, my, dl) -> WindTheme.fieldBg(dc, fl, ft, fw, 20, input.isFocused()));
+        addDrawable((dc, mx, my, dl) -> FloonsTheme.fieldBg(dc, fl, ft, fw, 20, input.isFocused()));
         input.setMaxLength(80);
         input.setText(keep);
         input.setChangedListener(s -> keep = s);
@@ -62,18 +62,18 @@ public class WindCalculatorScreen extends WindScreen {
             case "C" -> input.setText("");
             case "<" -> { if (!t.isEmpty()) input.setText(t.substring(0, t.length() - 1)); }
             case "=" -> {
-                Double v = WindCalc.eval(t);
+                Double v = FloonsCalc.eval(t);
                 if (v != null) {
-                    history.add(0, t + " = " + WindCalc.pretty(v));
+                    history.add(0, t + " = " + FloonsCalc.pretty(v));
                     while (history.size() > 4) history.remove(history.size() - 1);
-                    input.setText(WindCalc.plain(v));
+                    input.setText(FloonsCalc.plain(v));
                 }
             }
             case "Kopie" -> {
-                Double v = WindCalc.eval(t);
+                Double v = FloonsCalc.eval(t);
                 if (v != null) {
-                    MinecraftClient.getInstance().keyboard.setClipboard(WindCalc.plain(v));
-                    WindGamble.chat("Ergebnis kopiert: " + WindCalc.plain(v));
+                    MinecraftClient.getInstance().keyboard.setClipboard(FloonsCalc.plain(v));
+                    FloonsGamble.chat("Ergebnis kopiert: " + FloonsCalc.plain(v));
                 }
             }
             default -> input.setText(t + k);
@@ -84,28 +84,28 @@ public class WindCalculatorScreen extends WindScreen {
     @Override
     public void renderBackground(DrawContext ctx, int mouseX, int mouseY, float delta) {
         ctx.fillGradient(0, 0, width, height,
-            WindTheme.alpha(WindTheme.lerp(0xFF05030C, WindTheme.PURPLE, 0.15f), 0xE0),
-            WindTheme.alpha(WindTheme.lerp(0xFF05030C, WindTheme.BLUE, 0.18f), 0xE0));
-        WindTheme.panel(ctx, left - 12, top - 24, W + 24, 236);
-        WindTheme.gradientText(ctx, textRenderer, "Rechner", left, top - 16);
+            FloonsTheme.alpha(FloonsTheme.lerp(0xFF05030C, FloonsTheme.PURPLE, 0.15f), 0xE0),
+            FloonsTheme.alpha(FloonsTheme.lerp(0xFF05030C, FloonsTheme.BLUE, 0.18f), 0xE0));
+        FloonsTheme.panel(ctx, left - 12, top - 24, W + 24, 236);
+        FloonsTheme.gradientText(ctx, textRenderer, "Rechner", left, top - 16);
     }
 
     @Override
     protected void extra(DrawContext ctx, int mouseX, int mouseY) {
-        Double v = WindCalc.eval(input.getText());
-        String main = v == null ? (input.getText().isEmpty() ? "= 0" : "= …") : "= " + WindCalc.pretty(v);
+        Double v = FloonsCalc.eval(input.getText());
+        String main = v == null ? (input.getText().isEmpty() ? "= 0" : "= …") : "= " + FloonsCalc.pretty(v);
         ctx.getMatrices().pushMatrix();
         ctx.getMatrices().translate(left + 2, top + 26);
         ctx.getMatrices().scale(1.5f, 1.5f);
-        ctx.drawTextWithShadow(textRenderer, main, 0, 0, v == null ? WindTheme.MUTED : WindTheme.GOOD);
+        ctx.drawTextWithShadow(textRenderer, main, 0, 0, v == null ? FloonsTheme.MUTED : FloonsTheme.GOOD);
         ctx.getMatrices().popMatrix();
         if (v != null && Math.abs(v) >= 1000) {
-            String sh = WindStats.fmt(Math.round(v));
-            ctx.drawTextWithShadow(textRenderer, sh, left + W - textRenderer.getWidth(sh) - 2, top + 26, WindTheme.BLUE);
+            String sh = FloonsStats.fmt(Math.round(v));
+            ctx.drawTextWithShadow(textRenderer, sh, left + W - textRenderer.getWidth(sh) - 2, top + 26, FloonsTheme.BLUE);
         }
         int y = top + 52 + 5 * (CH + G) + 2;
         for (String h : history) {
-            ctx.drawTextWithShadow(textRenderer, h, left + 2, y, WindTheme.MUTED);
+            ctx.drawTextWithShadow(textRenderer, h, left + 2, y, FloonsTheme.MUTED);
             y += 10;
         }
     }

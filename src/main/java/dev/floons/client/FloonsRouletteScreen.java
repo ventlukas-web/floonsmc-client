@@ -1,4 +1,4 @@
-package dev.wind.client;
+package dev.floons.client;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /** Europaeisches Roulette (0-36) mit rollender Kugel: Kessel dreht sich, die Kugel laeuft gegenlaeufig, faellt ein und huepft ins Fach. */
-public class WindRouletteScreen extends WindScreen {
+public class FloonsRouletteScreen extends FloonsScreen {
     private static final int[] ORDER = {0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26};
     private static final Set<Integer> RED = Set.of(1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36);
     private static final double TAU = Math.PI * 2, STEP = TAU / 37;
@@ -33,7 +33,7 @@ public class WindRouletteScreen extends WindScreen {
     private long lastRoll;
     private boolean rebuilt;
 
-    public WindRouletteScreen(Screen parent) {
+    public FloonsRouletteScreen(Screen parent) {
         super(Text.literal("Roulette"));
         this.parent = parent;
     }
@@ -83,7 +83,7 @@ public class WindRouletteScreen extends WindScreen {
         dropLen = Math.max(1.8, Math.min(4.2, 2 * dist / wrel));
         t0 = System.nanoTime();
         lastRoll = 0;
-        if (WindConfig.get().sound) { WindGamble.playId("block.note_block.chime", 0.8f, 0.7f); WindGamble.playId("entity.item.pickup", 0.6f, 0.6f); }
+        if (FloonsConfig.get().sound) { FloonsGamble.playId("block.note_block.chime", 0.8f, 0.7f); FloonsGamble.playId("entity.item.pickup", 0.6f, 0.6f); }
         st = St.SPIN;
         lastPocket = -1;
         rebuilt = false;
@@ -118,7 +118,7 @@ public class WindRouletteScreen extends WindScreen {
         TextFieldWidget f = new TextFieldWidget(textRenderer, px + 78 + 8, y0 + 88 + 6, 72 - 16, 12, Text.empty());
         f.setDrawsBackground(false);
         final int bx0 = px + 78, by0 = y0 + 88;
-        addDrawable((dc, mx, my, dl) -> WindTheme.fieldBg(dc, bx0, by0, 72, 20, f.isFocused()));
+        addDrawable((dc, mx, my, dl) -> FloonsTheme.fieldBg(dc, bx0, by0, 72, 20, f.isFocused()));
         f.setMaxLength(2);
         f.setText(String.valueOf(betNum));
         f.setChangedListener(s -> {
@@ -158,39 +158,39 @@ public class WindRouletteScreen extends WindScreen {
         else curTheta = theta(t);
 
         double rt = R * 0.87, rp = R * 0.63;
-        if (st == St.SPIN && t < TD && WindConfig.get().sound) {
+        if (st == St.SPIN && t < TD && FloonsConfig.get().sound) {
             // Kugel rollt im Aussenring: leises Rattern, wird mit der Zeit langsamer
             long nowMs = System.currentTimeMillis();
             long gap = (long) (70 + 160 * (t / TD));
-            if (nowMs - lastRoll >= gap) { lastRoll = nowMs; WindGamble.playId("block.note_block.hat", 0.35f, 1.3f - (float) (t / TD) * 0.5f); }
+            if (nowMs - lastRoll >= gap) { lastRoll = nowMs; FloonsGamble.playId("block.note_block.hat", 0.35f, 1.3f - (float) (t / TD) * 0.5f); }
         }
         if (st == St.SPIN && t >= TD) {
             double s = (t - TD) / dropLen;
             double rel = relDrop - dist * (1 - (1 - Math.min(1, s)) * (1 - Math.min(1, s)));
             int pk = (int) Math.floor(mod(rel, TAU) / STEP);
-            if (pk != lastPocket) { lastPocket = pk; if (WindConfig.get().sound) WindGamble.playId("block.note_block.hat", 0.9f, 0.9f + (float) Math.min(1, s) * 0.3f); }
+            if (pk != lastPocket) { lastPocket = pk; if (FloonsConfig.get().sound) FloonsGamble.playId("block.note_block.hat", 0.9f, 0.9f + (float) Math.min(1, s) * 0.3f); }
         }
         if (st == St.SPIN && t >= TD + dropLen + 0.1) {
             st = St.DONE;
             HISTORY.add(result);
             if (HISTORY.size() > 16) HISTORY.remove(0);
             boolean w = wins(bet, result);
-            WindGamble.chat("Roulette: " + result + (result == 0 ? " Grün" : isRed(result) ? " Rot" : " Schwarz") + " – " + (w ? "Wette gewonnen (×" + (int) mult() + ")" : "Wette verloren"));
-            if (WindConfig.get().sound) {
-                WindGamble.playId("block.note_block.bell", 1f, result == 0 ? 0.6f : 1.2f);
-                WindGamble.playId(w ? "entity.player.levelup" : "block.note_block.bass", 1f, 1f);
+            FloonsGamble.chat("Roulette: " + result + (result == 0 ? " Grün" : isRed(result) ? " Rot" : " Schwarz") + " – " + (w ? "Wette gewonnen (×" + (int) mult() + ")" : "Wette verloren"));
+            if (FloonsConfig.get().sound) {
+                FloonsGamble.playId("block.note_block.bell", 1f, result == 0 ? 0.6f : 1.2f);
+                FloonsGamble.playId(w ? "entity.player.levelup" : "block.note_block.bass", 1f, 1f);
             }
             if (!rebuilt) { rebuilt = true; clearAndInit(); }
         }
 
         // Kessel: Rand, Holz, Kugelbahn, Faecherring
-        WindTheme.roundRectExact(ctx, cx - R - 3, cy - R - 3, 2 * R + 6, 2 * R + 6, R + 3, 0xFF000000);
-        WindTheme.roundRectExact(ctx, cx - R, cy - R, 2 * R, 2 * R, R, 0xFFB8862B);
+        FloonsTheme.roundRectExact(ctx, cx - R - 3, cy - R - 3, 2 * R + 6, 2 * R + 6, R + 3, 0xFF000000);
+        FloonsTheme.roundRectExact(ctx, cx - R, cy - R, 2 * R, 2 * R, R, 0xFFB8862B);
         int r2 = R - 5;
-        WindTheme.roundRectExact(ctx, cx - r2, cy - r2, 2 * r2, 2 * r2, r2, 0xFF3A1D10);
+        FloonsTheme.roundRectExact(ctx, cx - r2, cy - r2, 2 * r2, 2 * r2, r2, 0xFF3A1D10);
         int r3 = (int) (R * 0.76);
-        WindTheme.roundRectExact(ctx, cx - r3 - 2, cy - r3 - 2, 2 * r3 + 4, 2 * r3 + 4, r3 + 2, 0xFFB8862B);
-        WindTheme.roundRectExact(ctx, cx - r3, cy - r3, 2 * r3, 2 * r3, r3, 0xFF0B0B0B);
+        FloonsTheme.roundRectExact(ctx, cx - r3 - 2, cy - r3 - 2, 2 * r3 + 4, 2 * r3 + 4, r3 + 2, 0xFFB8862B);
+        FloonsTheme.roundRectExact(ctx, cx - r3, cy - r3, 2 * r3, 2 * r3, r3, 0xFF0B0B0B);
 
         // drehender Teil: Faecher + Zahlen
         var m = ctx.getMatrices();
@@ -219,9 +219,9 @@ public class WindRouletteScreen extends WindScreen {
         }
         // Mittelkegel
         int rc = (int) (R * 0.50);
-        WindTheme.roundRectExact(ctx, -rc, -rc, 2 * rc, 2 * rc, rc, 0xFF5A3418);
+        FloonsTheme.roundRectExact(ctx, -rc, -rc, 2 * rc, 2 * rc, rc, 0xFF5A3418);
         int rc2 = (int) (R * 0.40);
-        WindTheme.roundRectExact(ctx, -rc2, -rc2, 2 * rc2, 2 * rc2, rc2, 0xFF7A4A22);
+        FloonsTheme.roundRectExact(ctx, -rc2, -rc2, 2 * rc2, 2 * rc2, rc2, 0xFF7A4A22);
         for (int i = 0; i < 4; i++) {
             m.pushMatrix();
             m.rotate((float) (i * Math.PI / 2));
@@ -230,7 +230,7 @@ public class WindRouletteScreen extends WindScreen {
         }
         m.popMatrix();
         int hub = Math.max(5, (int) (R * 0.12));
-        WindTheme.roundRectExact(ctx, cx - hub, cy - hub, 2 * hub, 2 * hub, hub, 0xFFD9A441);
+        FloonsTheme.roundRectExact(ctx, cx - hub, cy - hub, 2 * hub, 2 * hub, hub, 0xFFD9A441);
 
         // Kugel mit Schweif
         if (st != St.IDLE) {
@@ -241,16 +241,16 @@ public class WindRouletteScreen extends WindScreen {
                 int by = cy - (int) Math.round(Math.cos(bp[0]) * bp[1]);
                 int d = Math.max(5, R / 13);
                 int a = g == 0 ? 0xFF : 0x55 - g * 0x12;
-                if (g == 0) WindTheme.roundRectExact(ctx, bx - d / 2 + 1, by - d / 2 + 1, d, d, d / 2, 0x88000000);
-                WindTheme.roundRectExact(ctx, bx - d / 2, by - d / 2, d, d, d / 2, WindTheme.alpha(0xFFF4F4F4, a));
+                if (g == 0) FloonsTheme.roundRectExact(ctx, bx - d / 2 + 1, by - d / 2 + 1, d, d, d / 2, 0x88000000);
+                FloonsTheme.roundRectExact(ctx, bx - d / 2, by - d / 2, d, d, d / 2, FloonsTheme.alpha(0xFFF4F4F4, a));
             }
         }
 
         // Ergebnis in der Mitte
         if (st == St.DONE) {
             int rb = Math.max(14, (int) (R * 0.26));
-            WindTheme.roundRectExact(ctx, cx - rb, cy - rb, 2 * rb, 2 * rb, rb, 0xFFFFFFFF);
-            WindTheme.roundRectExact(ctx, cx - rb + 2, cy - rb + 2, 2 * rb - 4, 2 * rb - 4, rb - 2, numColor(result));
+            FloonsTheme.roundRectExact(ctx, cx - rb, cy - rb, 2 * rb, 2 * rb, rb, 0xFFFFFFFF);
+            FloonsTheme.roundRectExact(ctx, cx - rb + 2, cy - rb + 2, 2 * rb - 4, 2 * rb - 4, rb - 2, numColor(result));
             m.pushMatrix();
             m.translate(cx, cy);
             m.scale(2f, 2f);
@@ -265,26 +265,26 @@ public class WindRouletteScreen extends WindScreen {
             int n = HISTORY.get(HISTORY.size() - 1 - i);
             int x = hx + i * 17;
             if (x + 16 > px - 8) break;
-            WindTheme.roundRectExact(ctx, x, hy, 15, 17, 6, numColor(n));
+            FloonsTheme.roundRectExact(ctx, x, hy, 15, 17, 6, numColor(n));
             String s = String.valueOf(n);
             ctx.drawTextWithShadow(textRenderer, s, x + 8 - textRenderer.getWidth(s) / 2, hy + 5, 0xFFFFFFFF);
         }
 
         // Seitenpanel
-        WindTheme.panel(ctx, px - 10, y0 - 6, 170, 212, 0xE0);
-        WindTheme.gradientText(ctx, textRenderer, "Roulette", px, y0 + 4);
+        FloonsTheme.panel(ctx, px - 10, y0 - 6, 170, 212, 0xE0);
+        FloonsTheme.gradientText(ctx, textRenderer, "Roulette", px, y0 + 4);
         super.render(ctx, mx, my, delta);
         String betTxt = bet >= 6 ? "Zahl " + betNum + " (×36)" : BETS[bet] + " (×2)";
-        ctx.drawTextWithShadow(textRenderer, "Wette: " + betTxt, px, y0 + 142, WindTheme.MUTED);
+        ctx.drawTextWithShadow(textRenderer, "Wette: " + betTxt, px, y0 + 142, FloonsTheme.MUTED);
         if (st == St.DONE) {
             boolean w = wins(bet, result);
             String col = result == 0 ? "Grün" : isRed(result) ? "Rot" : "Schwarz";
             ctx.drawTextWithShadow(textRenderer, result + " " + col, px, y0 + 154, 0xFFFFFFFF);
-            ctx.drawTextWithShadow(textRenderer, w ? "GEWONNEN" : "VERLOREN", px, y0 + 166, w ? WindTheme.GOOD : WindTheme.BAD);
+            ctx.drawTextWithShadow(textRenderer, w ? "GEWONNEN" : "VERLOREN", px, y0 + 166, w ? FloonsTheme.GOOD : FloonsTheme.BAD);
         } else if (st == St.SPIN) {
             ctx.drawTextWithShadow(textRenderer, "Kugel rollt …", px, y0 + 154, 0xFFFBBF24);
         } else {
-            ctx.drawTextWithShadow(textRenderer, "Wette wählen und drehen", px, y0 + 154, WindTheme.MUTED);
+            ctx.drawTextWithShadow(textRenderer, "Wette wählen und drehen", px, y0 + 154, FloonsTheme.MUTED);
         }
     }
 }

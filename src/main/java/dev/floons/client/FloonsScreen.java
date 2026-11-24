@@ -1,4 +1,4 @@
-package dev.wind.client;
+package dev.floons.client;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -9,13 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-/** Basis fuer alle Wind-Screens: Buttons mit runden Ecken im Wind-Design. */
-public abstract class WindScreen extends Screen {
+/** Basis fuer alle Floons-Screens: Buttons mit runden Ecken im Floons-Design. */
+public abstract class FloonsScreen extends Screen {
     protected record Btn(ButtonWidget w, Supplier<String> label, boolean accent) {}
     protected final List<Btn> btns = new ArrayList<>();
     private final java.util.Map<ButtonWidget, Float> hoverAnim = new java.util.HashMap<>();
 
-    protected WindScreen(Text title) { super(title); }
+    protected FloonsScreen(Text title) { super(title); }
 
     protected abstract void build();
 
@@ -76,12 +76,12 @@ public abstract class WindScreen extends Screen {
             float mix = base + (0.6f - base) * cur;
             boolean big = bigButton(w);
             int pr = bh / 2;
-            if (big || b.accent()) WindTheme.bigPill(ctx, x, y, bw, bh, cur, big ? bigOn() : true);
+            if (big || b.accent()) FloonsTheme.bigPill(ctx, x, y, bw, bh, cur, big ? bigOn() : true);
             else {
                 // Wolken-Pille: weiss, durchsichtig, heller Rand
                 int wa = Math.max(0x14, Math.min(0x50, 160 / 6));
-                WindTheme.roundRectExact(ctx, x, y, bw, bh, pr, WindTheme.alpha(WindTheme.btnTint(), wa + (int) (0x2C * cur)));
-                WindTheme.roundOutlineExact(ctx, x, y, bw, bh, pr, WindTheme.alpha(WindTheme.btnTint(), 0x40 + (int) (0x50 * cur)));
+                FloonsTheme.roundRectExact(ctx, x, y, bw, bh, pr, FloonsTheme.alpha(FloonsTheme.btnTint(), wa + (int) (0x2C * cur)));
+                FloonsTheme.roundOutlineExact(ctx, x, y, bw, bh, pr, FloonsTheme.alpha(FloonsTheme.btnTint(), 0x40 + (int) (0x50 * cur)));
             }
             String s = b.label().get();
             int maxW = bw - 10;
@@ -90,6 +90,6 @@ public abstract class WindScreen extends Screen {
                 s = s + "…";
             }
             net.minecraft.text.Text lt = net.minecraft.text.Text.literal(s);
-            ctx.drawTextWithShadow(textRenderer, lt, x + (bw - textRenderer.getWidth(lt)) / 2, y + (bh - 8) / 2, (w.active ? WindTheme.TEXT : WindTheme.MUTED));
+            ctx.drawTextWithShadow(textRenderer, lt, x + (bw - textRenderer.getWidth(lt)) / 2, y + (bh - 8) / 2, (w.active ? FloonsTheme.TEXT : FloonsTheme.MUTED));
     }
 }

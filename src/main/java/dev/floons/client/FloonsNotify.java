@@ -1,4 +1,4 @@
-package dev.wind.client;
+package dev.floons.client;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Kleine Benachrichtigungen (Toasts) unten rechts im Spiel. */
-public final class WindNotify {
+public final class FloonsNotify {
     private record T(String title, String msg, long at, int color) {}
     private static final List<T> LIST = new ArrayList<>();
     private static final long LIFE = 3800;
 
-    private WindNotify() {}
+    private FloonsNotify() {}
 
     public static synchronized void push(String title, String msg, int color) {
         LIST.add(new T(title, msg, System.currentTimeMillis(), color));
@@ -32,10 +32,10 @@ public final class WindNotify {
             int w = Math.max(tr.getWidth(m), tr.getWidth(t.title())) + 16, h = 26;
             float in = Math.min(1f, el / 250f), out = el > LIFE - 300 ? (LIFE - el) / 300f : 1f;
             int x = (int) (sw - 6 - w * in * Math.max(0f, out));
-            WindTheme.panel(ctx, x, y - h, w, h);
-            WindTheme.roundOutline(ctx, x, y - h, w, h, 6, WindTheme.alpha(t.color(), 0xC0));
+            FloonsTheme.panel(ctx, x, y - h, w, h);
+            FloonsTheme.roundOutline(ctx, x, y - h, w, h, 6, FloonsTheme.alpha(t.color(), 0xC0));
             ctx.drawTextWithShadow(tr, t.title(), x + 8, y - h + 4, t.color());
-            ctx.drawTextWithShadow(tr, m, x + 8, y - h + 14, WindTheme.TEXT);
+            ctx.drawTextWithShadow(tr, m, x + 8, y - h + 14, FloonsTheme.TEXT);
             y -= h + 4;
         }
     }

@@ -1,14 +1,14 @@
-package dev.wind.client;
+package dev.floons.client;
 
 import java.math.BigDecimal;
 import java.util.Locale;
 
 /** Kleiner Ausdrucks-Rechner: + - * / ^ ( ) % und Suffixe k m b t (z. B. 1.5k * 2m). Komma = Dezimaltrennzeichen. */
-public final class WindCalc {
+public final class FloonsCalc {
     private final String s;
     private int pos;
 
-    private WindCalc(String s) { this.s = s; }
+    private FloonsCalc(String s) { this.s = s; }
 
     /** @return Ergebnis oder null bei ungueltigem Ausdruck */
     public static Double eval(String in) {
@@ -16,7 +16,7 @@ public final class WindCalc {
         String t = in.replace(" ", "").replace(',', '.').replace('x', '*').replace('×', '*').replace(':', '/');
         if (t.isEmpty()) return null;
         try {
-            WindCalc c = new WindCalc(t);
+            FloonsCalc c = new FloonsCalc(t);
             double v = c.expr();
             if (c.pos != c.s.length() || Double.isNaN(v) || Double.isInfinite(v)) return null;
             return v;

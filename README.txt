@@ -1,11 +1,11 @@
-Wind Client 1.0.0 – Fabric-Mod für WindSMP (Minecraft 1.21.11)
+Floons Client 1.0.0 – Fabric-Mod für WindSMP (Minecraft 1.21.11)
 
 KEIN AUTO-UPDATE: Die Mod baut keine einzige Netzwerkverbindung auf, prüft nie auf
 neue Versionen und lädt nichts herunter. Neue Version = .jar selbst austauschen.
 
 Bauen (wie beim Toasty Client):
-  Neues GitHub-Repo anlegen, wind-client.zip und .github/workflows/build.yml hochladen.
-  GitHub Actions baut die .jar (Artifact "wind-client-jar" und Release "latest").
+  Repo ventlukas-web/floonsmc-client: jeder Push baut die .jar per GitHub Actions
+  (Artifact "floons-client-jar" und Release "latest"). Das Repo aktualisiert sich, die Mod nicht.
   Benötigt Fabric API.
 
 AUKTION (Gebote = Zahlungen an dich, Mehrfachzahlungen addieren sich)
@@ -16,8 +16,8 @@ AUKTION (Gebote = Zahlungen an dich, Mehrfachzahlungen addieren sich)
   - Anti-Snipe: Gebot kurz vor Schluss verlängert die Zeit
   - Countdown-Ansagen bei 60/30/10/5 s
   - Am Ende: Rückzahlungsliste mit [Zurückzahlen]-Knopf (trägt /pay nur ein, Enter drückst du selbst)
-  - Verlauf der letzten 50 Auktionen (config/windclient-history.json)
-  /wind  announce | countdown | sound | hud | debug | minraise <b> | antisnipe <s>
+  - Verlauf der letzten 50 Auktionen (config/floonsclient-history.json)
+  /floons  announce | countdown | sound | hud | debug | minraise <b> | antisnipe <s>
          scale <0.5-3> | corner <top_left|top_right|bottom_right|mid_left|mid_right> | pattern <regex>
 
 GAMBLE (wie Toasty Client; läuft keine Auktion, ist jede Zahlung ein Einsatz)

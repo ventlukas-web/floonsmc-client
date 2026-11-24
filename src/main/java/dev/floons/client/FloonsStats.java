@@ -1,11 +1,11 @@
-package dev.wind.client;
+package dev.floons.client;
 
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
 /** Session-Statistik aus Sicht des Hauses. */
-public class WindStats {
+public class FloonsStats {
     public static long income, payouts;
     public static int rounds, wins, losses;
     public static final Map<String, Long> pending = new LinkedHashMap<>();
@@ -25,7 +25,7 @@ public class WindStats {
 
     /** Meldet Zahlungen, die schon lange warten (Toast + Ton), im eingestellten Abstand. */
     public static void checkWait() {
-        WindConfig cfg = WindConfig.get();
+        FloonsConfig cfg = FloonsConfig.get();
         long now = System.currentTimeMillis();
         pendingAt.keySet().removeIf(k -> !pending.containsKey(k));
         lastWarn.keySet().removeIf(k -> !pending.containsKey(k));
@@ -35,8 +35,8 @@ public class WindStats {
             long since = Math.max(pendingAt.get(n), lastWarn.getOrDefault(n, 0L));
             if (now - since < cfg.waitWarnSec * 1000L) continue;
             lastWarn.put(n, now);
-            WindNotify.push("Wartet seit " + clock(waitedSec(n)), n + " · " + fmt(pending.get(n)), 0xFFFBBF24);
-            if (cfg.sound) WindGamble.playId("block.note_block.bell");
+            FloonsNotify.push("Wartet seit " + clock(waitedSec(n)), n + " · " + fmt(pending.get(n)), 0xFFFBBF24);
+            if (cfg.sound) FloonsGamble.playId("block.note_block.bell");
         }
     }
     /** Abgeschlossene Zahlungen (result 1 = bezahlt/gewonnen, 2 = verloren). */
@@ -75,13 +75,13 @@ public class WindStats {
 
     /** Warnt einmal, wenn der Session-Verlust das eingestellte Limit erreicht. */
     public static void checkLimit() {
-        WindConfig cfg = WindConfig.get();
+        FloonsConfig cfg = FloonsConfig.get();
         if (cfg.lossLimit <= 0) { limitHit = false; return; }
         boolean over = profit() <= -cfg.lossLimit;
         if (over && !limitHit) {
             limitHit = true;
-            WindNotify.push("Verlust-Limit erreicht", "Session: " + fmt(profit()), 0xFFFB7185);
-            if (cfg.sound) WindGamble.playId("block.anvil.land");
+            FloonsNotify.push("Verlust-Limit erreicht", "Session: " + fmt(profit()), 0xFFFB7185);
+            if (cfg.sound) FloonsGamble.playId("block.anvil.land");
         } else if (!over) limitHit = false;
     }
 

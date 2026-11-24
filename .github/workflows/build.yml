@@ -1,4 +1,4 @@
-name: Build Wind Client
+name: Build Floons Client
 on:
   push:
   workflow_dispatch:
@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Zip entpacken (nur wind-client.zip im Repo noetig)
+      - name: Zip entpacken (nur floons-client.zip im Repo noetig)
         run: |
-          if [ -f wind-client.zip ]; then unzip -oq wind-client.zip && cp -rf wind-client/. . ; fi
+          if [ -f floons-client.zip ]; then unzip -oq floons-client.zip && cp -rf floons-client/. . ; fi
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -30,11 +30,11 @@ jobs:
       - run: gradle build --no-daemon
       - uses: actions/upload-artifact@v4
         with:
-          name: wind-client-jar
-          path: build/libs/wind-client-*[0-9].jar
+          name: floons-client-jar
+          path: build/libs/floons-client-*[0-9].jar
       - name: Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release delete latest --yes --cleanup-tag || true
-          gh release create latest build/libs/wind-client-*[0-9].jar --title "Wind Client" --notes "Neueste Version des Wind Clients. Kein Auto-Update: .jar selbst herunterladen und in den mods-Ordner legen."
+          gh release create latest build/libs/floons-client-*[0-9].jar --title "Floons Client" --notes "Neueste Version des Floons Clients. Kein Auto-Update: .jar selbst herunterladen und in den mods-Ordner legen."
