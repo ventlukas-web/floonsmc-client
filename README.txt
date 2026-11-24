@@ -20,7 +20,14 @@ AUKTION (Gebote = Zahlungen an dich, Mehrfachzahlungen addieren sich)
   /floons  announce | countdown | sound | hud | watermark | debug | minraise <b> | antisnipe <s>
          scale <0.5-3> | corner <top_left|top_right|bottom_right|mid_left|mid_right> | pattern <regex>
 
-MENÜ: Rechte Shift oder /floons menu (Reiter Auktion, Gamble, Allgemein)
+MENÜ: Rechte Shift oder /floons menu
+  General   Design (Farben, Vorlagen, Deckkraft, Wasserzeichen, HUD verschieben) · FPS
+  Gamble    Win/Lose/Payback, Multiplikator, Auto-Pay, Min/Max, Limits
+  Auktion   Auktion starten/steuern, Ansagen, Anti-Snipe, HUD-Position
+  Visuals   HUD · Mehr HUDs · PvP-Anzeigen · Extras (Fullbright, NoFog, Anti-Leak, Glas, Zoom C) · Crosshair · Scoreboard · Eigenes HUD
+  Tools     Wegpunkte · Notizen · Timer/Stoppuhr/Rechner/Roulette
+  Commands  alle Befehle zum Anklicken
+  Tasten: Rechte Shift (Menü), C (Zoom), HUD verschieben und Fullbright frei belegbar
 
 GAMBLE (wie Toasty Client; läuft keine Auktion, ist jede Zahlung ein Einsatz)
   /win [spieler|all] [multiplikator]   Gewinn auszahlen (Einsatz x Multiplikator, Auto-Pay)
