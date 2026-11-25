@@ -90,8 +90,9 @@ public final class FloonsTitle {
             textX = 6;
         } else {
             // Floons-Pille: dunkel-durchsichtig, Rand in den Theme-Farben
-            int base = FloonsTheme.lerp(0xFF0B1620, FloonsTheme.lerp(FloonsTheme.PURPLE, FloonsTheme.BLUE, 0.5f), 0.18f + 0.40f * cur);
-            FloonsTheme.roundRectExact(ctx, x, y, w, h, h / 2, FloonsTheme.alpha(base, b.active ? 0xC8 : 0x70));
+            // fast schwarz, beim Drueberfahren leicht in den Theme-Farben
+            int base = FloonsTheme.lerp(0xFF040507, FloonsTheme.lerp(FloonsTheme.PURPLE, FloonsTheme.BLUE, 0.5f), 0.04f + 0.22f * cur);
+            FloonsTheme.roundRectExact(ctx, x, y, w, h, h / 2, FloonsTheme.alpha(base, b.active ? 0xEC : 0xA0));
             FloonsTheme.roundOutlineExact(ctx, x, y, w, h, h / 2,
                 FloonsTheme.alpha(FloonsTheme.lerp(FloonsTheme.PURPLE, FloonsTheme.BLUE, cur), b.active ? 0x70 + (int) (0x70 * cur) : 0x40));
         }
