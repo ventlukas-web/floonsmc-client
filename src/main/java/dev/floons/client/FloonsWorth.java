@@ -152,21 +152,26 @@ public final class FloonsWorth {
         return new Result(total, stacks.size(), items, priced, new ArrayList<>(missing), top);
     }
 
+    /** Oben rechts in der Endertruhe: Wert nach billigstem AH-Preis und nach höchstem Order-Preis. */
     private static void renderOverlay(GenericContainerScreen gs, DrawContext ctx) {
         if (!FloonsConfig.get().worthOverlay || lastResult == null) return;
         var tr = MinecraftClient.getInstance().textRenderer;
-        int rows = gs.getScreenHandler().getRows();
-        int bgW = 176, bgH = 114 + rows * 18;
-        int gx = (gs.width - bgW) / 2, gy = (gs.height - bgH) / 2;
-        String head = "Ender-Wert: " + money(lastResult.total());
-        String sub = lastResult.missing().isEmpty() ? "alle Items mit Preis"
-            : lastResult.missing().size() + " Item-Arten ohne Preis (/ewert missing)";
-        int w = Math.max(tr.getWidth(head), tr.getWidth(sub)) + 16, h = 28;
-        int x = gx + (bgW - w) / 2, y = gy - h - 4;
-        if (y < 2) { x = gx + bgW + 6; y = gy; } // kein Platz oben -> rechts daneben
+        double[] ah = totals(false), od = totals(true);
+        String head = "Ender-Wert";
+        String l1 = "AH (billigstes): " + money(ah[0]);
+        String l2 = "Orders (höchstes): " + money(od[0]);
+        String m1 = ah[1] > 0 ? (int) ah[1] + " ohne Preis" : "";
+        String m2 = od[1] > 0 ? (int) od[1] + " ohne Preis" : "";
+        int col = Math.max(tr.getWidth(l1), tr.getWidth(l2));
+        int mw = Math.max(tr.getWidth(m1), tr.getWidth(m2));
+        int w = 16 + col + (mw > 0 ? 10 + mw : 0), h = 40;
+        int x = gs.width - w - 6, y = 20; // oben rechts, unter dem Wasserzeichen
         FloonsTheme.panel(ctx, x, y, w, h);
         FloonsTheme.gradientText(ctx, tr, head, x + 8, y + 5);
-        ctx.drawTextWithShadow(tr, sub, x + 8, y + 16, lastResult.missing().isEmpty() ? FloonsTheme.GOOD : FloonsTheme.MUTED);
+        ctx.drawTextWithShadow(tr, l1, x + 8, y + 16, FloonsTheme.TEXT);
+        ctx.drawTextWithShadow(tr, l2, x + 8, y + 27, FloonsTheme.TEXT);
+        if (!m1.isEmpty()) ctx.drawTextWithShadow(tr, m1, x + w - 8 - tr.getWidth(m1), y + 16, FloonsTheme.MUTED);
+        if (!m2.isEmpty()) ctx.drawTextWithShadow(tr, m2, x + w - 8 - tr.getWidth(m2), y + 27, FloonsTheme.MUTED);
     }
 
     // ---------- Preise lernen ----------
@@ -219,6 +224,31 @@ public final class FloonsWorth {
 
     // ---------- Preise abfragen ----------
     /** Preis pro Stück nach eingestelltem Modus; 0 = unbekannt. */
+    /** Preis pro Stück nur aus einer Quelle: order=false -> billigstes AH-Angebot, true -> höchste Order. Eigener Preis geht vor. */
+    public static double unitPrice(ItemStack st, boolean order) {
+        if (st.isEmpty()) return 0;
+        Price p = prices.get(key(st));
+        if (p == null) return 0;
+        if (p.manual > 0) return p.manual;
+        return order ? p.order : p.ah;
+    }
+
+    /** {Wert, Anzahl Item-Arten ohne Preis} für die gemerkte Endertruhe (inkl. Shulker-Inhalt). */
+    public static double[] totals(boolean order) {
+        double total = 0;
+        Set<String> miss = new HashSet<>();
+        for (ItemStack st : lastEc) {
+            double u = unitPrice(st, order);
+            if (u > 0) total += u * st.getCount(); else if (!isContainer(st)) miss.add(key(st));
+            ContainerComponent cc = st.get(DataComponentTypes.CONTAINER);
+            if (cc != null) for (ItemStack in : cc.iterateNonEmpty()) {
+                double v = unitPrice(in, order);
+                if (v > 0) total += v * in.getCount(); else miss.add(key(in));
+            }
+        }
+        return new double[]{total, miss.size()};
+    }
+
     public static double unitPrice(ItemStack st) {
         if (st.isEmpty()) return 0;
         Price p = prices.get(key(st));
@@ -312,6 +342,9 @@ public final class FloonsWorth {
         FloonsAuction.info(Text.literal("Endertruhe (" + ago(lastEcTime) + "): ").formatted(Formatting.AQUA)
             .append(Text.literal(money(r.total())).formatted(Formatting.GOLD))
             .append(Text.literal("  ·  " + r.items() + " Items, " + r.missing().size() + " Arten ohne Preis").formatted(Formatting.GRAY)));
+        double[] ah = totals(false), od = totals(true);
+        FloonsAuction.info(Text.literal("  AH (billigstes): ").formatted(Formatting.GRAY).append(Text.literal(money(ah[0])).formatted(Formatting.GOLD))
+            .append(Text.literal("   Orders (höchstes): ").formatted(Formatting.GRAY)).append(Text.literal(money(od[0])).formatted(Formatting.GOLD)));
         for (int i = 0; i < Math.min(5, r.top().size()); i++) {
             var e = r.top().get(i);
             FloonsAuction.info(Text.literal("  " + (i + 1) + ". " + e.getKey() + " – ").formatted(Formatting.GRAY)
