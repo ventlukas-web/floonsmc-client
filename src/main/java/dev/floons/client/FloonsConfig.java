@@ -90,7 +90,8 @@ public final class FloonsConfig {
     public boolean topHud = false, graphHud = false;
     public boolean compassHud = false, armorWarn = true;
     public int armorWarnPct = 10;
-    public boolean armorHud = false, potionHud = false, sessionHud = false;
+    public boolean armorHud = true, potionHud = false, sessionHud = false;
+    public boolean armorHudMigrated = false;
     public boolean cpsHud = false, reachHud = false, pvpItems = false;
     public int hitSoundIdx = 0;
     public boolean hitMarker = false, hitSound = false, lowHpWarn = false, cooldownBar = false;
@@ -139,6 +140,7 @@ public final class FloonsConfig {
             } catch (Exception ignored) {}
             if (inst == null) inst = new FloonsConfig();
             if (inst.orig == null) inst.orig = new java.util.HashMap<>();
+            if (!inst.armorHudMigrated) { inst.armorHudMigrated = true; inst.armorHud = true; }
             // alte Standardfarben (hell) -> neue dunkle, satte Blautoene
             if ("#38BDF8".equalsIgnoreCase(inst.color1) && "#5EEAD4".equalsIgnoreCase(inst.color2)) { inst.color1 = "#2563EB"; inst.color2 = "#0284C7"; }
             if ("#0B1620".equalsIgnoreCase(inst.themeBase)) inst.themeBase = "#03060D";

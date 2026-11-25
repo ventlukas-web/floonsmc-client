@@ -198,7 +198,7 @@ public final class FloonsPanels {
         List<net.minecraft.item.ItemStack> st = new ArrayList<>();
         for (var s : sl) { var is = mc.player.getEquippedStack(s); if (!is.isEmpty()) st.add(is); }
         int w = 112, rows = Math.max(1, st.size()), h = rows * 18 + 8;
-        float[] pos = FloonsHud.place("armor", mc.getWindow().getScaledWidth() - w - 6, mc.getWindow().getScaledHeight() - h - 30,
+        float[] pos = FloonsHud.place("armor", mc.getWindow().getScaledWidth() - w - 6, mc.getWindow().getScaledHeight() - h - 64,
             w * cfg.hudScale, h * cfg.hudScale, mc);
         ctx.getMatrices().pushMatrix();
         ctx.getMatrices().translate(pos[0], pos[1]);
