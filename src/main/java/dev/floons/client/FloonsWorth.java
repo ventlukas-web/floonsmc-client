@@ -86,13 +86,14 @@ public final class FloonsWorth {
         });
         ScreenEvents.AFTER_INIT.register((client, screen, w, h) -> {
             if (!(screen instanceof GenericContainerScreen gs) || !isEnderChest(screen)) return;
-            int bx = screen.width - 116, by = 64;
+            int rows0 = gs.getScreenHandler().getRows();
+            int bx = (screen.width + 176) / 2 + 4, by = (screen.height - (114 + rows0 * 18)) / 2;
             net.fabricmc.fabric.api.client.screen.v1.Screens.getButtons(screen).add(
-                net.minecraft.client.gui.widget.ButtonWidget.builder(Text.literal(scanning ? "Suche läuft …" : "Alle Preise suchen"), b -> {
+                net.minecraft.client.gui.widget.ButtonWidget.builder(Text.literal(scanning ? "Suche läuft …" : "Preise suchen"), b -> {
                     snapshot(gs);
                     client.player.closeHandledScreen();
                     startScan();
-                }).dimensions(bx, by, 110, 16).build());
+                }).dimensions(bx, by, 84, 16).build());
             ScreenEvents.afterRender(screen).register((s, ctx, mx, my, delta) -> { if (!FloonsClient.off()) renderOverlay(gs, ctx); });
         });
     }
@@ -206,26 +207,22 @@ public final class FloonsWorth {
         return new Result(total, stacks.size(), items, priced, new ArrayList<>(missing), top);
     }
 
-    /** Oben rechts in der Endertruhe: Wert nach billigstem AH-Preis und nach höchstem Order-Preis. */
+    /** In der Endertruhe oben rechts (Titelzeile): Wert nach billigstem AH-Preis und nach höchstem Order-Preis. */
     private static void renderOverlay(GenericContainerScreen gs, DrawContext ctx) {
         if (!FloonsConfig.get().worthOverlay || lastResult == null) return;
         var tr = MinecraftClient.getInstance().textRenderer;
+        int rows = gs.getScreenHandler().getRows();
+        int bgW = 176, bgH = 114 + rows * 18;
+        int gx = (gs.width - bgW) / 2, gy = (gs.height - bgH) / 2;
         double[] ah = totals(false), od = totals(true);
-        String head = "Ender-Wert";
-        String l1 = "AH (billigstes): " + money(ah[0]);
-        String l2 = "Orders (höchstes): " + money(od[0]);
-        String m1 = ah[1] > 0 ? (int) ah[1] + " ohne Preis" : "";
-        String m2 = od[1] > 0 ? (int) od[1] + " ohne Preis" : "";
-        int col = Math.max(tr.getWidth(l1), tr.getWidth(l2));
-        int mw = Math.max(tr.getWidth(m1), tr.getWidth(m2));
-        int w = 16 + col + (mw > 0 ? 10 + mw : 0), h = 40;
-        int x = gs.width - w - 6, y = 20; // oben rechts, unter dem Wasserzeichen
-        FloonsTheme.panel(ctx, x, y, w, h);
-        FloonsTheme.gradientText(ctx, tr, head, x + 8, y + 5);
-        ctx.drawTextWithShadow(tr, l1, x + 8, y + 16, FloonsTheme.TEXT);
-        ctx.drawTextWithShadow(tr, l2, x + 8, y + 27, FloonsTheme.TEXT);
-        if (!m1.isEmpty()) ctx.drawTextWithShadow(tr, m1, x + w - 8 - tr.getWidth(m1), y + 16, FloonsTheme.MUTED);
-        if (!m2.isEmpty()) ctx.drawTextWithShadow(tr, m2, x + w - 8 - tr.getWidth(m2), y + 27, FloonsTheme.MUTED);
+        boolean dark = false;
+        int lab = dark ? 0xFFB8B0D0 : 0xFF404040;
+        Text line = Text.literal("AH ").withColor(lab & 0xFFFFFF)
+            .append(Text.literal(money(ah[0]).substring(1) + (ah[1] > 0 ? "*" : "")).withColor(dark ? 0x7CFF9A : 0x1B6E20))
+            .append(Text.literal(" · O ").withColor(lab & 0xFFFFFF))
+            .append(Text.literal(money(od[0]).substring(1) + (od[1] > 0 ? "*" : "")).withColor(dark ? 0x7CC8FF : 0x0D47A1));
+        int x = gx + bgW - 8 - tr.getWidth(line), y = gy + 6;
+        ctx.drawText(tr, line, x, y, 0xFFFFFFFF, dark);
     }
 
     // ---------- Preise lernen ----------
