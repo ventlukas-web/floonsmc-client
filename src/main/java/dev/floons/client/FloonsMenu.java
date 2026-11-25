@@ -492,6 +492,9 @@ public class FloonsMenu extends FloonsScreen {
         y += 34;
         toggle("Teilnahme über Twitch", () -> c.giveawayTwitch, v -> c.giveawayTwitch = v, left, y, half);
         toggle("Giveaway-HUD", () -> c.giveawayHud, v -> c.giveawayHud = v, x2, y, half);
+        y += 21;
+        toggle("Jede /msg zählt", () -> c.giveawayAnyMsg, v -> c.giveawayAnyMsg = v, left, y, half);
+        toggle("Bestätigung per /msg", () -> c.giveawayReply, v -> c.giveawayReply = v, x2, y, half);
         y += 23;
         if (!FloonsStreamer.gwOn) {
             button(() -> "Giveaway starten", () -> {
@@ -509,7 +512,7 @@ public class FloonsMenu extends FloonsScreen {
         button(() -> "Teilnehmer im Chat", () -> { runCommand("/giveaway list"); }, left, y, half, 18);
         button(() -> "HUD verschieben", () -> client.setScreen(new FloonsHudEditor(this)), x2, y, half, 18);
         y += 25;
-        label("Teilnahme: Stichwort im Spiel-Chat (und im Twitch-Chat).", left, y);
+        label("Teilnahme: /msg " + FloonsStreamer.myName() + " " + c.giveawayKeyword + "  (kein Geld nötig)", left, y);
         label("Beim Ziehen dreht sich ein Glücksrad, der Gewinner wird angesagt.", left, y + 11);
     }
 
@@ -840,7 +843,7 @@ public class FloonsMenu extends FloonsScreen {
         {"Auktion", "/action reset"}, {"Auktion", "/action reset bids"}, {"Auktion", "/action reset Spieler"}, {"Auktion", "/action pause"}, {"Auktion", "/action resume"}, {"Auktion", "/action buynow 5m"}, {"Auktion", "/action reserve 1m"}, {"Auktion", "/action stats"},
         {"Auktion", "/action queue add 500k 2m Item"}, {"Auktion", "/action queue list"}, {"Auktion", "/action queue next"}, {"Auktion", "/action queue remove 1"}, {"Auktion", "/action queue clear"},
         {"Streamer", "/giveaway start 60 Preis"}, {"Streamer", "/giveaway end"}, {"Streamer", "/giveaway cancel"}, {"Streamer", "/giveaway reroll"},
-        {"Streamer", "/giveaway list"}, {"Streamer", "/giveaway keyword join"}, {"Streamer", "/giveaway winners 1"}, {"Streamer", "/giveaway twitch"},
+        {"Streamer", "/giveaway list"}, {"Streamer", "/giveaway keyword join"}, {"Streamer", "/giveaway winners 1"}, {"Streamer", "/giveaway twitch"}, {"Streamer", "/giveaway debug"}, {"Streamer", "/giveaway anymsg"}, {"Streamer", "/giveaway reply"}, {"Streamer", "/giveaway public"}, {"Streamer", "/giveaway add Spieler"},
         {"Streamer", "/twitch Kanal"}, {"Streamer", "/twitch off"}, {"Streamer", "/werbung"},
         {"Einstellungen", "/floons autoqueue"}, {"Einstellungen", "/floons bigcountdown"}, {"Einstellungen", "/floons feed"},
         {"Einstellungen", "/floons"}, {"Einstellungen", "/floons menu"}, {"Einstellungen", "/floons off"}, {"Einstellungen", "/floons on"}, {"Einstellungen", "/floons toggle"}, {"Einstellungen", "/floons hud"}, {"Einstellungen", "/floons watermark"},
@@ -928,7 +931,7 @@ public class FloonsMenu extends FloonsScreen {
             ctx.drawTextWithShadow(textRenderer, l2, left, y + 11, FloonsStats.profit() >= 0 ? FloonsTheme.GOOD : FloonsTheme.BAD);
         } else if (pgName.equals("Giveaway") && FloonsStreamer.gwOn) {
             String l1 = FloonsStreamer.prize + "  ·  noch " + FloonsAuction.mmss(FloonsStreamer.left());
-            String l2 = FloonsStreamer.entrants.size() + " Teilnehmer  ·  Stichwort: " + FloonsConfig.get().giveawayKeyword;
+            String l2 = FloonsStreamer.entrants.size() + " Teilnehmer  ·  /msg " + FloonsStreamer.myName() + " " + FloonsConfig.get().giveawayKeyword;
             ctx.drawTextWithShadow(textRenderer, l1, left, y, FloonsTheme.TEXT);
             ctx.drawTextWithShadow(textRenderer, l2, left, y + 11, FloonsTheme.GOOD);
         } else if (pgName.equals("Crosshair")) {

@@ -95,8 +95,13 @@ public final class FloonsGiveawayHud {
         String win = FloonsStreamer.winnersWanted > 1 ? FloonsStreamer.winnersWanted + " Gewinner" : "1 Gewinner";
         ctx.drawTextWithShadow(tr, win, pad + w - tr.getWidth(win), y + 5, FloonsTheme.MUTED);
         y += 22;
-        String kw = "Schreib »" + c.giveawayKeyword + "«" + (c.giveawayTwitch && c.twitch ? " (Chat + Twitch)" : " in den Chat");
+        String kwd = c.giveawayKeyword == null || c.giveawayKeyword.isBlank() ? "join" : c.giveawayKeyword.trim();
+        String kw = "/msg " + FloonsStreamer.myName() + " " + kwd;
         ctx.drawTextWithShadow(tr, tr.trimToWidth(kw, w), pad, y, FloonsTheme.TEXT);
+        if (c.giveawayTwitch && c.twitch) {
+            String tw = "Twitch: »" + kwd + "«";
+            ctx.drawTextWithShadow(tr, tw, pad + w - tr.getWidth(tw), y, FloonsTheme.PURPLE);
+        }
         y += 12;
 
         if (feedN > 0) {

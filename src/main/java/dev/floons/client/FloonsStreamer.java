@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 /**
  * Streamer-Funktionen: Streamer-Modus (Name ersetzen), Werbung, Giveaway.
- * Giveaway-Teilnahme per Stichwort im Spiel-Chat und optional im Twitch-Chat.
+ * Giveaway-Teilnahme per Privatnachricht (/msg an dich), optional Stichwort im Spiel-/Twitch-Chat. Kein Geld nötig.
  */
 public final class FloonsStreamer {
     private FloonsStreamer() {}
@@ -117,8 +117,8 @@ public final class FloonsStreamer {
         gwDuration = sec * 1000L; gwEnd = gwStarted + gwDuration;
         lastCountdown = sec;
         twitchSeen = FloonsTwitch.seq();
-        String how = "Schreib \"" + c.giveawayKeyword + "\" in den Chat" + (c.giveawayTwitch && c.twitch ? " (auch im Twitch-Chat)" : "");
-        FloonsAuction.say("[Giveaway] " + prize + " | " + how + " | " + FloonsAuction.mmss(gwDuration)
+        replyQueue.clear();
+        FloonsAuction.say("[Giveaway] " + prize + " | " + howTo() + " | " + FloonsAuction.mmss(gwDuration)
             + (winnersWanted > 1 ? " | " + winnersWanted + " Gewinner" : ""));
         FloonsNotify.push("Giveaway gestartet", prize, FloonsTheme.BLUE);
         return null;
@@ -172,31 +172,105 @@ public final class FloonsStreamer {
         if (FloonsConfig.get().sound) FloonsGamble.playId("ui.toast.challenge_complete", 0.8f, 1.0f);
     }
 
-    private static void join(String key, boolean twitch) {
-        if (!entrants.add(key)) return;
+    private static boolean join(String key, boolean twitch) {
+        if (!entrants.add(key)) return false;
         joinFeed.add(0, new Join(display(key), twitch, System.currentTimeMillis()));
         while (joinFeed.size() > 6) joinFeed.remove(joinFeed.size() - 1);
+        return true;
     }
 
-    /** Spiel-Chat: Spielername aus der Tab-Liste, dahinter das Stichwort. */
+    // ---------- Teilnahme per /msg ----------
+    private static final String NAME = "\\.?[A-Za-z0-9_]{1,16}";
+    /** Eingebaute Formate für eingehende Privatnachrichten (Essentials, CMI, Vanilla, deutsch/englisch). */
+    private static final Pattern[] PM = {
+        Pattern.compile("^\\[?\\s*(?:[^\\[\\]]*?\\s)?(?<player>" + NAME + ")\\s*(?:->|→|➜|➡|»|>>|>)\\s*(?:me|mir|you|dir|du|ich)\\s*\\]?\\s*[:»>|\\-]?\\s*(?<msg>.*)$", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("^\\[?\\s*(?:msg|pm|nachricht|whisper)?\\s*\\]?\\s*(?:from|von)\\s+(?:[^:]*?\\s)?(?<player>" + NAME + ")\\s*\\]?\\s*[:»>]\\s*(?<msg>.*)$", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("^(?<player>" + NAME + ") (?:whispers to you|flüstert dir zu|schreibt dir):\\s*(?<msg>.*)$", Pattern.CASE_INSENSITIVE),
+    };
+    private static Pattern custom; private static String customSrc;
+    public static boolean pmDebug;
+    private static final java.util.ArrayDeque<String> replyQueue = new java.util.ArrayDeque<>();
+    private static long lastReply;
+
+    /** Eigener Name (der echte, nicht der Streamer-Name). */
+    public static String myName() {
+        MinecraftClient mc = MinecraftClient.getInstance();
+        return mc.player != null ? mc.player.getName().getString() : mc.getSession().getUsername();
+    }
+
+    /** Text für Ansage und HUD: wie man mitmacht. */
+    public static String howTo() {
+        FloonsConfig c = FloonsConfig.get();
+        String kw = c.giveawayKeyword == null ? "" : c.giveawayKeyword.trim();
+        String s = c.giveawayAnyMsg || kw.isEmpty() ? "Schreib mir: /msg " + myName() + " " + (kw.isEmpty() ? "join" : kw)
+            : "Schreib mir: /msg " + myName() + " " + kw;
+        return s + (c.giveawayTwitch && c.twitch ? " (oder \"" + (kw.isEmpty() ? "join" : kw) + "\" im Twitch-Chat)" : "");
+    }
+
+    /** Erkennt eine eingehende /msg; liefert {spieler, nachricht} oder null. */
+    public static String[] parsePm(String text) {
+        String t = text.replaceAll("§.", "").trim();
+        FloonsConfig c = FloonsConfig.get();
+        if (c.giveawayMsgPattern != null && !c.giveawayMsgPattern.isBlank()) {
+            try {
+                if (custom == null || !c.giveawayMsgPattern.equals(customSrc)) { custom = Pattern.compile(c.giveawayMsgPattern); customSrc = c.giveawayMsgPattern; }
+                Matcher m = custom.matcher(t);
+                if (m.find()) return new String[]{m.group("player"), m.group("msg")};
+            } catch (Exception ignored) {}
+        }
+        for (Pattern p : PM) {
+            Matcher m = p.matcher(t);
+            if (m.find()) return new String[]{m.group("player"), m.group("msg")};
+        }
+        return null;
+    }
+
     public static void onChatLine(String text) {
         if (!gwOn || FloonsClient.off()) return;
+        FloonsConfig c = FloonsConfig.get();
+        String kw = c.giveawayKeyword == null ? "" : c.giveawayKeyword.toLowerCase().trim();
+        String me = myName();
+        String[] pm = parsePm(text);
+        if (pm != null) {
+            String who = pm[0];
+            if (who.equalsIgnoreCase(me)) return; // eigene Nachricht
+            if (c.giveawayAnyMsg || kw.isEmpty() || pm[1].toLowerCase().contains(kw)) {
+                if (join(who, false) && c.giveawayReply) replyQueue.add(who);
+            }
+            return;
+        }
+        if (pmDebug) {
+            String l = text.toLowerCase();
+            if (l.contains("->") || l.contains("→") || l.contains("msg") || l.contains("flüster") || l.contains("whisper") || l.contains(" von "))
+                FloonsGamble.chat("Nicht als /msg erkannt: " + text);
+        }
+        if (!c.giveawayPublic || kw.isEmpty()) return;
+        // alt: Stichwort im öffentlichen Chat, Name aus der Tab-Liste
         MinecraftClient mc = MinecraftClient.getInstance();
         if (mc.getNetworkHandler() == null) return;
-        String kw = FloonsConfig.get().giveawayKeyword.toLowerCase().trim();
-        if (kw.isEmpty()) return;
         String low = text.toLowerCase();
         for (var e : mc.getNetworkHandler().getPlayerList()) {
             String n = e.getProfile().name();
+            if (n.equalsIgnoreCase(me)) continue;
             int i = low.indexOf(n.toLowerCase());
             if (i < 0) continue;
-            if (low.indexOf(kw, i + n.length()) >= 0) { join(n, false); return; }
+            if (low.indexOf(kw, i + n.length()) >= 0) { if (join(n, false) && c.giveawayReply) replyQueue.add(n); return; }
         }
+    }
+
+    private static void sendReplies() {
+        if (replyQueue.isEmpty() || System.currentTimeMillis() - lastReply < 1500) return;
+        MinecraftClient mc = MinecraftClient.getInstance();
+        if (mc.player == null || mc.player.networkHandler == null) return;
+        String n = replyQueue.poll();
+        lastReply = System.currentTimeMillis();
+        mc.player.networkHandler.sendChatCommand("msg " + n + " Du bist im Giveaway dabei: " + prize);
     }
 
     public static void tick() {
         long now = System.currentTimeMillis();
         if (drawStart > 0 && now - drawStart >= DRAW_MS) reveal();
+        sendReplies();
         if (!gwOn) return;
         FloonsConfig c = FloonsConfig.get();
         // Twitch-Chat: neue Nachrichten mit dem Stichwort
@@ -214,7 +288,7 @@ public final class FloonsStreamer {
         for (int cd : COUNTDOWN) {
             if (s <= cd && lastCountdown > cd) {
                 lastCountdown = cd;
-                FloonsAuction.say("[Giveaway] Noch " + cd + "s | " + prize + " | " + entrants.size() + " Teilnehmer | Stichwort: " + c.giveawayKeyword);
+                FloonsAuction.say("[Giveaway] Noch " + cd + "s | " + prize + " | " + entrants.size() + " Teilnehmer | " + howTo());
                 break;
             }
         }
@@ -255,6 +329,39 @@ public final class FloonsStreamer {
                     k.giveawayWinners = IntegerArgumentType.getInteger(c, "anzahl"); k.save();
                     return ok("Gewinner pro Giveaway: " + k.giveawayWinners);
                 })))
+            .then(ClientCommandManager.literal("debug").executes(c -> {
+                pmDebug = !pmDebug; return ok("Giveaway-Debug (nicht erkannte /msg zeigen): " + (pmDebug ? "an" : "aus"));
+            }))
+            .then(ClientCommandManager.literal("anymsg").executes(c -> {
+                k.giveawayAnyMsg = !k.giveawayAnyMsg; k.save();
+                return ok(k.giveawayAnyMsg ? "Jede /msg an dich zählt als Teilnahme." : "Nur /msg mit Stichwort \"" + k.giveawayKeyword + "\" zählt.");
+            }))
+            .then(ClientCommandManager.literal("public").executes(c -> {
+                k.giveawayPublic = !k.giveawayPublic; k.save();
+                return ok("Stichwort im öffentlichen Chat: " + (k.giveawayPublic ? "an" : "aus"));
+            }))
+            .then(ClientCommandManager.literal("reply").executes(c -> {
+                k.giveawayReply = !k.giveawayReply; k.save();
+                return ok("Bestätigung per /msg: " + (k.giveawayReply ? "an" : "aus"));
+            }))
+            .then(ClientCommandManager.literal("pattern")
+                .then(ClientCommandManager.argument("regex", StringArgumentType.greedyString()).executes(c -> {
+                    String r = StringArgumentType.getString(c, "regex");
+                    if (r.equalsIgnoreCase("reset")) { k.giveawayMsgPattern = ""; k.save(); return ok("/msg-Muster: eingebaute Formate."); }
+                    try { Pattern.compile(r); } catch (Exception e) { return ok("Ungültige Regex."); }
+                    if (!r.contains("(?<player>") || !r.contains("(?<msg>")) return ok("Regex braucht die Gruppen (?<player>…) und (?<msg>…).");
+                    k.giveawayMsgPattern = r; k.save(); return ok("/msg-Muster gesetzt.");
+                })))
+            .then(ClientCommandManager.literal("test")
+                .then(ClientCommandManager.argument("nachricht", StringArgumentType.greedyString()).executes(c -> {
+                    String[] pm = parsePm(StringArgumentType.getString(c, "nachricht"));
+                    return ok(pm == null ? "Nicht als /msg erkannt." : "Erkannt: Spieler " + pm[0] + ", Nachricht \"" + pm[1] + "\"");
+                })))
+            .then(ClientCommandManager.literal("add")
+                .then(ClientCommandManager.argument("spieler", StringArgumentType.word()).executes(c -> {
+                    if (!gwOn) return ok("Kein Giveaway aktiv.");
+                    return ok(join(StringArgumentType.getString(c, "spieler"), false) ? null : "Schon dabei.");
+                })))
             .then(ClientCommandManager.literal("twitch").executes(c -> {
                 k.giveawayTwitch = !k.giveawayTwitch; k.save();
                 return ok("Teilnahme über Twitch-Chat: " + (k.giveawayTwitch ? "an" : "aus"));
@@ -270,6 +377,6 @@ public final class FloonsStreamer {
 
     private static void status() {
         if (!gwOn) { FloonsGamble.chat("Kein Giveaway aktiv. /giveaway start <dauer> <preis>"); return; }
-        FloonsGamble.chat(prize + " | noch " + FloonsAuction.mmss(left()) + " | " + entrants.size() + " Teilnehmer | Stichwort: " + FloonsConfig.get().giveawayKeyword);
+        FloonsGamble.chat(prize + " | noch " + FloonsAuction.mmss(left()) + " | " + entrants.size() + " Teilnehmer | " + howTo());
     }
 }

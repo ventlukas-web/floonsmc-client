@@ -117,6 +117,14 @@ public final class FloonsConfig {
     public int giveawayWinners = 1;
     public boolean giveawayTwitch = true;
     public boolean giveawayHud = true;
+    /** Teilnahme per Privatnachricht (/msg an dich): jede Nachricht zählt, sonst nur mit Stichwort. */
+    public boolean giveawayAnyMsg = true;
+    /** Zusätzlich das Stichwort im öffentlichen Chat erlauben (alt). */
+    public boolean giveawayPublic = false;
+    /** Teilnehmern per /msg bestätigen, dass sie dabei sind. */
+    public boolean giveawayReply = false;
+    /** Eigenes Muster für eingehende /msg (Gruppen player und msg); leer = eingebaute Formate. */
+    public String giveawayMsgPattern = "";
     // Scoreboard (rechte Seite)
     public boolean sbCustom = false, sbNumbers = false, sbBorderOn = true, sbTheme = true;
     public int sbRadius = 6, sbAlpha = 170;
