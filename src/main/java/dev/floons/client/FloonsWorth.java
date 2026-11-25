@@ -100,6 +100,7 @@ public final class FloonsWorth {
     /** Jeden Tick: offene Markt-GUIs auslesen, offene Endertruhe merken. */
     public static void tick(MinecraftClient mc) {
         if (++saveTimer >= 200) { saveTimer = 0; if (dirty) save(); }
+        autoTick(mc);
         if (scanning) { scanTick(mc); return; }
         if (!(mc.currentScreen instanceof HandledScreen<?> hs)) return;
         String title = hs.getTitle().getString();
@@ -131,7 +132,52 @@ public final class FloonsWorth {
         }
         lastEcTime = System.currentTimeMillis();
         lastResult = evaluate(lastEc);
+        trackChanges();
     }
+
+    // ---------- Auto-Update: geänderte EC-Items nach dem Schließen neu suchen ----------
+    private static Map<String, Integer> ecCounts;
+    private static final Set<String> pending = new LinkedHashSet<>();
+    private static boolean ecWasOpen;
+    private static long ecOpenedAt, ecClosedAt;
+
+    private static void trackChanges() {
+        long now = System.currentTimeMillis();
+        if (!ecWasOpen) { ecWasOpen = true; ecOpenedAt = now; }
+        if (now - ecOpenedAt < 400) return; // Inhalt kommt erst vom Server
+        Map<String, Integer> cur = new HashMap<>();
+        for (ItemStack st : lastEc) {
+            if (!isContainer(st)) cur.merge(key(st), st.getCount(), Integer::sum);
+            ContainerComponent cc = st.get(DataComponentTypes.CONTAINER);
+            if (cc != null) for (ItemStack in : cc.iterateNonEmpty()) cur.merge(key(in), in.getCount(), Integer::sum);
+        }
+        if (ecCounts == null) {
+            // erstes Öffnen: nur Items ohne jeden Preis nachschlagen
+            for (ItemStack st : lastEc) {
+                if (!isContainer(st) && unitPrice(st, false) <= 0 && unitPrice(st, true) <= 0) pending.add(key(st));
+                ContainerComponent cc = st.get(DataComponentTypes.CONTAINER);
+                if (cc != null) for (ItemStack in : cc.iterateNonEmpty())
+                    if (unitPrice(in, false) <= 0 && unitPrice(in, true) <= 0) pending.add(key(in));
+            }
+        } else {
+            for (Map.Entry<String, Integer> e : cur.entrySet())
+                if (!e.getValue().equals(ecCounts.get(e.getKey()))) pending.add(e.getKey()); // rein oder raus (Rest bleibt)
+            pending.retainAll(cur.keySet()); // komplett rausgenommen: nichts zu suchen
+        }
+        ecCounts = cur;
+    }
+
+    private static void autoTick(MinecraftClient mc) {
+        long now = System.currentTimeMillis();
+        boolean ecOpen = mc.currentScreen instanceof GenericContainerScreen g && isEnderChest(g);
+        if (ecWasOpen && !ecOpen) { ecWasOpen = false; ecClosedAt = now; }
+        if (scanning || pending.isEmpty() || ecOpen || mc.currentScreen != null) return;
+        if (!FloonsConfig.get().worthAutoScan || now - ecClosedAt < 700) return;
+        Set<String> only = new HashSet<>(pending);
+        pending.clear();
+        startScan(only, true);
+    }
+
 
     public static Result evaluate(List<ItemStack> stacks) {
         double total = 0;
@@ -340,6 +386,10 @@ public final class FloonsWorth {
                 int n = prices.size(); prices.clear(); save();
                 FloonsAuction.info("Ender-Wert: " + n + " Preise gelöscht."); return 1;
             }))
+            .then(ClientCommandManager.literal("auto").executes(c -> {
+                FloonsConfig k = FloonsConfig.get(); k.worthAutoScan = !k.worthAutoScan; k.save();
+                FloonsAuction.info("Ender-Wert: Preise nach jeder EC-Änderung aktualisieren: " + (k.worthAutoScan ? "an" : "aus")); return 1;
+            }))
             .then(ClientCommandManager.literal("scan").executes(c -> { startScan(); return 1; }))
             .then(ClientCommandManager.literal("stop").executes(c -> { stopScan("Suche abgebrochen."); return 1; }))
             .then(ClientCommandManager.literal("cmd")
@@ -456,7 +506,10 @@ public final class FloonsWorth {
         return Registries.ITEM.getId(st.getItem()).getPath().replace('_', ' ');
     }
 
-    public static void startScan() {
+    public static void startScan() { startScan(null, false); }
+
+    /** only = nur diese Item-Keys (null = alle); auto = vom Auto-Update gestartet (leiser). */
+    public static void startScan(Set<String> only, boolean auto) {
         if (scanning) { FloonsAuction.info("Ender-Wert: Suche läuft schon (/ewert stop)."); return; }
         if (lastEc.isEmpty()) { FloonsAuction.info("Ender-Wert: Öffne erst deine Endertruhe."); return; }
         LinkedHashMap<String, Target> t = new LinkedHashMap<>();
@@ -465,7 +518,9 @@ public final class FloonsWorth {
             ContainerComponent cc = st.get(DataComponentTypes.CONTAINER);
             if (cc != null) for (ItemStack in : cc.iterateNonEmpty()) t.putIfAbsent(key(in), new Target(baseKey(in), key(in), display(in), searchName(in)));
         }
+        if (only != null) t.keySet().retainAll(only);
         scanList.clear(); scanList.addAll(t.values());
+        if (scanList.isEmpty() && auto) return;
         if (scanList.isEmpty()) { FloonsAuction.info("Ender-Wert: Endertruhe ist leer."); return; }
         scanning = true; scanIdx = 0; scanPhase = 0; scanFails = 0; scanSeen.clear();
         scanAt = System.currentTimeMillis() + 300; scanSent = false; scanOpen = false;
@@ -483,6 +538,11 @@ public final class FloonsWorth {
 
     private static void scanTick(MinecraftClient mc) {
         if (mc.player == null || mc.getNetworkHandler() == null) { stopScan("Suche abgebrochen (Verbindung weg)."); return; }
+        if (mc.currentScreen instanceof GenericContainerScreen g && isEnderChest(g)) {
+            for (int i = scanIdx; i < scanList.size(); i++) pending.add(scanList.get(i).key());
+            scanning = false; scanBase = null; save();
+            return; // geht nach dem Schließen weiter
+        }
         long now = System.currentTimeMillis();
         if (now < scanAt) return;
         FloonsConfig c = FloonsConfig.get();
@@ -523,7 +583,7 @@ public final class FloonsWorth {
 
     private static void help() {
         FloonsAuction.info(Text.literal("/ewert – Wert der Endertruhe · missing – Items ohne Preis · hand – Wert in der Hand").formatted(Formatting.GRAY));
-        FloonsAuction.info(Text.literal("/ewert scan – alle EC-Items in /ah und /orders suchen · stop · cmd ah|order <befehl> · set <preis> · del · list · clear").formatted(Formatting.GRAY));
+        FloonsAuction.info(Text.literal("/ewert scan – alle EC-Items in /ah und /orders suchen · stop · auto · cmd ah|order <befehl> · set <preis> · del · list · clear").formatted(Formatting.GRAY));
         FloonsAuction.info(Text.literal("Preise lernt der Client beim Durchblättern von /ah und /orders auf WindSMP.").formatted(Formatting.GRAY));
     }
 

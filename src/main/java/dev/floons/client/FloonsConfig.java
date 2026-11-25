@@ -84,6 +84,8 @@ public final class FloonsConfig {
     public String worthMode = "ah";
     /** GUI-Titel, in denen AH-Preise gelernt werden (Orders werden am Wort "Order" erkannt). */
     /** Suchbefehle für "Alle Preise suchen"; {item} = Itemname (englisch, z. B. diamond sword). */
+    /** Nach jeder Änderung in der Endertruhe die geänderten Items automatisch in /ah und /orders neu suchen. */
+    public boolean worthAutoScan = true;
     public String worthAhCmd = "ah {item}", worthOrderCmd = "orders {item}";
     public String worthMarketTitle = "(auction|auktion|\\bah\\b|markt|market)";
     public java.util.Map<String, float[]> hudPos = new java.util.HashMap<>();

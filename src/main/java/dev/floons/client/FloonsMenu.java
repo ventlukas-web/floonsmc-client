@@ -750,6 +750,7 @@ public class FloonsMenu extends FloonsScreen {
             t("Wert in der Endertruhe", () -> c.worthOverlay, v -> c.worthOverlay = v),
             t("Preis im Item-Tooltip", () -> c.worthTooltip, v -> c.worthTooltip = v),
             t("Preise aus /ah & /orders lernen", () -> c.worthLearn, v -> c.worthLearn = v),
+            t("Nach jeder EC-Änderung neu suchen", () -> c.worthAutoScan, v -> c.worthAutoScan = v),
         });
         int half = (PW - 6) / 2;
         button(() -> "Rechnen mit: " + ("order".equals(c.worthMode) ? "Orders (Sofortverkauf)" : "AH (günstigstes Angebot)"),
