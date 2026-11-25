@@ -40,6 +40,16 @@ public final class FloonsVisuals {
         else if (!zk && zooming) { mc.options.getFov().setValue(zoomOrig); zooming = false; }
     }
 
+    /** Wenn alles aus ist: Fullbright zuruecknehmen, Zoom loesen. */
+    public static void offTick(MinecraftClient mc) {
+        FloonsConfig cfg = FloonsConfig.get();
+        boolean fb = cfg.fullbright;
+        cfg.fullbright = false;
+        fullbright(mc, cfg);
+        cfg.fullbright = fb;
+        if (zooming) { mc.options.getFov().setValue(zoomOrig); zooming = false; }
+    }
+
     /** Echtes Fullbright: Gamma weit ueber das Menue-Maximum - kein Nachtsicht-Effekt. */
     private static void fullbright(MinecraftClient mc, FloonsConfig cfg) {
         try {
@@ -129,7 +139,7 @@ public final class FloonsVisuals {
 
     private static boolean allowOut(String text) {
         FloonsConfig c = FloonsConfig.get();
-        if (bypass || !c.antiLeak || !c.leakChat) return true;
+        if (bypass || c.allOff || !c.antiLeak || !c.leakChat) return true;
         String why = leakReason(text);
         if (why == null) return true;
         lastBlocked = text;

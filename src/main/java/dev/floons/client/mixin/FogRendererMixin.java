@@ -15,7 +15,7 @@ public abstract class FogRendererMixin {
 
     private static float far(float orig, boolean end) {
         try {
-            if (FloonsConfig.get().noFog) return end ? FAR + 1f : FAR;
+            if (FloonsConfig.get().noFog && !FloonsConfig.get().allOff) return end ? FAR + 1f : FAR;
         } catch (Throwable ignored) {}
         return orig;
     }

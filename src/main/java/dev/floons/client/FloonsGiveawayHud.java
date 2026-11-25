@@ -18,7 +18,7 @@ public final class FloonsGiveawayHud {
         MinecraftClient mc = MinecraftClient.getInstance();
         FloonsConfig c = FloonsConfig.get();
         if (mc.options.hudHidden || !c.giveawayHud) return;
-        if (FloonsClient.hideHud()) return;
+        if (FloonsClient.hideHud() || FloonsClient.off()) return;
         TextRenderer tr = mc.textRenderer;
         boolean showWinners = !FloonsStreamer.gwOn && FloonsStreamer.revealAt > 0
             && System.currentTimeMillis() - FloonsStreamer.revealAt < 15_000 && !FloonsStreamer.lastWinners.isEmpty();

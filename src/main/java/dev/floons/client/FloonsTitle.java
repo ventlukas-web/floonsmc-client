@@ -26,6 +26,11 @@ public final class FloonsTitle {
             int minY = screen.height, maxY = 0;
             for (var vb : vanilla) { minY = Math.min(minY, vb.getY()); maxY = Math.max(maxY, vb.getY() + vb.getHeight()); }
             if (vanilla.isEmpty()) { minY = screen.height / 4 + 48; maxY = minY; }
+            if (c.allOff) {
+                Screens.getButtons(screen).add(ButtonWidget.builder(Text.literal("Floons (aus)"), b -> client.setScreen(new FloonsMenu(screen)))
+                    .dimensions(screen.width - 96, screen.height - 54, 88, 20).build());
+                return;
+            }
             if (c.joinButton) {
                 int bw = Math.min(220, screen.width - 20), bh = 26, gap = 5;
                 int top = 78;                                    // unter Minecraft-Logo + Spruch

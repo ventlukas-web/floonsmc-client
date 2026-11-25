@@ -71,7 +71,7 @@ public final class FloonsPvp {
                 reach = eye.distanceTo(c);
                 long now = System.currentTimeMillis();
                 markerUntil = now + 260;
-                if (FloonsConfig.get().hitSound) playHit();
+                if (FloonsConfig.get().hitSound && !FloonsClient.off()) playHit();
             }
             return ActionResult.PASS;
         });

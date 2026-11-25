@@ -114,7 +114,11 @@ public class FloonsMenu extends FloonsScreen {
         labels.clear();
         left = width / 2 - W / 2 + 10;
         top = Math.max(4, height / 2 - H / 2);
-        int tw = PW / TABS.length;
+        int tw;
+        // Hauptschalter oben rechts: alles von der Mod auf einmal aus/an
+        button(() -> FloonsClient.off() ? "Alles AN" : "Alles AUS", () -> { FloonsClient.setAllOff(!FloonsClient.off()); rebuild(); },
+            left + PW - 96, top + 4, 96, 15, FloonsClient.off());
+        tw = PW / TABS.length;
         for (int i = 0; i < TABS.length; i++) {
             final int k = i;
             button(() -> TABS[k], () -> { tab = k; rebuild(); }, left + i * tw, top + 22, tw - 3, 18, tab == k);
@@ -839,7 +843,7 @@ public class FloonsMenu extends FloonsScreen {
         {"Streamer", "/giveaway list"}, {"Streamer", "/giveaway keyword join"}, {"Streamer", "/giveaway winners 1"}, {"Streamer", "/giveaway twitch"},
         {"Streamer", "/twitch Kanal"}, {"Streamer", "/twitch off"}, {"Streamer", "/werbung"},
         {"Einstellungen", "/floons autoqueue"}, {"Einstellungen", "/floons bigcountdown"}, {"Einstellungen", "/floons feed"},
-        {"Einstellungen", "/floons"}, {"Einstellungen", "/floons menu"}, {"Einstellungen", "/floons hud"}, {"Einstellungen", "/floons watermark"},
+        {"Einstellungen", "/floons"}, {"Einstellungen", "/floons menu"}, {"Einstellungen", "/floons off"}, {"Einstellungen", "/floons on"}, {"Einstellungen", "/floons toggle"}, {"Einstellungen", "/floons hud"}, {"Einstellungen", "/floons watermark"},
         {"Einstellungen", "/floons announce"}, {"Einstellungen", "/floons countdown"}, {"Einstellungen", "/floons sound"},
         {"Einstellungen", "/floons minraise 10k"}, {"Einstellungen", "/floons antisnipe"}, {"Einstellungen", "/floons antisnipe 10 15"}, {"Einstellungen", "/floons scale 1"},
         {"Einstellungen", "/floons corner mid_right"}, {"Einstellungen", "/floons pattern <regex>"}, {"Einstellungen", "/floons debug"},
@@ -896,11 +900,15 @@ public class FloonsMenu extends FloonsScreen {
         FloonsLogo.draw(ctx, left, top + 6, 12);
         FloonsTheme.gradientText(ctx, textRenderer, "Floons Client", left + 16, top + 8);
         String v = "v1.0.0 · kein Auto-Update";
-        ctx.drawTextWithShadow(textRenderer, v, left + PW - textRenderer.getWidth(v), top + 8, FloonsTheme.MUTED);
+        ctx.drawTextWithShadow(textRenderer, v, left + PW - 104 - textRenderer.getWidth(v), top + 8, FloonsTheme.MUTED);
     }
 
     @Override
     protected void extra(DrawContext ctx, int mouseX, int mouseY) {
+        if (FloonsClient.off()) {
+            String o = "Floons Client ist AUS – oben rechts \"Alles AN\" drücken";
+            ctx.drawTextWithShadow(textRenderer, o, left + PW / 2 - textRenderer.getWidth(o) / 2, top + H - 36, FloonsTheme.BAD);
+        }
         for (Label l : labels) ctx.drawTextWithShadow(textRenderer, l.text(), l.x(), l.y(), l.color());
         String pgName = PAGES[tab][Math.floorMod(page[tab], PAGES[tab].length)];
         int y = top + 46 + (PAGES[tab].length > 1 ? 22 : 0);

@@ -18,7 +18,7 @@ public abstract class OwnNametagMixin {
     @Inject(method = "hasLabel", at = @At("RETURN"), cancellable = true, require = 0)
     private void floons$ownTag(LivingEntity entity, double squaredDistanceToCamera, CallbackInfoReturnable<Boolean> cir) {
         try {
-            if (cir.getReturnValueZ() || !FloonsConfig.get().ownNametag) return;
+            if (cir.getReturnValueZ() || !FloonsConfig.get().ownNametag || FloonsConfig.get().allOff) return;
             MinecraftClient mc = MinecraftClient.getInstance();
             if (entity != mc.player || mc.options.hudHidden) return;
             if (mc.options.getPerspective().isFirstPerson()) return;

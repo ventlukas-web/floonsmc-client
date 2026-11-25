@@ -24,6 +24,7 @@ public final class FloonsScoreboard {
     }
 
     public static void render(DrawContext ctx, RenderTickCounter tick, Runnable vanilla) {
+        if (FloonsClient.off()) { vanilla.run(); return; }
         long p0 = FloonsProf.begin();
         try { render0(ctx, tick, vanilla); } finally { FloonsProf.end("Scoreboard", p0); }
     }

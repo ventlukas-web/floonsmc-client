@@ -98,6 +98,8 @@ public final class FloonsConfig {
     public int armorWarnPct = 10;
     public boolean armorHud = true, potionHud = false, sessionHud = false;
     public boolean armorHudMigrated = false;
+    /** Hauptschalter: true = alle Funktionen der Mod aus (Menü, Taste und /floons on bleiben, damit man wieder einschalten kann). */
+    public boolean allOff = false;
     /** Eigener Nametag ueber dem Kopf in der 3. Person. */
     public boolean ownNametag = true;
     public boolean cpsHud = false, reachHud = false, pvpItems = false;

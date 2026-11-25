@@ -22,7 +22,7 @@ public final class FloonsAuctionHud {
         FloonsConfig c = FloonsConfig.get();
         MinecraftClient mc = MinecraftClient.getInstance();
         if (mc.options.hudHidden || !c.hud) return;
-        if (FloonsClient.hideHud()) return;
+        if (FloonsClient.hideHud() || FloonsClient.off()) return;
         TextRenderer tr = mc.textRenderer;
         boolean editing = mc.currentScreen instanceof FloonsHudEditor || mc.currentScreen instanceof net.minecraft.client.gui.screen.ChatScreen;
         if (!FloonsAuction.active && FloonsAuction.queue.isEmpty() && editing && mc.currentScreen instanceof FloonsHudEditor) {

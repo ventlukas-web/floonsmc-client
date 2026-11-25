@@ -23,7 +23,7 @@ public abstract class ClickableWidgetMixin {
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void floons$render(DrawContext ctx, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         try {
-            if (!FloonsConfig.get().niceButtons) return;
+            if (!FloonsConfig.get().niceButtons || FloonsConfig.get().allOff) return;
             Object self = this;
             boolean button = self.getClass() == ButtonWidget.class || self instanceof CyclingButtonWidget;
             boolean slider = self instanceof SliderWidget;

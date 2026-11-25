@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PanoramaDarkenMixin {
     @Inject(method = "renderPanoramaBackground", at = @At("TAIL"), require = 0)
     private void floons$darken(DrawContext ctx, float delta, CallbackInfo ci) {
-        if (!dev.floons.client.FloonsConfig.get().niceButtons) return;
+        if (!dev.floons.client.FloonsConfig.get().niceButtons || dev.floons.client.FloonsConfig.get().allOff) return;
         Screen s = (Screen) (Object) this;
         ctx.fillGradient(0, 0, s.width, s.height, 0xA003060D, 0xC8020814);
     }

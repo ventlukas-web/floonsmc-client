@@ -66,6 +66,8 @@ public class FloonsClient implements ClientModInitializer {
         KeyBinding.Category cat = KeyBinding.Category.create(Identifier.of(ID, "main"));
         menuKey = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.floonsclient.menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, cat));
+        allKey = KeyBindingHelper.registerKeyBinding(
+            new KeyBinding("key.floonsclient.alloff", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, cat));
         hudEditKey = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.floonsclient.hudedit", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, cat));
         FloonsVisuals.zoomKey = KeyBindingHelper.registerKeyBinding(
@@ -81,6 +83,8 @@ public class FloonsClient implements ClientModInitializer {
         ClientLifecycleEvents.CLIENT_STARTED.register(c -> { FloonsPerf.apply(); FloonsVisuals.syncLeakPack(); });
         ClientTickEvents.END_CLIENT_TICK.register(mc -> {
             while (menuKey.wasPressed()) if (mc.currentScreen == null) mc.setScreen(new FloonsMenu(null));
+            while (allKey.wasPressed()) setAllOff(!off());
+            if (off()) { FloonsVisuals.offTick(mc); return; }
             while (hudEditKey.wasPressed()) if (mc.currentScreen == null) mc.setScreen(new FloonsHudEditor(null));
             FloonsAuction.tick();
             FloonsGamble.tick(mc);
@@ -98,7 +102,7 @@ public class FloonsClient implements ClientModInitializer {
         ScreenEvents.AFTER_INIT.register((client, screen, w, h) ->
             ScreenEvents.afterRender(screen).register((s, ctx, mx, my, delta) -> {
                 FloonsNotify.render(ctx, client.textRenderer, client);
-                if (!FloonsConfig.get().watermark) return;
+                if (off() || !FloonsConfig.get().watermark) return;
                 if (s instanceof FloonsScreen) return; // Floons-Menues haben Logo + Titel selbst
                 var tr = client.textRenderer;
                 String label = "Floons Client";
@@ -118,6 +122,20 @@ public class FloonsClient implements ClientModInitializer {
     }
 
     /** Waehrend ein Floons-Menue offen ist (ausser HUD-Editor), werden die HUDs nicht gezeichnet, damit nichts durchscheint. */
+    /** Hauptschalter: alles aus? */
+    public static boolean off() { return FloonsConfig.get().allOff; }
+
+    /** Alles an/aus. Packs (Glas, Anti-Leak) und Fullbright werden mit umgeschaltet. */
+    public static void setAllOff(boolean off) {
+        FloonsConfig c = FloonsConfig.get();
+        c.allOff = off; c.save();
+        if (off) { FloonsGlass.setCloak(false); FloonsGlass.set(false); }
+        else FloonsVisuals.syncLeakPack();
+        FloonsNotify.push("Floons Client", off ? "Alles aus" : "Alles an", off ? FloonsTheme.BAD : FloonsTheme.GOOD);
+    }
+
+    public static KeyBinding allKey;
+
     public static boolean hideHud() {
         var sc = net.minecraft.client.MinecraftClient.getInstance().currentScreen;
         return sc instanceof FloonsScreen && !(sc instanceof FloonsHudEditor);
@@ -125,6 +143,7 @@ public class FloonsClient implements ClientModInitializer {
 
     // ---------- Zahlungen erkennen ----------
     private static void onChat(String text) {
+        if (off()) return;
         FloonsConfig c = FloonsConfig.get();
         try {
             if (compiled == null || !c.pattern.equals(compiledSrc)) { compiled = Pattern.compile(c.pattern); compiledSrc = c.pattern; }
@@ -298,6 +317,9 @@ public class FloonsClient implements ClientModInitializer {
             .then(auctionCommand("auction"))
             .then(auctionCommand("auctions"))
             .then(ClientCommandManager.literal("menu").executes(c -> { FloonsGamble.pendingScreen = 1; return 1; }))
+            .then(ClientCommandManager.literal("off").executes(c -> { setAllOff(true); return 1; }))
+            .then(ClientCommandManager.literal("on").executes(c -> { setAllOff(false); return 1; }))
+            .then(ClientCommandManager.literal("toggle").executes(c -> { setAllOff(!off()); return 1; }))
             .then(ClientCommandManager.literal("hud").executes(c -> { FloonsGamble.pendingScreen = 4; return 1; }))
             .then(ClientCommandManager.literal("lag").executes(c -> { for (String ln : FloonsProf.analyze()) FloonsAuction.info(ln); return 1; }))
             .then(ClientCommandManager.literal("perf")

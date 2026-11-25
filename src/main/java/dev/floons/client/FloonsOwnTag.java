@@ -16,7 +16,7 @@ public final class FloonsOwnTag {
     public static volatile long mixinAt = 0;
 
     public static void render(DrawContext ctx, MinecraftClient mc, FloonsConfig cfg) {
-        if (!cfg.ownNametag || mc.player == null || mc.options.hudHidden) return;
+        if (cfg.allOff || !cfg.ownNametag || mc.player == null || mc.options.hudHidden) return;
         if (mc.options.getPerspective().isFirstPerson()) return;
         if (System.currentTimeMillis() - mixinAt < 1500) return;   // Vanilla-Nametag laeuft, nichts doppelt zeichnen
         var cam = mc.gameRenderer.getCamera();

@@ -73,7 +73,7 @@ public final class FloonsWorth {
     public static void register() {
         load();
         ItemTooltipCallback.EVENT.register((stack, ctx, type, lines) -> {
-            if (!FloonsConfig.get().worthTooltip || stack.isEmpty()) return;
+            if (!FloonsConfig.get().worthTooltip || FloonsConfig.get().allOff || stack.isEmpty()) return;
             double unit = unitPrice(stack);
             double inside = containerValue(stack);
             if (unit <= 0 && inside <= 0) return;
@@ -86,7 +86,7 @@ public final class FloonsWorth {
         });
         ScreenEvents.AFTER_INIT.register((client, screen, w, h) -> {
             if (!(screen instanceof GenericContainerScreen gs) || !isEnderChest(screen)) return;
-            ScreenEvents.afterRender(screen).register((s, ctx, mx, my, delta) -> renderOverlay(gs, ctx));
+            ScreenEvents.afterRender(screen).register((s, ctx, mx, my, delta) -> { if (!FloonsClient.off()) renderOverlay(gs, ctx); });
         });
     }
 

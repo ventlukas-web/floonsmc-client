@@ -69,7 +69,7 @@ public class FloonsHud {
         BOUNDS.clear();
         if (sbb != null) BOUNDS.put("scoreboard", sbb);
         if (mc.options.hudHidden) return;
-        if (FloonsClient.hideHud()) return;
+        if (FloonsClient.hideHud() || FloonsClient.off()) return;
         FloonsConfig cfg = FloonsConfig.get();
         FloonsOwnTag.render(ctx, mc, cfg);
         TextRenderer tr = mc.textRenderer;

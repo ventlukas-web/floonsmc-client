@@ -19,7 +19,7 @@ public final class FloonsCrosshair {
         HudElementRegistry.replaceElement(VanillaHudElements.CROSSHAIR, orig -> (ctx, tick) -> {
             FloonsConfig c = FloonsConfig.get();
             MinecraftClient mc = MinecraftClient.getInstance();
-            if (!c.chOn) { orig.render(ctx, tick); return; }
+            if (!c.chOn || c.allOff) { orig.render(ctx, tick); return; }
             if (mc.options == null || !mc.options.getPerspective().isFirstPerson() || mc.options.hudHidden) return;
             draw(ctx, ctx.getScaledWindowWidth() / 2, ctx.getScaledWindowHeight() / 2, c);
         });

@@ -82,7 +82,7 @@ public final class FloonsStreamer {
     // ---------- Streamer-Modus ----------
     private static Text alias(Text msg) {
         FloonsConfig cfg = FloonsConfig.get();
-        if (!cfg.streamer || cfg.streamerName == null || cfg.streamerName.isBlank()) return msg;
+        if (cfg.allOff || !cfg.streamer || cfg.streamerName == null || cfg.streamerName.isBlank()) return msg;
         MinecraftClient mc = MinecraftClient.getInstance();
         String real = mc.player != null ? mc.player.getName().getString() : mc.getSession().getUsername();
         if (real == null || real.isBlank() || !msg.getString().toLowerCase().contains(real.toLowerCase())) return msg;
@@ -180,7 +180,7 @@ public final class FloonsStreamer {
 
     /** Spiel-Chat: Spielername aus der Tab-Liste, dahinter das Stichwort. */
     public static void onChatLine(String text) {
-        if (!gwOn) return;
+        if (!gwOn || FloonsClient.off()) return;
         MinecraftClient mc = MinecraftClient.getInstance();
         if (mc.getNetworkHandler() == null) return;
         String kw = FloonsConfig.get().giveawayKeyword.toLowerCase().trim();

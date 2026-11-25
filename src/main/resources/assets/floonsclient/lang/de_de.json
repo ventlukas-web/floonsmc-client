@@ -6,5 +6,6 @@
   "key.floonsclient.fullbright": "Fullbright",
   "key.floonsclient.calc": "Rechner",
   "key.floonsclient.shot": "Screenshot (ohne HUD)",
-  "key.floonsclient.antileak": "Anti-Leak an/aus"
+  "key.floonsclient.antileak": "Anti-Leak an/aus",
+  "key.floonsclient.alloff": "Floons: alles an/aus"
 }

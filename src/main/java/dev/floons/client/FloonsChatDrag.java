@@ -20,7 +20,7 @@ public final class FloonsChatDrag {
             if (!(screen instanceof ChatScreen)) return;
             dragId = null; wasDown = true; // Klick, der den Chat geoeffnet hat, nicht als Griff werten
             ScreenEvents.afterRender(screen).register((s, ctx, mx, my, delta) -> {
-                if (!FloonsConfig.get().chatDrag) return;
+                if (!FloonsConfig.get().chatDrag || FloonsClient.off()) return;
                 MinecraftClient mc = MinecraftClient.getInstance();
                 boolean down = GLFW.glfwGetMouseButton(mc.getWindow().getHandle(), GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
                 FloonsConfig cfg = FloonsConfig.get();
