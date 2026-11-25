@@ -78,6 +78,12 @@ public final class FloonsConfig {
     // ---------- HUDs (wie Toasty Client) ----------
     public boolean keystrokes = true, coords = true, showFps = false, ping = false, speed = false, clock = false, moduleList = true;
     public boolean payHud = true, notesHud = true, notify = true, satBorder = true;
+    // ---------- Ender-Wert (WindSMP-Preise aus /ah und /orders) ----------
+    public boolean worthOverlay = true, worthTooltip = true, worthLearn = true;
+    /** "ah" = günstigstes AH-Angebot, "order" = Order-Preis (Sofortverkauf). */
+    public String worthMode = "ah";
+    /** GUI-Titel, in denen AH-Preise gelernt werden (Orders werden am Wort "Order" erkannt). */
+    public String worthMarketTitle = "(auction|auktion|\\bah\\b|markt|market)";
     public java.util.Map<String, float[]> hudPos = new java.util.HashMap<>();
     public static class Wp { public String name = "", dim = ""; public int x, y, z; }
     public boolean wpOn = true;
