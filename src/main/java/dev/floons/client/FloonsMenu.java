@@ -347,6 +347,11 @@ public class FloonsMenu extends FloonsScreen {
             }, x2, y, half, 18);
             y += 27;
             label("Warteschlange (" + FloonsAuction.queue.size() + ")", left, y);
+            button(() -> "HUD verschieben", () -> client.setScreen(new FloonsHudEditor(this)), left + PW - 254, y - 3, 100, 13);
+            button(() -> System.currentTimeMillis() < resetArmed ? "Wirklich zurücksetzen?" : "Zahler-Liste zurücksetzen", () -> {
+                if (System.currentTimeMillis() < resetArmed) { resetArmed = 0; FloonsAuction.reset(); rebuild(); }
+                else resetArmed = System.currentTimeMillis() + 3000;
+            }, left + PW - 150, y - 3, 150, 13);
             y += 11;
             for (int i = 0; i < Math.min(2, FloonsAuction.queue.size()); i++) {
                 final int idx = i;
@@ -384,7 +389,15 @@ public class FloonsMenu extends FloonsScreen {
                 if (b > 0) FloonsAuction.say("[Auktion] Sofortkauf für " + FloonsAuction.item + ": " + FloonsAuction.fmt(b));
             }, left, y, half, 18, true);
             button(() -> "Statistik im Chat", () -> { FloonsAuction.stats(); close(); }, x2, y, half, 18);
-            y += 26;
+            y += 21;
+            int tw3 = (PW - 8) / 3;
+            button(() -> System.currentTimeMillis() < resetArmed ? "Wirklich?" : "Auktion zurücksetzen", () -> {
+                if (System.currentTimeMillis() < resetArmed) { resetArmed = 0; FloonsAuction.reset(); rebuild(); }
+                else resetArmed = System.currentTimeMillis() + 3000;
+            }, left, y, tw3, 18);
+            button(() -> "Nur Gebote zurücksetzen", () -> msg(FloonsAuction.resetBids()), left + tw3 + 4, y, tw3, 18);
+            button(() -> "HUD verschieben", () -> client.setScreen(new FloonsHudEditor(this)), left + 2 * (tw3 + 4), y, tw3, 18, true);
+            y += 25;
             label("Warteschlange: " + FloonsAuction.queue.size() + (FloonsAuction.queue.isEmpty() ? "" : "  ·  danach " + FloonsAuction.queue.get(0).item()), left, y);
         }
     }
@@ -819,7 +832,7 @@ public class FloonsMenu extends FloonsScreen {
         {"Gamble", "/gamble warn 30"}, {"Gamble", "/gamble limit 250k"}, {"Gamble", "/gamble hud"}, {"Gamble", "/gamble effects"}, {"Gamble", "/gamble confetti"},
         {"Auktion", "/action start 500k 2m Item"}, {"Auktion", "/auction start 500k 2m Item"}, {"Auktion", "/floons auction hand 500k 2m"}, {"Auktion", "/action hand 500k 2m"}, {"Auktion", "/action end"}, {"Auktion", "/action cancel"}, {"Auktion", "/action extend 30"},
         {"Auktion", "/action status"}, {"Auktion", "/action refund"}, {"Auktion", "/action history"}, {"Auktion", "/action test Spieler 1k"},
-        {"Auktion", "/action pause"}, {"Auktion", "/action resume"}, {"Auktion", "/action buynow 5m"}, {"Auktion", "/action reserve 1m"}, {"Auktion", "/action stats"},
+        {"Auktion", "/action reset"}, {"Auktion", "/action reset bids"}, {"Auktion", "/action reset Spieler"}, {"Auktion", "/action pause"}, {"Auktion", "/action resume"}, {"Auktion", "/action buynow 5m"}, {"Auktion", "/action reserve 1m"}, {"Auktion", "/action stats"},
         {"Auktion", "/action queue add 500k 2m Item"}, {"Auktion", "/action queue list"}, {"Auktion", "/action queue next"}, {"Auktion", "/action queue remove 1"}, {"Auktion", "/action queue clear"},
         {"Streamer", "/giveaway start 60 Preis"}, {"Streamer", "/giveaway end"}, {"Streamer", "/giveaway cancel"}, {"Streamer", "/giveaway reroll"},
         {"Streamer", "/giveaway list"}, {"Streamer", "/giveaway keyword join"}, {"Streamer", "/giveaway winners 1"}, {"Streamer", "/giveaway twitch"},

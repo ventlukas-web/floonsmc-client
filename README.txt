@@ -18,6 +18,7 @@ AUKTION (Gebote = Zahlungen an dich, Mehrfachzahlungen addieren sich)
   /action reserve <betrag|aus>                Mindestpreis: darunter wird nicht verkauft
   /action queue add <start> <dauer> <item>    Warteschlange, startet automatisch nacheinander
   /action queue list | next | remove <nr> | clear
+  /action reset | reset bids | reset <spieler>   alles / nur Gebote / einen Zahler zurücksetzen
   /action stats                               Erlös, Schnitt, teuerstes Item, bester Käufer
   - Neues Auktions-HUD: Logo, große Restzeit, Zeitbalken, nächstes Mindestgebot,
     Sofortkauf/Mindestpreis, Top 3, Live-Gebotsverlauf, Warteschlange; frei verschiebbar

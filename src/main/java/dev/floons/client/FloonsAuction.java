@@ -213,6 +213,43 @@ public final class FloonsAuction {
         }
     }
 
+    /** Alles zurücksetzen: laufende Auktion still stoppen, alle Gebote/Zahler und die Rückzahlungsliste vergessen. */
+    public static String reset() {
+        boolean was = active;
+        active = false; paused = false; manualPause = false;
+        item = ""; bestName = null; best = 0; startBid = 0;
+        bids.clear(); feed.clear(); lastBids.clear(); lastWinner = null;
+        buyNow = 0; reserve = 0; nextBuyNow = 0; nextReserve = 0;
+        queueStartAt = 0;
+        info("Auktion zurückgesetzt" + (was ? " (laufende Auktion gestoppt)" : "") + ": alle Zahler und Gebote gelöscht.");
+        return null;
+    }
+
+    /** Nur die Gebote zurücksetzen, die Auktion läuft weiter (Höchstgebot wieder auf Start). */
+    public static String resetBids() {
+        if (!active) return "Keine Auktion aktiv – /action reset löscht die alte Zahler-Liste.";
+        bids.clear(); feed.clear(); bestName = null; best = startBid;
+        say("[Auktion] Gebote für " + item + " wurden zurückgesetzt – neu bieten ab " + fmt(startBid) + ".");
+        return null;
+    }
+
+    /** Gebot eines einzelnen Spielers entfernen (laufende Auktion oder Rückzahlungsliste). */
+    public static String resetPlayer(String name) {
+        Map<String, Long> m = active ? bids : lastBids;
+        String key = null;
+        for (String k : m.keySet()) if (k.replaceFirst("^\\.", "").equalsIgnoreCase(name.replaceFirst("^\\.", ""))) { key = k; break; }
+        if (key == null) return name + " hat nichts gezahlt.";
+        long v = m.remove(key);
+        if (active && key.equals(bestName)) {
+            bestName = null; best = startBid;
+            for (var e : top()) { long need = bestName == null ? startBid : best; if (e.getValue() >= need) { bestName = e.getKey(); best = e.getValue(); } break; }
+        }
+        final String k2 = key;
+        feed.removeIf(b -> b.name().equals(k2));
+        info(key + " (" + fmt(v) + ") entfernt.");
+        return null;
+    }
+
     /** Eigenes /pay an einen Bieter der letzten Auktion mit genau seinem Gebot = Rückzahlung (zählt nicht fürs Gamble). */
     public static boolean isRefund(String player, long amount) {
         String key = null;

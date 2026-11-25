@@ -23,6 +23,21 @@ public final class FloonsGiveawayHud {
         boolean showWinners = !FloonsStreamer.gwOn && FloonsStreamer.revealAt > 0
             && System.currentTimeMillis() - FloonsStreamer.revealAt < 15_000 && !FloonsStreamer.lastWinners.isEmpty();
         if (FloonsStreamer.gwOn || FloonsStreamer.drawing() || showWinners) card(ctx, tr, mc, c, showWinners);
+        else if (mc.currentScreen instanceof FloonsHudEditor) {
+            // Platzhalter zum Verschieben
+            int pad = 7, w = 150, h = 50, bw = w + pad * 2;
+            int sw = mc.getWindow().getScaledWidth(), sh = mc.getWindow().getScaledHeight();
+            float s = c.hudScale;
+            float[] pos = FloonsHud.place("giveaway", sw - bw * s - 6, sh * 0.16f, bw * s, h * s, mc);
+            ctx.getMatrices().pushMatrix();
+            ctx.getMatrices().translate(pos[0], pos[1]);
+            ctx.getMatrices().scale(s, s);
+            FloonsTheme.panel(ctx, 0, 0, bw, h);
+            FloonsLogo.draw(ctx, pad, pad, 10);
+            FloonsTheme.gradientText(ctx, tr, "GIVEAWAY", pad + 14, pad + 1);
+            ctx.drawTextWithShadow(tr, "Vorschau – ziehen zum Verschieben", pad, pad + 22, FloonsTheme.MUTED);
+            ctx.getMatrices().popMatrix();
+        }
         if (FloonsStreamer.drawing()) wheel(ctx, tr, mc);
     }
 

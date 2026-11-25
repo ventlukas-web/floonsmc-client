@@ -24,6 +24,11 @@ public final class FloonsAuctionHud {
         if (mc.options.hudHidden || !c.hud) return;
         if (FloonsClient.hideHud()) return;
         TextRenderer tr = mc.textRenderer;
+        boolean editing = mc.currentScreen instanceof FloonsHudEditor || mc.currentScreen instanceof net.minecraft.client.gui.screen.ChatScreen;
+        if (!FloonsAuction.active && FloonsAuction.queue.isEmpty() && editing && mc.currentScreen instanceof FloonsHudEditor) {
+            preview(ctx, tr, mc, c);
+            return;
+        }
         if (FloonsAuction.active) {
             card(ctx, tr, mc, c);
             if (c.bigCountdown) bigCountdown(ctx, tr, mc);
@@ -146,6 +151,25 @@ public final class FloonsAuctionHud {
             y += 3;
             ctx.drawTextWithShadow(tr, tr.trimToWidth(next, w), pad, y, FloonsTheme.MUTED);
         }
+        ctx.getMatrices().popMatrix();
+    }
+
+    /** Platzhalter im HUD-Editor, damit man das Auktions-HUD auch ohne laufende Auktion verschieben kann. */
+    private static void preview(DrawContext ctx, TextRenderer tr, MinecraftClient mc, FloonsConfig c) {
+        int pad = 7, w = 160, h = 76, bw = w + pad * 2;
+        float s = c.hudScale;
+        float[] d = defaultPos(mc, c, bw * s, h * s);
+        float[] pos = FloonsHud.place("auction", d[0], d[1], bw * s, h * s, mc);
+        ctx.getMatrices().pushMatrix();
+        ctx.getMatrices().translate(pos[0], pos[1]);
+        ctx.getMatrices().scale(s, s);
+        FloonsTheme.panel(ctx, 0, 0, bw, h);
+        FloonsLogo.draw(ctx, pad, pad, 10);
+        FloonsTheme.gradientText(ctx, tr, "AUKTION", pad + 14, pad + 1);
+        ctx.drawTextWithShadow(tr, "Vorschau", pad + w - tr.getWidth("Vorschau"), pad + 1, FloonsTheme.MUTED);
+        ctx.drawTextWithShadow(tr, "Hier erscheint das", pad, pad + 20, FloonsTheme.TEXT);
+        ctx.drawTextWithShadow(tr, "Auktions-HUD.", pad, pad + 31, FloonsTheme.TEXT);
+        ctx.drawTextWithShadow(tr, "Ziehen zum Verschieben", pad, pad + 50, FloonsTheme.MUTED);
         ctx.getMatrices().popMatrix();
     }
 
