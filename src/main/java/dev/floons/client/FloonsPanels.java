@@ -139,7 +139,7 @@ public final class FloonsPanels {
         for (int i = 0; i < 36; i++) if (p.getInventory().getStack(i).isEmpty()) free++;
         int ping = 0;
         if (mc.getNetworkHandler() != null) { var e = mc.getNetworkHandler().getPlayerListEntry(p.getUuid()); if (e != null) ping = e.getLatency(); }
-        boolean hide = FloonsConfig.get().streamer && FloonsConfig.get().streamerHideXyz;
+        boolean hide = FloonsVisuals.hideCoords();
         String[] v = {hide ? "?" : String.valueOf((int) Math.floor(p.getX())), hide ? "?" : String.valueOf((int) Math.floor(p.getY())), hide ? "?" : String.valueOf((int) Math.floor(p.getZ())),
             String.valueOf(mc.getCurrentFps()), String.valueOf(ping), FloonsStats.fmt(FloonsStats.profit()), FloonsStats.fmt(FloonsStats.income),
             FloonsStats.fmt(FloonsStats.payouts), String.valueOf(FloonsStats.rounds), String.valueOf(FloonsStats.wins), String.valueOf(FloonsStats.losses),

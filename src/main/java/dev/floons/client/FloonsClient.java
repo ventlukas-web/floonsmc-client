@@ -69,13 +69,15 @@ public class FloonsClient implements ClientModInitializer {
             new KeyBinding("key.floonsclient.hudedit", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, cat));
         FloonsVisuals.zoomKey = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.floonsclient.zoom", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_C, cat));
+        FloonsVisuals.leakKey = KeyBindingHelper.registerKeyBinding(
+            new KeyBinding("key.floonsclient.antileak", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, cat));
         FloonsVisuals.calcKey = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.floonsclient.calc", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_J, cat));
         FloonsVisuals.shotKey = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.floonsclient.shot", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_F9, cat));
         FloonsVisuals.fullbrightKey = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.floonsclient.fullbright", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, cat));
-        ClientLifecycleEvents.CLIENT_STARTED.register(c -> FloonsPerf.apply());
+        ClientLifecycleEvents.CLIENT_STARTED.register(c -> { FloonsPerf.apply(); FloonsVisuals.syncLeakPack(); });
         ClientTickEvents.END_CLIENT_TICK.register(mc -> {
             while (menuKey.wasPressed()) if (mc.currentScreen == null) mc.setScreen(new FloonsMenu(null));
             while (hudEditKey.wasPressed()) if (mc.currentScreen == null) mc.setScreen(new FloonsHudEditor(null));

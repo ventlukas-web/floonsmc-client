@@ -114,6 +114,8 @@ public final class FloonsConfig {
     // Visuals
     public boolean fullbright = false, noFog = false, antiLeak = false, autoSprint = false;
     public String leakWords = "";
+    /** Anti-Leak-Teile: Bloecke als Netherite, Chat-Filter, Koordinaten in HUDs ausblenden. */
+    public boolean leakBlocks = true, leakChat = true, leakHud = true;
     // FPS (aendert nur normale Spieloptionen, alte Werte werden gemerkt)
     public boolean perfParticles = false, perfShadows = false, perfDistance = false;
     public boolean perfClouds = false, perfBlend = false, perfAo = false, perfFps = false;

@@ -5,5 +5,6 @@
   "key.floonsclient.zoom": "Zoom",
   "key.floonsclient.fullbright": "Fullbright",
   "key.floonsclient.calc": "Calculator",
-  "key.floonsclient.shot": "Screenshot (no HUD)"
+  "key.floonsclient.shot": "Screenshot (no HUD)",
+  "key.floonsclient.antileak": "Anti-Leak on/off"
 }

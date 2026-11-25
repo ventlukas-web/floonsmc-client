@@ -66,3 +66,11 @@ STREAMER (Reiter Streamer: Twitch-Chat · Giveaway · Auktion · Streamer & Werb
   Giveaway-HUD: Preis, Zeitbalken, große Teilnehmerzahl, neue Teilnehmer live ([T] = Twitch),
   Glücksrad beim Ziehen, Gewinner-Banner mit Konfetti.
   /auction und /floons auction (auch /floons auctions) funktionieren genauso wie /action.
+
+ANTI-LEAK (Visuals → Anti-Leak, /antileak, eigene Taste unter Steuerung)
+  Blöcke als Netherite: jeder Block sieht gleich aus (Erze, Basen verraten nichts im Stream/ss)
+  Chat-Filter: blockiert deine Koordinaten, Koordinaten deiner Wegpunkte, IP-Adressen,
+    deinen PC-Namen und eigene gesperrte Wörter – im Chat und in /msg, /w, /r usw.
+    [Trotzdem senden] bzw. /antileak send schickt die blockierte Nachricht doch.
+  Koordinaten in HUDs verstecken (Koordinaten-HUD, Eigenes HUD)
+  /antileak | blocks | chat | hud | words <a,b,c> | test <text> | send

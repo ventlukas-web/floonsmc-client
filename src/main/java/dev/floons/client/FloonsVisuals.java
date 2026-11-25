@@ -27,6 +27,7 @@ public final class FloonsVisuals {
         shotTick(mc);
         while (calcKey != null && calcKey.wasPressed()) if (mc.currentScreen == null) mc.setScreen(new FloonsCalculatorScreen(null));
         while (shotKey != null && shotKey.wasPressed()) screenshot(true);
+        while (leakKey != null && leakKey.wasPressed()) toggleLeak();
         if (mc.player == null || mc.world == null) return;
         while (fullbrightKey != null && fullbrightKey.wasPressed()) {
             cfg.fullbright = !cfg.fullbright; cfg.save();
@@ -90,6 +91,17 @@ public final class FloonsVisuals {
         FloonsConfig cfg = FloonsConfig.get();
         MinecraftClient mc = MinecraftClient.getInstance();
         String low = text.toLowerCase();
+        // gespeicherte Wegpunkte (z. B. Basen): x und z in der Nachricht
+        if (cfg.waypoints != null) {
+            java.util.List<Integer> ns = new java.util.ArrayList<>();
+            Matcher wm = NUM.matcher(text);
+            while (wm.find()) { try { ns.add(Integer.parseInt(wm.group())); } catch (Exception ignored) {} }
+            for (var wp : cfg.waypoints) {
+                boolean hx = false, hz = false;
+                for (int n : ns) { if (Math.abs(n - wp.x) <= 10) hx = true; if (Math.abs(n - wp.z) <= 10) hz = true; }
+                if (hx && hz) return "Wegpunkt \"" + wp.name + "\"";
+            }
+        }
         for (String w : cfg.leakWords.split(",")) {
             w = w.trim().toLowerCase();
             if (w.length() >= 2 && low.contains(w)) return "gesperrtes Wort \"" + w + "\"";
@@ -111,12 +123,59 @@ public final class FloonsVisuals {
         return null;
     }
 
+    /** Zuletzt blockierte Nachricht (fuer /antileak send). */
+    public static String lastBlocked;
+    private static boolean bypass;
+
     private static boolean allowOut(String text) {
-        if (!FloonsConfig.get().antiLeak) return true;
+        FloonsConfig c = FloonsConfig.get();
+        if (bypass || !c.antiLeak || !c.leakChat) return true;
         String why = leakReason(text);
         if (why == null) return true;
+        lastBlocked = text;
         FloonsNotify.push("Anti-Leak", "Blockiert: " + why, FloonsTheme.BAD);
-        FloonsGamble.chat("Anti-Leak hat die Nachricht blockiert (" + why + ").");
+        FloonsAuction.info(net.minecraft.text.Text.literal("Anti-Leak hat die Nachricht blockiert (" + why + "). ")
+            .formatted(net.minecraft.util.Formatting.RED)
+            .append(net.minecraft.text.Text.literal("[Trotzdem senden]").styled(st -> st
+                .withColor(net.minecraft.util.Formatting.YELLOW)
+                .withClickEvent(new net.minecraft.text.ClickEvent.RunCommand("/antileak send"))
+                .withHoverEvent(new net.minecraft.text.HoverEvent.ShowText(net.minecraft.text.Text.literal(text))))));
         return false;
+    }
+
+    /** Sendet die zuletzt blockierte Nachricht ohne Pruefung. */
+    public static String sendBlocked() {
+        MinecraftClient mc = MinecraftClient.getInstance();
+        if (lastBlocked == null) return "Keine blockierte Nachricht.";
+        if (mc.player == null || mc.player.networkHandler == null) return "Nicht in einer Welt.";
+        String t = lastBlocked; lastBlocked = null;
+        bypass = true;
+        try {
+            if (t.startsWith("/")) mc.player.networkHandler.sendChatCommand(t.substring(1));
+            else mc.player.networkHandler.sendChatMessage(t);
+        } finally { bypass = false; }
+        return null;
+    }
+
+    /** Koordinaten in HUDs verstecken (Streamer-Modus oder Anti-Leak). */
+    public static boolean hideCoords() {
+        FloonsConfig c = FloonsConfig.get();
+        return (c.streamer && c.streamerHideXyz) || (c.antiLeak && c.leakHud);
+    }
+
+    /** Block-Pack an den Schaltern ausrichten. */
+    public static void syncLeakPack() {
+        FloonsConfig c = FloonsConfig.get();
+        FloonsGlass.setCloak(c.antiLeak && c.leakBlocks);
+    }
+
+    public static KeyBinding leakKey;
+
+    /** Alles auf einmal an/aus (Hotkey, /antileak). */
+    public static void toggleLeak() {
+        FloonsConfig c = FloonsConfig.get();
+        c.antiLeak = !c.antiLeak; c.save();
+        syncLeakPack();
+        FloonsNotify.push("Anti-Leak", c.antiLeak ? "an" : "aus", c.antiLeak ? FloonsTheme.GOOD : FloonsTheme.BAD);
     }
 }

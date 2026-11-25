@@ -24,7 +24,7 @@ public class FloonsMenu extends FloonsScreen {
         {"Design", "FPS"},
         {"Gamble"},
         {"Auktion", "Einstellungen"},
-        {"HUD", "Mehr HUDs", "PvP-Anzeigen", "Extras", "Crosshair", "Scoreboard", "Eigenes HUD"},
+        {"HUD", "Mehr HUDs", "PvP-Anzeigen", "Extras", "Anti-Leak", "Crosshair", "Scoreboard", "Eigenes HUD"},
         {"Twitch-Chat", "Giveaway", "Auktion", "Streamer & Werbung"},
         {"Tools", "Wegpunkte", "Notizen"},
         {"Server"},
@@ -141,6 +141,7 @@ public class FloonsMenu extends FloonsScreen {
             case "Mehr HUDs" -> moreHud(y);
             case "PvP-Anzeigen" -> pvp(y);
             case "Extras" -> extras(y);
+            case "Anti-Leak" -> antiLeak(y);
             case "Crosshair" -> crosshair(y);
             case "Scoreboard" -> scoreboard(y);
             case "Eigenes HUD" -> custom(y);
@@ -581,20 +582,32 @@ public class FloonsMenu extends FloonsScreen {
             t("NoFog", () -> c.noFog, v -> c.noFog = v),
             t("Auto-Sprint", () -> c.autoSprint, v -> c.autoSprint = v),
         });
-        button(() -> "Anti-Leak: " + onOff(c.antiLeak), () -> {
-            c.antiLeak = !c.antiLeak; c.save();
-            if (!FloonsGlass.setCloak(c.antiLeak)) FloonsGamble.chat("Anti-Leak-Pack nicht gefunden.");
-        }, left, y, half, 18);
         button(() -> "Unsichtbares Glas: " + onOff(FloonsGlass.isOn()), () -> {
             if (!FloonsGlass.toggle()) FloonsGamble.chat("Glas-Pack nicht gefunden.");
-        }, left + half + 6, y, half, 18);
+        }, left + half + 6, y - 21, half, 18);
+        y += 4;
+        label("Zoom: Taste C halten.  Packs laden Texturen neu (kurzer Ruckler).", left, y);
+    }
+
+    private void antiLeak(int y) {
+        FloonsConfig c = FloonsConfig.get();
+        int half = (PW - 6) / 2;
+        button(() -> "Anti-Leak: " + (c.antiLeak ? "AN" : "aus"), () -> { FloonsVisuals.toggleLeak(); rebuild(); }, left, y, PW, 20, c.antiLeak);
         y += 25;
-        label("Anti-Leak zeigt jeden Block als Netherite und filtert den Chat.", left, y);
-        label("Packs laden Texturen neu (kurzer Ruckler). Zoom: Taste C.", left, y + 11);
-        y += 28;
-        label("Anti-Leak: gesperrte Wörter (Komma getrennt)", left, y);
-        field(left, y + 10, PW, c.leakWords, 300, s -> { c.leakWords = s; c.save(); });
-        label("Sperrt auch Koordinaten, IPs und deinen PC-Namen.", left, y + 33);
+        button(() -> "Blöcke als Netherite: " + onOff(c.leakBlocks), () -> {
+            c.leakBlocks = !c.leakBlocks; c.save(); FloonsVisuals.syncLeakPack();
+        }, left, y, half, 18);
+        toggle("Chat-Filter", () -> c.leakChat, v -> c.leakChat = v, left + half + 6, y, half);
+        y += 22;
+        toggle("Koordinaten in HUDs verstecken", () -> c.leakHud, v -> c.leakHud = v, left, y, PW);
+        y += 27;
+        label("Gesperrte Wörter (Komma getrennt, z. B. Basis-Name, Discord, Wohnort)", left, y);
+        field(left, y + 11, PW, c.leakWords, 300, s -> { c.leakWords = s; c.save(); });
+        y += 36;
+        label("Chat-Filter blockiert: deine Koordinaten, Koordinaten deiner Wegpunkte,", left, y);
+        label("IP-Adressen, deinen PC-Namen und die Wörter oben – im Chat und in /msg.", left, y + 11);
+        label("Bei Blockade: [Trotzdem senden] im Chat.  Test: /antileak test <text>", left, y + 22);
+        label("Ein/Aus auch per Taste (Steuerung → Floons Client) und /antileak.", left, y + 33);
     }
 
     private void crosshair(int y) {
@@ -776,7 +789,7 @@ public class FloonsMenu extends FloonsScreen {
         {"Einstellungen", "/floons minraise 10k"}, {"Einstellungen", "/floons antisnipe"}, {"Einstellungen", "/floons antisnipe 10 15"}, {"Einstellungen", "/floons scale 1"},
         {"Einstellungen", "/floons corner mid_right"}, {"Einstellungen", "/floons pattern <regex>"}, {"Einstellungen", "/floons debug"},
         {"Einstellungen", "/floons lag"}, {"Einstellungen", "/floons perf"}, {"Einstellungen", "/floons perf reset"}, {"Einstellungen", "/floons lite"},
-        {"Tools", "/roll 100"}, {"Tools", "/coinflip"}, {"Tools", "/roulette"}, {"Gamble", "/roulette Spieler"}, {"Gamble", "/roulette auto"}, {"Tools", "/calc"}, {"Tools", "/fullbright"}, {"Tools", "/glass"}, {"Tools", "/shot"}, {"Tools", "/shot hud"},
+        {"Tools", "/roll 100"}, {"Tools", "/coinflip"}, {"Tools", "/roulette"}, {"Gamble", "/roulette Spieler"}, {"Gamble", "/roulette auto"}, {"Tools", "/calc"}, {"Tools", "/fullbright"}, {"Tools", "/antileak"}, {"Tools", "/antileak send"}, {"Tools", "/antileak test Text"}, {"Tools", "/antileak words a,b"}, {"Tools", "/antileak blocks"}, {"Tools", "/antileak chat"}, {"Tools", "/antileak hud"}, {"Tools", "/glass"}, {"Tools", "/shot"}, {"Tools", "/shot hud"},
         {"Tools", "/stopwatch start"}, {"Tools", "/stopwatch stop"}, {"Tools", "/stopwatch lap"}, {"Tools", "/stopwatch reset"},
         {"Tools", "/timer 60 Name"}, {"Tools", "/timer cancel"},
         {"Notizen", "/note add Text"}, {"Notizen", "/note list"}, {"Notizen", "/note remove 1"}, {"Notizen", "/note clear"},

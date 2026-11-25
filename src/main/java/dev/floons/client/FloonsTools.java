@@ -77,6 +77,22 @@ public final class FloonsTools {
         d.register(ClientCommandManager.literal("shot")
             .executes(c -> { FloonsVisuals.screenshot(true); return 1; })
             .then(ClientCommandManager.literal("hud").executes(c -> { FloonsVisuals.screenshot(false); return 1; })));
+        d.register(ClientCommandManager.literal("antileak")
+            .executes(c -> { FloonsVisuals.toggleLeak(); return 1; })
+            .then(ClientCommandManager.literal("send").executes(c -> { String e = FloonsVisuals.sendBlocked(); if (e != null) chat(e); return 1; }))
+            .then(ClientCommandManager.literal("blocks").executes(c -> { FloonsConfig k = FloonsConfig.get(); k.leakBlocks = !k.leakBlocks; k.save(); FloonsVisuals.syncLeakPack(); chat("Anti-Leak Blöcke: " + (k.leakBlocks ? "an" : "aus")); return 1; }))
+            .then(ClientCommandManager.literal("chat").executes(c -> { FloonsConfig k = FloonsConfig.get(); k.leakChat = !k.leakChat; k.save(); chat("Anti-Leak Chat-Filter: " + (k.leakChat ? "an" : "aus")); return 1; }))
+            .then(ClientCommandManager.literal("hud").executes(c -> { FloonsConfig k = FloonsConfig.get(); k.leakHud = !k.leakHud; k.save(); chat("Anti-Leak Koordinaten verstecken: " + (k.leakHud ? "an" : "aus")); return 1; }))
+            .then(ClientCommandManager.literal("test")
+                .then(ClientCommandManager.argument("text", StringArgumentType.greedyString()).executes(c -> {
+                    String r = FloonsVisuals.leakReason(StringArgumentType.getString(c, "text"));
+                    chat(r == null ? "Würde gesendet: nichts gefunden." : "Würde blockiert: " + r); return 1;
+                })))
+            .then(ClientCommandManager.literal("words")
+                .then(ClientCommandManager.argument("liste", StringArgumentType.greedyString()).executes(c -> {
+                    FloonsConfig k = FloonsConfig.get(); k.leakWords = StringArgumentType.getString(c, "liste"); k.save();
+                    chat("Gesperrte Wörter gespeichert."); return 1;
+                }))));
         d.register(ClientCommandManager.literal("fullbright").executes(c -> {
             FloonsConfig cf = FloonsConfig.get(); cf.fullbright = !cf.fullbright; cf.save();
             chat("Fullbright " + (cf.fullbright ? "an" : "aus")); return 1;

@@ -167,7 +167,7 @@ public class FloonsHud {
 
         List<String[]> rows = new ArrayList<>();
         if (cfg.coords) {
-            rows.add(new String[]{"XYZ", cfg.streamer && cfg.streamerHideXyz ? "versteckt" : (int) Math.floor(p.getX()) + " " + (int) Math.floor(p.getY()) + " " + (int) Math.floor(p.getZ())});
+            rows.add(new String[]{"XYZ", FloonsVisuals.hideCoords() ? "versteckt" : (int) Math.floor(p.getX()) + " " + (int) Math.floor(p.getY()) + " " + (int) Math.floor(p.getZ())});
             rows.add(new String[]{"Blick", dirName(p.getHorizontalFacing())});
         }
         if (cfg.showFps) rows.add(new String[]{"FPS", String.valueOf(mc.getCurrentFps())});
