@@ -22,24 +22,54 @@ public final class FloonsTitle {
             if (!(screen instanceof TitleScreen)) return;
             joinBtn = null;
             FloonsConfig c = FloonsConfig.get();
+            var vanilla = new java.util.ArrayList<>(Screens.getButtons(screen));
+            int minY = screen.height, maxY = 0;
+            for (var vb : vanilla) { minY = Math.min(minY, vb.getY()); maxY = Math.max(maxY, vb.getY() + vb.getHeight()); }
+            if (vanilla.isEmpty()) { minY = screen.height / 4 + 48; maxY = minY; }
             if (c.joinButton) {
-                int bw = 220, bh = 26;   // groesser als die Vanilla-Buttons (200x20), aber nicht riesig
-                int minY = screen.height;
-                for (var vb : Screens.getButtons(screen)) minY = Math.min(minY, vb.getY());
-                int by = minY - bh - 6;
-                int need = 34 - by;
-                if (need > 0) { for (var vb : Screens.getButtons(screen)) vb.setY(vb.getY() + need); by += need; }
+                int bw = Math.min(220, screen.width - 20), bh = 26, gap = 5;
+                int top = 78;                                    // unter Minecraft-Logo + Spruch
+                int by = minY - bh - gap;
+                if (by < top) {
+                    int need = top - by;
+                    int free = Math.max(0, (screen.height - 58) - maxY); // Platz bis zu den Knoepfen unten rechts
+                    int shift = Math.min(need, free);
+                    if (shift > 0) for (var vb : vanilla) vb.setY(vb.getY() + shift);
+                    minY += shift; maxY += shift;
+                    int rest = need - shift;
+                    bh = Math.max(20, bh - rest);                // notfalls etwas flacher
+                    by = Math.max(4, minY - bh - gap);
+                }
                 joinBtn = ButtonWidget.builder(Text.literal(joinLabel()), b -> joinServer(client, screen))
                     .dimensions(screen.width / 2 - bw / 2, by, bw, bh).build();
                 Screens.getButtons(screen).add(joinBtn);
             }
+            // Floons Menue + TikTok: unten rechts, aber nie ueber anderen Buttons
+            var taken = new java.util.ArrayList<int[]>();
+            for (var vb : Screens.getButtons(screen)) taken.add(new int[]{vb.getX(), vb.getY(), vb.getWidth(), vb.getHeight()});
+            int ew = 110;
+            int[][] spots = {
+                {screen.width - ew - 8, screen.height - 54, screen.width - ew - 8, screen.height - 30},   // unten rechts
+                {8, screen.height - 54, 8, screen.height - 30},                                           // unten links
+                {8, 6, 8, 30},                                                                            // oben links
+            };
+            int[] pick = spots[spots.length - 1];
+            for (int[] sp : spots) {
+                if (!hits(taken, sp[0], sp[1], ew, 20) && !hits(taken, sp[2], sp[3], ew, 20)) { pick = sp; break; }
+            }
             Screens.getButtons(screen).add(ButtonWidget.builder(Text.literal("Floons Menü"), b -> client.setScreen(new FloonsMenu(screen)))
-                .dimensions(screen.width - 118, screen.height - 54, 110, 20).build());
-            // Link unten rechts: TikTok
+                .dimensions(pick[0], pick[1], ew, 20).build());
             Screens.getButtons(screen).add(ButtonWidget.builder(Text.literal("TikTok @floonsmc"), b -> {
                 try { net.minecraft.util.Util.getOperatingSystem().open(TIKTOK); } catch (Throwable ignored) { }
-            }).dimensions(screen.width - 118, screen.height - 30, 110, 20).build());
+            }).dimensions(pick[2], pick[3], ew, 20).build());
         });
+    }
+
+    /** Ueberschneidet das Rechteck (mit 2 px Abstand) einen vorhandenen Button? */
+    private static boolean hits(java.util.List<int[]> taken, int x, int y, int w, int h) {
+        for (int[] r : taken)
+            if (x < r[0] + r[2] + 2 && x + w + 2 > r[0] && y < r[1] + r[3] + 2 && y + h + 2 > r[1]) return true;
+        return false;
     }
 
     public static String joinLabel() {
