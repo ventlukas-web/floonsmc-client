@@ -395,10 +395,10 @@ public final class FloonsWorth {
             .then(ClientCommandManager.literal("cmd")
                 .then(ClientCommandManager.literal("ah").then(ClientCommandManager.argument("befehl", StringArgumentType.greedyString()).executes(c -> {
                     FloonsConfig k = FloonsConfig.get(); k.worthAhCmd = StringArgumentType.getString(c, "befehl").replaceFirst("^/", ""); k.save();
-                    FloonsAuction.info("AH-Suche: /" + k.worthAhCmd + "  ({item} = Itemname)"); return 1; })))
+                    FloonsAuction.info("AH-Suche: /" + k.worthAhCmd + "  ({item} = Itemname mit _, z. B. diamond_sword)"); return 1; })))
                 .then(ClientCommandManager.literal("order").then(ClientCommandManager.argument("befehl", StringArgumentType.greedyString()).executes(c -> {
                     FloonsConfig k = FloonsConfig.get(); k.worthOrderCmd = StringArgumentType.getString(c, "befehl").replaceFirst("^/", ""); k.save();
-                    FloonsAuction.info("Order-Suche: /" + k.worthOrderCmd + "  ({item} = Itemname)"); return 1; }))))
+                    FloonsAuction.info("Order-Suche: /" + k.worthOrderCmd + "  ({item} = Itemname mit _, z. B. diamond_sword)"); return 1; }))))
             .then(ClientCommandManager.literal("help").executes(c -> { help(); return 1; }));
     }
 
@@ -502,8 +502,9 @@ public final class FloonsWorth {
 
     private static String searchName(ItemStack st) {
         Text name = st.get(DataComponentTypes.CUSTOM_NAME);
-        if (name != null || !key(st).equals(baseKey(st)) && !key(st).contains("@")) return display(st);
-        return Registries.ITEM.getId(st.getItem()).getPath().replace('_', ' ');
+        // Abstand immer als Unterstrich, z. B. diamond_sword
+        if (name != null || !key(st).equals(baseKey(st)) && !key(st).contains("@")) return display(st).trim().replaceAll("\\s+", "_");
+        return Registries.ITEM.getId(st.getItem()).getPath();
     }
 
     public static void startScan() { startScan(null, false); }

@@ -83,7 +83,7 @@ public final class FloonsConfig {
     /** "ah" = günstigstes AH-Angebot, "order" = Order-Preis (Sofortverkauf). */
     public String worthMode = "ah";
     /** GUI-Titel, in denen AH-Preise gelernt werden (Orders werden am Wort "Order" erkannt). */
-    /** Suchbefehle für "Alle Preise suchen"; {item} = Itemname (englisch, z. B. diamond sword). */
+    /** Suchbefehle für "Alle Preise suchen"; {item} = Itemname mit _ (z. B. diamond_sword). */
     /** Nach jeder Änderung in der Endertruhe die geänderten Items automatisch in /ah und /orders neu suchen. */
     public boolean worthAutoScan = true;
     public String worthAhCmd = "ah {item}", worthOrderCmd = "orders {item}";
