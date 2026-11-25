@@ -64,7 +64,8 @@ STREAMER (Reiter Streamer: Twitch-Chat · Giveaway · Auktion · Streamer & Werb
   /giveaway end | cancel | reroll | list | keyword <wort> | winners <n> | twitch
   /werbung                               Werbe-Text in den Chat
   Giveaway-HUD: Preis, Zeitbalken, große Teilnehmerzahl, neue Teilnehmer live ([T] = Twitch),
-  Glücksrad beim Ziehen, Gewinner-Banner mit Konfetti.
+  Glücksrad in der Bildschirmmitte: Rad mit allen Namen dreht sich und bleibt beim Gewinner
+  unter dem Zeiger stehen (Tick-Ton, max. 24 Felder), danach Gewinner-Banner mit Konfetti.
   /auction und /floons auction (auch /floons auctions) funktionieren genauso wie /action.
 
 EFFEKTE (Visuals → Effekte): Luftpartikel (Dichte wenig/mittel/viel), Jumpringe, Block-Kontur

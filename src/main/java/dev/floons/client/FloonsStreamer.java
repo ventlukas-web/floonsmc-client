@@ -42,7 +42,27 @@ public final class FloonsStreamer {
 
     /** Zieh-Animation: Namen rotieren im HUD, bevor der Gewinner feststeht. */
     public static long drawStart = 0, revealAt = 0;
-    public static final long DRAW_MS = 3200;
+    /** Rad: 5,8 s drehen, dann 1,6 s den Gewinner zeigen, danach Ansage + Banner. */
+    public static final long SPIN_MS = 5800, DRAW_MS = 7400;
+    /** Felder auf dem Rad (max. 24, Gewinner ist immer dabei) und das Gewinnerfeld. */
+    public static final List<String> wheelSlots = new ArrayList<>();
+    public static int wheelWin = 0;
+    public static double wheelTurns = 5;
+
+    private static void buildWheel() {
+        wheelSlots.clear();
+        String win = pendingWinners.isEmpty() ? null : pendingWinners.get(0);
+        List<String> rest = new ArrayList<>(lastPool);
+        if (win != null) rest.remove(win);
+        java.util.Collections.shuffle(rest, RND);
+        int cap = 24;
+        for (String r : rest) { if (wheelSlots.size() >= cap - 1) break; wheelSlots.add(r); }
+        if (win != null) wheelSlots.add(RND.nextInt(wheelSlots.size() + 1), win);
+        // bei nur einem Teilnehmer: Rad mit dem Namen zweimal, damit es nach etwas aussieht
+        if (wheelSlots.size() == 1) wheelSlots.add(wheelSlots.get(0));
+        wheelWin = win == null ? 0 : wheelSlots.indexOf(win);
+        wheelTurns = 5 + RND.nextInt(3);
+    }
     private static List<String> pendingWinners = List.of();
     private static long twitchSeen = 0;
 
@@ -118,6 +138,7 @@ public final class FloonsStreamer {
         lastPool.clear(); lastPool.addAll(entrants);
         if (lastPool.isEmpty()) { FloonsAuction.say("[Giveaway] " + prize + " beendet – keine Teilnehmer."); return null; }
         pendingWinners = pick(lastPool, winnersWanted);
+        buildWheel();
         drawStart = System.currentTimeMillis();
         return null;
     }
@@ -129,6 +150,7 @@ public final class FloonsStreamer {
         pool.removeAll(lastWinners);
         if (pool.isEmpty()) return "Keine weiteren Teilnehmer zum Neu-Ziehen.";
         pendingWinners = pick(pool, 1);
+        buildWheel();
         drawStart = System.currentTimeMillis();
         return null;
     }
