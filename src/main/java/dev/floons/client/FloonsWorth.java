@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 /**
  * Ender-Wert: zeigt, wie viel die Endertruhe nach WindSMP-Preisen wert ist.
  * Es gibt keine eingebaute Preisliste: Preise kommen nur vom Server selbst
- * (beim Durchblättern von /ah bzw. /orders aus dem Item-Text gelesen) oder werden per /ewert set gesetzt.
+ * (beim Durchblättern von /ah bzw. /orders aus dem Item-Text gelesen) oder werden per /ecworth set gesetzt.
  * Gespeichert in config/floonsclient-prices.json.
  */
 public final class FloonsWorth {
@@ -360,7 +360,7 @@ public final class FloonsWorth {
 
     // ---------- Befehle ----------
     public static void registerCommands(CommandDispatcher<FabricClientCommandSource> d) {
-        d.register(command("ewert"));
+        d.register(command("ecworth"));
         d.register(command("ecvalue"));
     }
 
@@ -420,14 +420,14 @@ public final class FloonsWorth {
             FloonsAuction.info(Text.literal("  " + (i + 1) + ". " + e.getKey() + " – ").formatted(Formatting.GRAY)
                 .append(Text.literal(money(e.getValue())).formatted(Formatting.GOLD)));
         }
-        if (prices.isEmpty()) FloonsAuction.info(Text.literal("Noch keine Preise: blättere durch /ah oder /orders, oder nutze /ewert set <preis>.").formatted(Formatting.GRAY));
+        if (prices.isEmpty()) FloonsAuction.info(Text.literal("Noch keine Preise: blättere durch /ah oder /orders, oder nutze /ecworth set <preis>.").formatted(Formatting.GRAY));
     }
 
     private static void missing() {
         if (lastResult == null) { FloonsAuction.info("Ender-Wert: Öffne erst deine Endertruhe."); return; }
         Result r = evaluate(lastEc);
         if (r.missing().isEmpty()) { FloonsAuction.info("Ender-Wert: alle Items haben einen Preis."); return; }
-        FloonsAuction.info(Text.literal("Ohne Preis (in /ah suchen oder /ewert set <preis> mit Item in der Hand):").formatted(Formatting.AQUA));
+        FloonsAuction.info(Text.literal("Ohne Preis (in /ah suchen oder /ecworth set <preis> mit Item in der Hand):").formatted(Formatting.AQUA));
         FloonsAuction.info(Text.literal(String.join(", ", r.missing())).formatted(Formatting.GRAY));
     }
 
@@ -511,7 +511,7 @@ public final class FloonsWorth {
 
     /** only = nur diese Item-Keys (null = alle); auto = vom Auto-Update gestartet (leiser). */
     public static void startScan(Set<String> only, boolean auto) {
-        if (scanning) { FloonsAuction.info("Ender-Wert: Suche läuft schon (/ewert stop)."); return; }
+        if (scanning) { FloonsAuction.info("Ender-Wert: Suche läuft schon (/ecworth stop)."); return; }
         if (lastEc.isEmpty()) { FloonsAuction.info("Ender-Wert: Öffne erst deine Endertruhe."); return; }
         LinkedHashMap<String, Target> t = new LinkedHashMap<>();
         for (ItemStack st : lastEc) {
@@ -525,7 +525,7 @@ public final class FloonsWorth {
         if (scanList.isEmpty()) { FloonsAuction.info("Ender-Wert: Endertruhe ist leer."); return; }
         scanning = true; scanIdx = 0; scanPhase = 0; scanFails = 0; scanSeen.clear();
         scanAt = System.currentTimeMillis() + 300; scanSent = false; scanOpen = false;
-        FloonsAuction.info("Ender-Wert: suche " + scanList.size() + " Items in /ah und /orders (ca. " + (scanList.size() * 6) + " s). Abbrechen: /ewert stop");
+        FloonsAuction.info("Ender-Wert: suche " + scanList.size() + " Items in /ah und /orders (ca. " + (scanList.size() * 6) + " s). Abbrechen: /ecworth stop");
     }
 
     private static void stopScan(String why) {
@@ -568,7 +568,7 @@ public final class FloonsWorth {
             return;
         } else if (++scanFails >= 3) {
             stopScan("Suche gestoppt: /" + (scanPhase == 0 ? c.worthAhCmd : c.worthOrderCmd).replace("{item}", t.search())
-                + " öffnet kein Menü. Anpassen mit /ewert cmd ah <befehl> bzw. /ewert cmd order <befehl>");
+                + " öffnet kein Menü. Anpassen mit /ecworth cmd ah <befehl> bzw. /ecworth cmd order <befehl>");
             return;
         }
         // nächster Schritt
@@ -583,8 +583,8 @@ public final class FloonsWorth {
     }
 
     private static void help() {
-        FloonsAuction.info(Text.literal("/ewert – Wert der Endertruhe · missing – Items ohne Preis · hand – Wert in der Hand").formatted(Formatting.GRAY));
-        FloonsAuction.info(Text.literal("/ewert scan – alle EC-Items in /ah und /orders suchen · stop · auto · cmd ah|order <befehl> · set <preis> · del · list · clear").formatted(Formatting.GRAY));
+        FloonsAuction.info(Text.literal("/ecworth – Wert der Endertruhe · missing – Items ohne Preis · hand – Wert in der Hand").formatted(Formatting.GRAY));
+        FloonsAuction.info(Text.literal("/ecworth scan – alle EC-Items in /ah und /orders suchen · stop · auto · cmd ah|order <befehl> · set <preis> · del · list · clear").formatted(Formatting.GRAY));
         FloonsAuction.info(Text.literal("Preise lernt der Client beim Durchblättern von /ah und /orders auf WindSMP.").formatted(Formatting.GRAY));
     }
 

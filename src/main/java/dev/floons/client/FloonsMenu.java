@@ -759,10 +759,10 @@ public class FloonsMenu extends FloonsScreen {
         label(FloonsWorth.lastSummary(), left, y);
         label(FloonsWorth.priceCount() + " Preise gespeichert", left, y + 11);
         y += 26;
-        button(() -> "Wert im Chat", () -> runCommand("/ewert"), left, y, half, 18, true);
-        button(() -> "Items ohne Preis", () -> runCommand("/ewert missing"), left + half + 6, y, half, 18);
+        button(() -> "Wert im Chat", () -> runCommand("/ecworth"), left, y, half, 18, true);
+        button(() -> "Items ohne Preis", () -> runCommand("/ecworth missing"), left + half + 6, y, half, 18);
         y += 21;
-        label("Eigener Preis: Item in die Hand, /ewert set 1.5k (pro Stück)", left, y + 4);
+        label("Eigener Preis: Item in die Hand, /ecworth set 1.5k (pro Stück)", left, y + 4);
     }
 
     private void notes(int y) {
@@ -855,8 +855,8 @@ public class FloonsMenu extends FloonsScreen {
         {"Tools", "/roll 100"}, {"Tools", "/coinflip"}, {"Tools", "/roulette"}, {"Gamble", "/roulette Spieler"}, {"Gamble", "/roulette auto"}, {"Tools", "/calc"}, {"Tools", "/fullbright"}, {"Tools", "/antileak"}, {"Tools", "/antileak send"}, {"Tools", "/antileak test Text"}, {"Tools", "/antileak words a,b"}, {"Tools", "/antileak blocks"}, {"Tools", "/antileak chat"}, {"Tools", "/antileak hud"}, {"Tools", "/glass"}, {"Tools", "/shot"}, {"Tools", "/shot hud"},
         {"Tools", "/stopwatch start"}, {"Tools", "/stopwatch stop"}, {"Tools", "/stopwatch lap"}, {"Tools", "/stopwatch reset"},
         {"Tools", "/timer 60 Name"}, {"Tools", "/timer cancel"},
-        {"Ender-Wert", "/ewert"}, {"Ender-Wert", "/ewert missing"}, {"Ender-Wert", "/ewert hand"}, {"Ender-Wert", "/ewert set 1k"},
-        {"Ender-Wert", "/ewert del"}, {"Ender-Wert", "/ewert mode ah"}, {"Ender-Wert", "/ewert mode order"}, {"Ender-Wert", "/ewert list"}, {"Ender-Wert", "/ewert learn"},
+        {"Ender-Wert", "/ecworth"}, {"Ender-Wert", "/ecworth missing"}, {"Ender-Wert", "/ecworth hand"}, {"Ender-Wert", "/ecworth set 1k"},
+        {"Ender-Wert", "/ecworth del"}, {"Ender-Wert", "/ecworth mode ah"}, {"Ender-Wert", "/ecworth mode order"}, {"Ender-Wert", "/ecworth list"}, {"Ender-Wert", "/ecworth learn"},
         {"Notizen", "/note add Text"}, {"Notizen", "/note list"}, {"Notizen", "/note remove 1"}, {"Notizen", "/note clear"},
         {"Wegpunkte", "/waypoint add Name"}, {"Wegpunkte", "/waypoint add Name 0 64 0"}, {"Wegpunkte", "/waypoint list"},
         {"Wegpunkte", "/waypoint remove Name"}, {"Wegpunkte", "/waypoint clear"},

@@ -275,7 +275,7 @@ public class FloonsClient implements ClientModInitializer {
         FloonsAuction.info("/action buynow <betrag|aus> | reserve <betrag|aus> | queue add <start> <dauer> <item> | queue list|next|remove <nr>|clear");
         FloonsAuction.info("/action test <spieler> <betrag> – Gebot simulieren (kein Geld)");
         FloonsAuction.info("Gamble: /win /lose /payback [spieler|all] · /gamble · /roll · /coinflip · /roulette · /calc");
-        FloonsAuction.info("/ewert – Wert der Endertruhe nach WindSMP-Preisen (/ewert help)");
+        FloonsAuction.info("/ecworth – Wert der Endertruhe nach WindSMP-Preisen (/ecworth help)");
         FloonsAuction.info("/floons menu oder Rechte Shift – Mod-Menü  ·  /floons – Einstellungen per Befehl");
     }
 
