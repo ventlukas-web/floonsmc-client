@@ -14,6 +14,7 @@ public final class FloonsTitle {
     private FloonsTitle() {}
 
     private static ButtonWidget joinBtn;
+    public static final String TIKTOK = "https://www.tiktok.com/@floonsmc";
     private static final java.util.Map<Object, Float> HOVER = new java.util.WeakHashMap<>();
 
     public static void register() {
@@ -33,7 +34,11 @@ public final class FloonsTitle {
                 Screens.getButtons(screen).add(joinBtn);
             }
             Screens.getButtons(screen).add(ButtonWidget.builder(Text.literal("Floons Menü"), b -> client.setScreen(new FloonsMenu(screen)))
-                .dimensions(screen.width - 96, screen.height - 30, 88, 20).build());
+                .dimensions(screen.width - 118, screen.height - 54, 110, 20).build());
+            // Link unten rechts: TikTok
+            Screens.getButtons(screen).add(ButtonWidget.builder(Text.literal("TikTok @floonsmc"), b -> {
+                try { net.minecraft.util.Util.getOperatingSystem().open(TIKTOK); } catch (Throwable ignored) { }
+            }).dimensions(screen.width - 118, screen.height - 30, 110, 20).build());
         });
     }
 
