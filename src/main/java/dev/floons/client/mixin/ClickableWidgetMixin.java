@@ -41,7 +41,7 @@ public abstract class ClickableWidgetMixin {
         int x = w.getX(), y = w.getY(), bw = w.getWidth(), bh = w.getHeight();
         boolean hov = w.active && mouseX >= x && mouseX < x + bw && mouseY >= y && mouseY < y + bh;
         int r = Math.min(bh / 2, 10);
-        FloonsTheme.roundRectExact(ctx, x, y, bw, bh, r, FloonsTheme.alpha(0xFF040507, w.active ? 0xEC : 0xA0));
+        FloonsTheme.roundRectExact(ctx, x, y, bw, bh, r, FloonsTheme.alpha(FloonsTheme.lerp(0xFF03060D, FloonsTheme.PURPLE, 0.06f), w.active ? 0xEC : 0xA0));
         double v = Math.max(0, Math.min(1, value));
         int hw = 8;
         int hx = x + (int) (v * (bw - hw));

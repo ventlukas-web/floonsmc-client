@@ -70,10 +70,10 @@ public final class FloonsConfig {
     public boolean bidFeed = true;
 
     // ---------- Design ----------
-    public String color1 = "#38BDF8";
-    public String color2 = "#5EEAD4";
-    public int bgOpacity = 208;
-    public String themeBase = "#0B1620";
+    public String color1 = "#2563EB";
+    public String color2 = "#0284C7";
+    public int bgOpacity = 235;
+    public String themeBase = "#03060D";
 
     // ---------- HUDs (wie Toasty Client) ----------
     public boolean keystrokes = true, coords = true, showFps = false, ping = false, speed = false, clock = false, moduleList = true;
@@ -110,7 +110,7 @@ public final class FloonsConfig {
     public boolean sbCustom = false, sbNumbers = false, sbBorderOn = true, sbTheme = true;
     public int sbRadius = 6, sbAlpha = 170;
     public float sbScale = 1.0f;
-    public String sbBg = "#0B1620", sbBorder = "#38BDF8", sbText = "#FFFFFF";
+    public String sbBg = "#03060D", sbBorder = "#2563EB", sbText = "#FFFFFF";
     // Visuals
     public boolean fullbright = false, noFog = false, antiLeak = false, autoSprint = false;
     /** Effekte: Luftpartikel (Dichte 1-3), Jumpringe, Block-Kontur. */
@@ -139,6 +139,12 @@ public final class FloonsConfig {
             } catch (Exception ignored) {}
             if (inst == null) inst = new FloonsConfig();
             if (inst.orig == null) inst.orig = new java.util.HashMap<>();
+            // alte Standardfarben (hell) -> neue dunkle, satte Blautoene
+            if ("#38BDF8".equalsIgnoreCase(inst.color1) && "#5EEAD4".equalsIgnoreCase(inst.color2)) { inst.color1 = "#2563EB"; inst.color2 = "#0284C7"; }
+            if ("#0B1620".equalsIgnoreCase(inst.themeBase)) inst.themeBase = "#03060D";
+            if (inst.bgOpacity == 208) inst.bgOpacity = 235;
+            if ("#0B1620".equalsIgnoreCase(inst.sbBg)) inst.sbBg = "#03060D";
+            if ("#38BDF8".equalsIgnoreCase(inst.sbBorder)) inst.sbBorder = "#2563EB";
             inst.save();
         }
         return inst;

@@ -31,7 +31,8 @@ public class FloonsMenu extends FloonsScreen {
         {"Commands"}
     };
     private static final String[][] PRESETS = {
-        {"Floons", "#38BDF8", "#5EEAD4"},
+        {"Floons", "#2563EB", "#0284C7"},
+        {"Hellblau", "#38BDF8", "#5EEAD4"},
         {"Lila-Blau", "#A855F7", "#7DD3FC"},
         {"Sunset", "#FB7185", "#FBBF24"},
         {"Mint", "#34D399", "#7DD3FC"},
@@ -849,8 +850,8 @@ public class FloonsMenu extends FloonsScreen {
     @Override
     public void renderBackground(DrawContext ctx, int mouseX, int mouseY, float delta) {
         ctx.fillGradient(0, 0, width, height,
-            FloonsTheme.alpha(FloonsTheme.lerp(0xFF05030C, FloonsTheme.PURPLE, 0.15f), 0xE0),
-            FloonsTheme.alpha(FloonsTheme.lerp(0xFF05030C, FloonsTheme.BLUE, 0.18f), 0xE0));
+            FloonsTheme.alpha(FloonsTheme.lerp(0xFF03060D, FloonsTheme.PURPLE, 0.10f), 0xF2),
+            FloonsTheme.alpha(FloonsTheme.lerp(0xFF03060D, FloonsTheme.BLUE, 0.12f), 0xF2));
         FloonsTheme.solidPanel(ctx, left - 10, top, W, H);
         FloonsLogo.draw(ctx, left, top + 6, 12);
         FloonsTheme.gradientText(ctx, textRenderer, "Floons Client", left + 16, top + 8);

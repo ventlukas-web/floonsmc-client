@@ -84,8 +84,8 @@ public class FloonsCalculatorScreen extends FloonsScreen {
     @Override
     public void renderBackground(DrawContext ctx, int mouseX, int mouseY, float delta) {
         ctx.fillGradient(0, 0, width, height,
-            FloonsTheme.alpha(FloonsTheme.lerp(0xFF05030C, FloonsTheme.PURPLE, 0.15f), 0xE0),
-            FloonsTheme.alpha(FloonsTheme.lerp(0xFF05030C, FloonsTheme.BLUE, 0.18f), 0xE0));
+            FloonsTheme.alpha(FloonsTheme.lerp(0xFF03060D, FloonsTheme.PURPLE, 0.15f), 0xE0),
+            FloonsTheme.alpha(FloonsTheme.lerp(0xFF03060D, FloonsTheme.BLUE, 0.18f), 0xE0));
         FloonsTheme.solidPanel(ctx, left - 12, top - 24, W + 24, 236);
         FloonsTheme.gradientText(ctx, textRenderer, "Rechner", left, top - 16);
     }

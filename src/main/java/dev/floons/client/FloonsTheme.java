@@ -6,11 +6,11 @@ import net.minecraft.client.gui.DrawContext;
 /** Floons-Design: Himmelblau / Türkis. */
 public final class FloonsTheme {
     /** Hauptfarbe (Standard Lila) und Zweitfarbe (Standard Hellblau) - einstellbar im Design-Tab. */
-    public static int PURPLE = 0xFF38BDF8; // Floons: Himmelblau
-    public static int BLUE = 0xFF5EEAD4; // Floons: Türkis
-    public static int BG = 0xD00B1620;
+    public static int PURPLE = 0xFF2563EB; // Floons: kräftiges Blau
+    public static int BLUE = 0xFF0284C7; // Floons: tiefes Himmelblau
+    public static int BG = 0xEB03060D;
     public static final int TEXT = 0xFFF3EEFF;
-    public static final int MUTED = 0xFFB8B5E6;
+    public static final int MUTED = 0xFF9DB0D0;
     public static final int GOOD = 0xFF86EFAC;
     public static final int BAD = 0xFFFDA4AF;
 
@@ -31,7 +31,7 @@ public final class FloonsTheme {
         if (b != null) BLUE = b;
         int op = Math.max(32, Math.min(255, c.bgOpacity));
         Integer base = parseHex(c.themeBase);
-        BG = alpha(lerp(base != null ? base : 0xFF0B1620, PURPLE, 0.10f), op);
+        BG = alpha(lerp(base != null ? base : 0xFF03060D, PURPLE, 0.10f), op);
     }
 
     public static String toHex(int argb) { return String.format("#%06X", argb & 0xFFFFFF); }
@@ -241,25 +241,25 @@ public final class FloonsTheme {
     /** Deckendes Panel fuer Menues: nichts dahinter scheint durch. */
     public static void solidPanel(DrawContext ctx, int x, int y, int w, int h) {
         int r = Math.max(3, Math.min(h >= 60 ? 12 : 8, Math.min(w, h) / 2));
-        roundRectExact(ctx, x, y, w, h, r, 0xFF000000 | lerp(0xFF0A111A, PURPLE, 0.08f));
+        roundRectExact(ctx, x, y, w, h, r, 0xFF000000 | lerp(0xFF03060D, PURPLE, 0.08f));
         cloud(ctx, x, y, w, h, 255);
     }
 
     private static void cloud(DrawContext ctx, int x, int y, int w, int h, int bgAlpha) {
         int r = Math.max(3, Math.min(h >= 60 ? 12 : 8, Math.min(w, h) / 2));
         int a = Math.max(60, Math.min(0xC8, (int) (((BG >>> 24) * bgAlpha / 255) * 0.78f)));
-        int top = lerp(PURPLE, 0xFF2A1B5E, 0.35f), bot = lerp(BLUE, 0xFF3B5FBF, 0.60f);
+        int top = lerp(PURPLE, 0xFF03060D, 0.74f), bot = lerp(BLUE, 0xFF03060D, 0.86f); // dunkel, satter Blauton
         int sheenRows = Math.max(4, h * 45 / 100);
         for (int i = 0; i < h; i++) {
             float t = h <= 1 ? 0 : (float) i / (h - 1);
             int c = lerp(top, bot, t);
-            if (i < sheenRows) c = lerp(c, 0xFFFFFFFF, 0.16f * (1f - (float) i / sheenRows));
+            if (i < sheenRows) c = lerp(c, 0xFFFFFFFF, 0.05f * (1f - (float) i / sheenRows));
             int inset = 0;
             int d = i < r ? r - i : (h - 1 - i < r ? r - (h - 1 - i) : 0);
             if (d > 0) inset = (int) Math.round(r - Math.sqrt(Math.max(0, (double) r * r - (d - 0.5) * (d - 0.5))));
             ctx.fill(x + inset, y + i, x + w - inset, y + i + 1, alpha(c, a));
         }
-        roundOutlineExact(ctx, x, y, w, h, r, 0x66FFFFFF);
+        roundOutlineExact(ctx, x, y, w, h, r, alpha(PURPLE, 0x90));
     }
 
     public static void glass(DrawContext ctx, int x, int y, int w, int h, int r, int tintAlpha) {

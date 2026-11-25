@@ -132,7 +132,7 @@ public final class FloonsGiveawayHud {
         int cx = sw / 2, cy = sh / 2 - 6;
 
         // Hintergrund-Glow
-        FloonsTheme.roundRectExact(ctx, cx - R - 14, cy - R - 26, 2 * R + 28, 2 * R + 52, 16, FloonsTheme.alpha(0xFF070C14, 0xC8));
+        FloonsTheme.roundRectExact(ctx, cx - R - 14, cy - R - 26, 2 * R + 28, 2 * R + 52, 16, FloonsTheme.alpha(0xFF03060D, 0xC8));
         FloonsTheme.roundOutlineExact(ctx, cx - R - 14, cy - R - 26, 2 * R + 28, 2 * R + 52, 16, FloonsTheme.alpha(FloonsTheme.BLUE, 0x90));
 
         // Segmente per Scanline zeichnen (Laeufe gleicher Farbe zusammengefasst)
@@ -175,7 +175,7 @@ public final class FloonsGiveawayHud {
             ctx.getMatrices().popMatrix();
         }
         // Nabe mit Logo
-        FloonsTheme.roundRectExact(ctx, cx - 11, cy - 11, 22, 22, 11, 0xFF0A111A);
+        FloonsTheme.roundRectExact(ctx, cx - 11, cy - 11, 22, 22, 11, 0xFF03060D);
         FloonsTheme.roundOutlineExact(ctx, cx - 11, cy - 11, 22, 22, 11, 0xFFF2F7FF);
         FloonsLogo.draw(ctx, cx - 7, cy - 7, 14);
         // Zeiger oben (Dreieck nach unten)
@@ -214,9 +214,9 @@ public final class FloonsGiveawayHud {
             case 0 -> a;
             case 1 -> b;
             case 2 -> FloonsTheme.lerp(a, b, 0.5f);
-            default -> FloonsTheme.lerp(b, 0xFF0A111A, 0.35f);
+            default -> FloonsTheme.lerp(b, 0xFF03060D, 0.35f);
         };
         if (n % 4 == 1 && i == n - 1) base = FloonsTheme.lerp(a, 0xFFFFFFFF, 0.3f); // letztes Feld nicht gleich wie das erste
-        return 0xFF000000 | (FloonsTheme.lerp(base, 0xFF0A111A, (i % 2) * 0.12f) & 0xFFFFFF);
+        return 0xFF000000 | (FloonsTheme.lerp(base, 0xFF03060D, (i % 2) * 0.12f) & 0xFFFFFF);
     }
 }

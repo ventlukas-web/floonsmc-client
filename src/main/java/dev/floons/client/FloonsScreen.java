@@ -78,10 +78,9 @@ public abstract class FloonsScreen extends Screen {
             int pr = bh / 2;
             if (big || b.accent()) FloonsTheme.bigPill(ctx, x, y, bw, bh, cur, big ? bigOn() : true);
             else {
-                // Wolken-Pille: weiss, durchsichtig, heller Rand
-                int wa = Math.max(0x14, Math.min(0x50, 160 / 6));
-                FloonsTheme.roundRectExact(ctx, x, y, bw, bh, pr, FloonsTheme.alpha(FloonsTheme.btnTint(), wa + (int) (0x2C * cur)));
-                FloonsTheme.roundOutlineExact(ctx, x, y, bw, bh, pr, FloonsTheme.alpha(FloonsTheme.btnTint(), 0x40 + (int) (0x50 * cur)));
+                // dunkle Pille mit sattem Blau-Rand
+                FloonsTheme.roundRectExact(ctx, x, y, bw, bh, pr, FloonsTheme.alpha(FloonsTheme.lerp(0xFF03060D, FloonsTheme.PURPLE, 0.08f + 0.22f * cur), 0xEC));
+                FloonsTheme.roundOutlineExact(ctx, x, y, bw, bh, pr, FloonsTheme.alpha(FloonsTheme.lerp(FloonsTheme.PURPLE, FloonsTheme.BLUE, cur), 0x70 + (int) (0x70 * cur)));
             }
             String s = b.label().get();
             int maxW = bw - 10;

@@ -47,7 +47,7 @@ public final class FloonsNotify {
             int yy = Math.round(y - h);
             int a = Math.max(16, Math.round(255 * vis));
             // Pille: voll rund, dunkel, Rand in der Info-Farbe
-            FloonsTheme.roundRectExact(ctx, x, yy, w, h, h / 2, FloonsTheme.alpha(0xFF0A111A, Math.min(0xE8, a)));
+            FloonsTheme.roundRectExact(ctx, x, yy, w, h, h / 2, FloonsTheme.alpha(0xFF03060D, Math.min(0xE8, a)));
             FloonsTheme.roundRectExact(ctx, x + 1, yy + 1, w - 2, h / 2 - 1, h / 2 - 1, FloonsTheme.alpha(0xFFFFFFFF, Math.min(0x14, a / 12)));
             FloonsTheme.roundOutlineExact(ctx, x, yy, w, h, h / 2, FloonsTheme.alpha(t.color(), Math.min(0xD0, a)));
             // Fortschritt der Anzeigezeit als duenner Strich unten
