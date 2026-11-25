@@ -18,6 +18,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /** Alle Vanilla-Buttons und Slider im Floons-Design. */
 @Mixin(ClickableWidget.class)
 public abstract class ClickableWidgetMixin {
+    /** Vanilla setzt "hovered" in render(); da wir render() ersetzen, setzen wir es selbst, sonst reagieren Buttons nicht richtig. */
+    @org.spongepowered.asm.mixin.Shadow protected boolean hovered;
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void floons$render(DrawContext ctx, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         try {
@@ -29,6 +31,7 @@ public abstract class ClickableWidgetMixin {
             MinecraftClient mc = MinecraftClient.getInstance();
             if (mc.currentScreen instanceof FloonsScreen) return;
             ClickableWidget w = (ClickableWidget) self;
+            this.hovered = w.visible && mouseX >= w.getX() && mouseY >= w.getY() && mouseX < w.getX() + w.getWidth() && mouseY < w.getY() + w.getHeight();
             if (button) FloonsTitle.styledButton(ctx, mc, w, mouseX, mouseY);
             else slider(ctx, mc, w, self instanceof SliderAccessor acc ? acc.floons$getValue() : 0.5, mouseX, mouseY);
             ci.cancel();
