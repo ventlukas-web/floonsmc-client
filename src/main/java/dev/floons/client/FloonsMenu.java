@@ -24,7 +24,7 @@ public class FloonsMenu extends FloonsScreen {
         {"Design", "FPS"},
         {"Gamble"},
         {"Auktion", "Einstellungen"},
-        {"HUD", "Mehr HUDs", "PvP-Anzeigen", "Extras", "Anti-Leak", "Crosshair", "Scoreboard", "Eigenes HUD"},
+        {"HUD", "Mehr HUDs", "PvP-Anzeigen", "Extras", "Effekte", "Anti-Leak", "Crosshair", "Scoreboard", "Eigenes HUD"},
         {"Twitch-Chat", "Giveaway", "Auktion", "Streamer & Werbung"},
         {"Tools", "Wegpunkte", "Notizen"},
         {"Server"},
@@ -142,6 +142,7 @@ public class FloonsMenu extends FloonsScreen {
             case "PvP-Anzeigen" -> pvp(y);
             case "Extras" -> extras(y);
             case "Anti-Leak" -> antiLeak(y);
+            case "Effekte" -> effects(y);
             case "Crosshair" -> crosshair(y);
             case "Scoreboard" -> scoreboard(y);
             case "Eigenes HUD" -> custom(y);
@@ -587,6 +588,21 @@ public class FloonsMenu extends FloonsScreen {
         }, left + half + 6, y - 21, half, 18);
         y += 4;
         label("Zoom: Taste C halten.  Packs laden Texturen neu (kurzer Ruckler).", left, y);
+    }
+
+    private void effects(int y) {
+        FloonsConfig c = FloonsConfig.get();
+        y = toggles(y, new Object[][]{
+            t("Luftpartikel", () -> c.fxOrbs, v -> c.fxOrbs = v),
+            t("Jumpringe", () -> c.fxJump, v -> c.fxJump = v),
+            t("Block-Kontur", () -> c.blockOutline, v -> c.blockOutline = v),
+        });
+        cycleLong("Luftpartikel-Dichte", new long[]{1, 2, 3},
+            () -> (long) c.airDensity, v -> c.airDensity = (int) (long) v, v -> v == 1 ? "wenig" : v == 2 ? "mittel" : "viel", left, y, PW);
+        y += 26;
+        label("Luftpartikel: weiche Lichtpunkte und Glitzer schweben um dich.", left, y);
+        label("Jumpringe: Lichtring am Boden, wo du abspringst.", left, y + 11);
+        label("Alles in deinen Design-Farben, nur für dich sichtbar (Client-Partikel).", left, y + 22);
     }
 
     private void antiLeak(int y) {

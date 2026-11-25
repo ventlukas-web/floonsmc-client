@@ -67,6 +67,8 @@ STREAMER (Reiter Streamer: Twitch-Chat · Giveaway · Auktion · Streamer & Werb
   Glücksrad beim Ziehen, Gewinner-Banner mit Konfetti.
   /auction und /floons auction (auch /floons auctions) funktionieren genauso wie /action.
 
+EFFEKTE (Visuals → Effekte): Luftpartikel (Dichte wenig/mittel/viel), Jumpringe, Block-Kontur
+
 ANTI-LEAK (Visuals → Anti-Leak, /antileak, eigene Taste unter Steuerung)
   Blöcke als Netherite: jeder Block sieht gleich aus (Erze, Basen verraten nichts im Stream/ss)
   Chat-Filter: blockiert deine Koordinaten, Koordinaten deiner Wegpunkte, IP-Adressen,

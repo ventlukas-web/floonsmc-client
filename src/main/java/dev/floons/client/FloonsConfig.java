@@ -113,6 +113,9 @@ public final class FloonsConfig {
     public String sbBg = "#0B1620", sbBorder = "#38BDF8", sbText = "#FFFFFF";
     // Visuals
     public boolean fullbright = false, noFog = false, antiLeak = false, autoSprint = false;
+    /** Effekte: Luftpartikel (Dichte 1-3), Jumpringe, Block-Kontur. */
+    public boolean fxOrbs = false, fxJump = false, blockOutline = false;
+    public int airDensity = 2;
     public String leakWords = "";
     /** Anti-Leak-Teile: Bloecke als Netherite, Chat-Filter, Koordinaten in HUDs ausblenden. */
     public boolean leakBlocks = true, leakChat = true, leakHud = true;

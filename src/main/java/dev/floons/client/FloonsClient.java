@@ -86,6 +86,7 @@ public class FloonsClient implements ClientModInitializer {
             FloonsTimers.tick();
             FloonsStreamer.tick();
             FloonsVisuals.tick(mc);
+            FloonsFx.tick(mc);
         });
         ClientSendMessageEvents.COMMAND.register(FloonsGamble::onOwnCommand);
         ClientReceiveMessageEvents.GAME.register((msg, overlay) -> { if (!overlay) onChat(msg.getString()); });
