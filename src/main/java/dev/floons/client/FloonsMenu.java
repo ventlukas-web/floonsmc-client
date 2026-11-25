@@ -584,6 +584,7 @@ public class FloonsMenu extends FloonsScreen {
             t("Low-HP-Warnung", () -> c.lowHpWarn, v -> c.lowHpWarn = v),
             t("Cooldown-Balken", () -> c.cooldownBar, v -> c.cooldownBar = v),
             t("Saturation-Rand", () -> c.satBorder, v -> c.satBorder = v),
+            t("Eigener Nametag (F5)", () -> c.ownNametag, v -> c.ownNametag = v),
         });
         button(() -> "Treffer-Sound: " + FloonsPvp.SOUNDS[Math.floorMod(c.hitSoundIdx, FloonsPvp.SOUNDS.length)][0], () -> {
             c.hitSoundIdx = (c.hitSoundIdx + 1) % FloonsPvp.SOUNDS.length; c.save(); FloonsPvp.playHit();

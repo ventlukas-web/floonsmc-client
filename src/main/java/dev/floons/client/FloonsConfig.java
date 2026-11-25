@@ -98,6 +98,8 @@ public final class FloonsConfig {
     public int armorWarnPct = 10;
     public boolean armorHud = true, potionHud = false, sessionHud = false;
     public boolean armorHudMigrated = false;
+    /** Eigener Nametag ueber dem Kopf in der 3. Person. */
+    public boolean ownNametag = true;
     public boolean cpsHud = false, reachHud = false, pvpItems = false;
     public int hitSoundIdx = 0;
     public boolean hitMarker = false, hitSound = false, lowHpWarn = false, cooldownBar = false;

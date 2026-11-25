@@ -71,6 +71,7 @@ public class FloonsHud {
         if (mc.options.hudHidden) return;
         if (FloonsClient.hideHud()) return;
         FloonsConfig cfg = FloonsConfig.get();
+        FloonsOwnTag.render(ctx, mc, cfg);
         TextRenderer tr = mc.textRenderer;
 
         long nowN = System.nanoTime();
