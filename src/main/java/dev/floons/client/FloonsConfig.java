@@ -83,6 +83,8 @@ public final class FloonsConfig {
     /** "ah" = günstigstes AH-Angebot, "order" = Order-Preis (Sofortverkauf). */
     public String worthMode = "ah";
     /** GUI-Titel, in denen AH-Preise gelernt werden (Orders werden am Wort "Order" erkannt). */
+    /** Suchbefehle für "Alle Preise suchen"; {item} = Itemname (englisch, z. B. diamond sword). */
+    public String worthAhCmd = "ah {item}", worthOrderCmd = "orders {item}";
     public String worthMarketTitle = "(auction|auktion|\\bah\\b|markt|market)";
     public java.util.Map<String, float[]> hudPos = new java.util.HashMap<>();
     public static class Wp { public String name = "", dim = ""; public int x, y, z; }

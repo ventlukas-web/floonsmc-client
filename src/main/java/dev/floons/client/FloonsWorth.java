@@ -86,6 +86,13 @@ public final class FloonsWorth {
         });
         ScreenEvents.AFTER_INIT.register((client, screen, w, h) -> {
             if (!(screen instanceof GenericContainerScreen gs) || !isEnderChest(screen)) return;
+            int bx = screen.width - 116, by = 64;
+            net.fabricmc.fabric.api.client.screen.v1.Screens.getButtons(screen).add(
+                net.minecraft.client.gui.widget.ButtonWidget.builder(Text.literal(scanning ? "Suche läuft …" : "Alle Preise suchen"), b -> {
+                    snapshot(gs);
+                    client.player.closeHandledScreen();
+                    startScan();
+                }).dimensions(bx, by, 110, 16).build());
             ScreenEvents.afterRender(screen).register((s, ctx, mx, my, delta) -> { if (!FloonsClient.off()) renderOverlay(gs, ctx); });
         });
     }
@@ -93,6 +100,7 @@ public final class FloonsWorth {
     /** Jeden Tick: offene Markt-GUIs auslesen, offene Endertruhe merken. */
     public static void tick(MinecraftClient mc) {
         if (++saveTimer >= 200) { saveTimer = 0; if (dirty) save(); }
+        if (scanning) { scanTick(mc); return; }
         if (!(mc.currentScreen instanceof HandledScreen<?> hs)) return;
         String title = hs.getTitle().getString();
         if (hs instanceof GenericContainerScreen gs && isEnderChest(hs)) { snapshot(gs); return; }
@@ -208,11 +216,14 @@ public final class FloonsWorth {
             if (best < 0 || (unit && !bestUnit) || (!bestUnit && word && !bestWord)) { best = v; bestUnit = unit; bestWord = word; }
         }
         if (best <= 0) return;
+        if (scanning && !baseKey(st).equals(scanBase)) return;
         double perItem = bestUnit || src == Source.ORDER ? best : best / Math.max(1, st.getCount());
         String k = key(st);
         Price p = prices.computeIfAbsent(k, x -> new Price());
         p.name = display(st);
         long now = System.currentTimeMillis();
+        boolean fresh = scanning && scanSeen.add(src + k); // Suche: alter Preis wird ersetzt
+        if (fresh) { if (src == Source.AH) p.ah = 0; else p.order = 0; }
         if (src == Source.AH) {
             if (p.ah <= 0 || now - p.ahTime > AH_FRESH_MS || perItem < p.ah) { if (p.ah != perItem) dirty = true; p.ah = perItem; }
             p.ahTime = now;
@@ -329,6 +340,15 @@ public final class FloonsWorth {
                 int n = prices.size(); prices.clear(); save();
                 FloonsAuction.info("Ender-Wert: " + n + " Preise gelöscht."); return 1;
             }))
+            .then(ClientCommandManager.literal("scan").executes(c -> { startScan(); return 1; }))
+            .then(ClientCommandManager.literal("stop").executes(c -> { stopScan("Suche abgebrochen."); return 1; }))
+            .then(ClientCommandManager.literal("cmd")
+                .then(ClientCommandManager.literal("ah").then(ClientCommandManager.argument("befehl", StringArgumentType.greedyString()).executes(c -> {
+                    FloonsConfig k = FloonsConfig.get(); k.worthAhCmd = StringArgumentType.getString(c, "befehl").replaceFirst("^/", ""); k.save();
+                    FloonsAuction.info("AH-Suche: /" + k.worthAhCmd + "  ({item} = Itemname)"); return 1; })))
+                .then(ClientCommandManager.literal("order").then(ClientCommandManager.argument("befehl", StringArgumentType.greedyString()).executes(c -> {
+                    FloonsConfig k = FloonsConfig.get(); k.worthOrderCmd = StringArgumentType.getString(c, "befehl").replaceFirst("^/", ""); k.save();
+                    FloonsAuction.info("Order-Suche: /" + k.worthOrderCmd + "  ({item} = Itemname)"); return 1; }))))
             .then(ClientCommandManager.literal("help").executes(c -> { help(); return 1; }));
     }
 
@@ -416,9 +436,94 @@ public final class FloonsWorth {
         }
     }
 
+    // ---------- Automatische Suche: jedes EC-Item in /ah und /orders nachschlagen ----------
+    private record Target(String base, String key, String name, String search) {}
+    private static boolean scanning;
+    private static final List<Target> scanList = new ArrayList<>();
+    private static final Set<String> scanSeen = new HashSet<>();
+    private static String scanBase;
+    private static int scanIdx, scanPhase, scanFails; // Phase 0 = AH, 1 = Orders
+    private static long scanAt, scanOpenedAt;
+    private static boolean scanSent, scanOpen;
+    private static final long OPEN_TIMEOUT = 5000, READ_MS = 1500, GAP_MS = 1100;
+
+    public static boolean scanning() { return scanning; }
+    public static String scanStatus() { return scanning ? "Suche " + (scanIdx + 1) + "/" + scanList.size() + ": " + scanList.get(Math.min(scanIdx, scanList.size() - 1)).name() + (scanPhase == 0 ? " (AH)" : " (Orders)") : ""; }
+
+    private static String searchName(ItemStack st) {
+        Text name = st.get(DataComponentTypes.CUSTOM_NAME);
+        if (name != null || !key(st).equals(baseKey(st)) && !key(st).contains("@")) return display(st);
+        return Registries.ITEM.getId(st.getItem()).getPath().replace('_', ' ');
+    }
+
+    public static void startScan() {
+        if (scanning) { FloonsAuction.info("Ender-Wert: Suche läuft schon (/ewert stop)."); return; }
+        if (lastEc.isEmpty()) { FloonsAuction.info("Ender-Wert: Öffne erst deine Endertruhe."); return; }
+        LinkedHashMap<String, Target> t = new LinkedHashMap<>();
+        for (ItemStack st : lastEc) {
+            if (!isContainer(st)) t.putIfAbsent(key(st), new Target(baseKey(st), key(st), display(st), searchName(st)));
+            ContainerComponent cc = st.get(DataComponentTypes.CONTAINER);
+            if (cc != null) for (ItemStack in : cc.iterateNonEmpty()) t.putIfAbsent(key(in), new Target(baseKey(in), key(in), display(in), searchName(in)));
+        }
+        scanList.clear(); scanList.addAll(t.values());
+        if (scanList.isEmpty()) { FloonsAuction.info("Ender-Wert: Endertruhe ist leer."); return; }
+        scanning = true; scanIdx = 0; scanPhase = 0; scanFails = 0; scanSeen.clear();
+        scanAt = System.currentTimeMillis() + 300; scanSent = false; scanOpen = false;
+        FloonsAuction.info("Ender-Wert: suche " + scanList.size() + " Items in /ah und /orders (ca. " + (scanList.size() * 6) + " s). Abbrechen: /ewert stop");
+    }
+
+    private static void stopScan(String why) {
+        if (!scanning) return;
+        scanning = false; scanBase = null;
+        MinecraftClient mc = MinecraftClient.getInstance();
+        if (mc.currentScreen instanceof HandledScreen<?> && mc.player != null) mc.player.closeHandledScreen();
+        save();
+        FloonsAuction.info("Ender-Wert: " + why);
+    }
+
+    private static void scanTick(MinecraftClient mc) {
+        if (mc.player == null || mc.getNetworkHandler() == null) { stopScan("Suche abgebrochen (Verbindung weg)."); return; }
+        long now = System.currentTimeMillis();
+        if (now < scanAt) return;
+        FloonsConfig c = FloonsConfig.get();
+        Target t = scanList.get(scanIdx);
+        scanBase = t.base();
+        if (!scanSent) {
+            String cmd = (scanPhase == 0 ? c.worthAhCmd : c.worthOrderCmd).replace("{item}", t.search());
+            mc.player.networkHandler.sendChatCommand(cmd);
+            scanSent = true; scanOpen = false; scanOpenedAt = now;
+            return;
+        }
+        if (mc.currentScreen instanceof HandledScreen<?> hs && !(hs.getScreenHandler().slots.isEmpty())) {
+            if (!scanOpen) { scanOpen = true; scanOpenedAt = now; scanFails = 0; }
+            Source src = scanPhase == 0 ? Source.AH : Source.ORDER;
+            for (Slot slot : hs.getScreenHandler().slots) {
+                if (slot.inventory instanceof PlayerInventory) continue;
+                learn(slot.getStack(), src);
+            }
+            if (now - scanOpenedAt < READ_MS) return;
+            mc.player.closeHandledScreen();
+        } else if (now - scanOpenedAt < OPEN_TIMEOUT) {
+            return;
+        } else if (++scanFails >= 3) {
+            stopScan("Suche gestoppt: /" + (scanPhase == 0 ? c.worthAhCmd : c.worthOrderCmd).replace("{item}", t.search())
+                + " öffnet kein Menü. Anpassen mit /ewert cmd ah <befehl> bzw. /ewert cmd order <befehl>");
+            return;
+        }
+        // nächster Schritt
+        scanSent = false; scanAt = now + GAP_MS;
+        if (scanPhase == 0) { scanPhase = 1; return; }
+        scanPhase = 0;
+        if (++scanIdx >= scanList.size()) {
+            scanning = false; scanBase = null; save();
+            FloonsAuction.info("Ender-Wert: Suche fertig.");
+            show();
+        }
+    }
+
     private static void help() {
         FloonsAuction.info(Text.literal("/ewert – Wert der Endertruhe · missing – Items ohne Preis · hand – Wert in der Hand").formatted(Formatting.GRAY));
-        FloonsAuction.info(Text.literal("/ewert set <preis> (pro Stück, oder z. B. 64k/stack) · del · mode ah|order · learn · list · clear").formatted(Formatting.GRAY));
+        FloonsAuction.info(Text.literal("/ewert scan – alle EC-Items in /ah und /orders suchen · stop · cmd ah|order <befehl> · set <preis> · del · list · clear").formatted(Formatting.GRAY));
         FloonsAuction.info(Text.literal("Preise lernt der Client beim Durchblättern von /ah und /orders auf WindSMP.").formatted(Formatting.GRAY));
     }
 
