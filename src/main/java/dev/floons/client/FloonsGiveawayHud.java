@@ -51,7 +51,7 @@ public final class FloonsGiveawayHud {
         List<FloonsStreamer.Join> feed = FloonsStreamer.joinFeed;
         int feedN = on ? Math.min(5, feed.size()) : 0;
         int winN = showWinners ? Math.min(5, FloonsStreamer.lastWinners.size()) : 0;
-        int h = pad + 12 + 4 + 12 + 10 + 24 + 12 + (feedN > 0 ? 14 + feedN * 10 : 0) + (winN > 0 ? 14 + winN * 11 : 0) + pad - 4;
+        int h = pad + 12 + 4 + 12 + 10 + 24 + 12 + (c.giveawayTwitch && c.twitch ? 12 : 0) + (feedN > 0 ? 14 + feedN * 10 : 0) + (winN > 0 ? 14 + winN * 11 : 0) + pad - 4;
         int bw = w + pad * 2;
         int sw = mc.getWindow().getScaledWidth(), sh = mc.getWindow().getScaledHeight();
         float s = c.hudScale;
@@ -98,11 +98,11 @@ public final class FloonsGiveawayHud {
         String kwd = c.giveawayKeyword == null || c.giveawayKeyword.isBlank() ? "join" : c.giveawayKeyword.trim();
         String kw = "/msg " + FloonsStreamer.myName() + " " + kwd;
         ctx.drawTextWithShadow(tr, tr.trimToWidth(kw, w), pad, y, FloonsTheme.TEXT);
-        if (c.giveawayTwitch && c.twitch) {
-            String tw = "Twitch: »" + kwd + "«";
-            ctx.drawTextWithShadow(tr, tw, pad + w - tr.getWidth(tw), y, FloonsTheme.PURPLE);
-        }
         y += 12;
+        if (c.giveawayTwitch && c.twitch) { // eigene Zeile, damit nichts überlappt
+            ctx.drawTextWithShadow(tr, tr.trimToWidth("Twitch-Chat: »" + kwd + "«", w), pad, y, FloonsTheme.PURPLE);
+            y += 12;
+        }
 
         if (feedN > 0) {
             ctx.fill(pad, y, pad + w, y + 1, FloonsTheme.alpha(0xFFFFFFFF, 0x30));
