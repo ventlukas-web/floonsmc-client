@@ -190,8 +190,39 @@ public final class FloonsAuction {
         FloonsHud.overlay(true, "VERKAUFT", item + "  ·  " + bestName + "  ·  " + fmt(best));
         long over = bids.getOrDefault(bestName, 0L) - best;
         if (over > 0) info(bestName + " hat " + fmt(over) + " mehr gezahlt als nötig.");
+        tpaButtons(bestName);
         refundList();
         scheduleNext();
+        return null;
+    }
+
+    /** Klick-Knöpfe im Chat: TPA an den Gewinner senden (nur für dich sichtbar). */
+    public static void tpaButtons(String winner) {
+        if (winner == null) return;
+        info(Text.literal("Gewinner " + winner + ": ").formatted(Formatting.GRAY)
+            .append(Text.literal("[TPA senden]").styled(st -> st.withColor(Formatting.GREEN).withBold(true)
+                .withClickEvent(new ClickEvent.RunCommand("/tpa " + winner))
+                .withHoverEvent(new net.minecraft.text.HoverEvent.ShowText(Text.literal("/tpa " + winner)))))
+            .append(Text.literal("  "))
+            .append(Text.literal("[TPA-Here]").styled(st -> st.withColor(Formatting.AQUA).withBold(true)
+                .withClickEvent(new ClickEvent.RunCommand("/tpahere " + winner))
+                .withHoverEvent(new net.minecraft.text.HoverEvent.ShowText(Text.literal("/tpahere " + winner))))));
+    }
+
+    /** Letzter Auktions-Gewinner (für /action tpa und den Menü-Knopf), sonst null. */
+    public static String lastWinner() {
+        if (lastWinner != null) return lastWinner;
+        for (Entry e : history()) if (e.winner != null) return e.winner;
+        return null;
+    }
+
+    /** Sendet direkt /tpa (here=false) bzw. /tpahere an den letzten Gewinner. */
+    public static String tpaWinner(boolean here) {
+        String w = lastWinner();
+        if (w == null) return "Noch kein Auktions-Gewinner.";
+        var mc = net.minecraft.client.MinecraftClient.getInstance();
+        if (mc.player == null) return "Nicht im Spiel.";
+        mc.player.networkHandler.sendChatCommand((here ? "tpahere " : "tpa ") + w);
         return null;
     }
 

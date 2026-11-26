@@ -452,6 +452,10 @@ public class FloonsMenu extends FloonsScreen {
         y += 21;
         button(() -> "HUD frei verschieben", () -> client.setScreen(new FloonsHudEditor(this)), left, y, half, 18, true);
         button(() -> "Auktions-Statistik", () -> { FloonsAuction.stats(); close(); }, x2, y, half, 18);
+        y += 21;
+        button(() -> FloonsAuction.lastWinner() == null ? "TPA an Gewinner (keiner)" : "TPA an " + FloonsAuction.lastWinner(),
+            () -> { String e = FloonsAuction.tpaWinner(false); if (e != null) FloonsAuction.info(e); else close(); }, left, y, half, 18, true);
+        button(() -> "TPA-Here an Gewinner", () -> { String e = FloonsAuction.tpaWinner(true); if (e != null) FloonsAuction.info(e); else close(); }, x2, y, half, 18);
 
     }
 
@@ -815,7 +819,7 @@ public class FloonsMenu extends FloonsScreen {
         {"Gamble", "/gamble max 1b"}, {"Gamble", "/gamble multiplier 2"}, {"Gamble", "/gamble autopay"}, {"Gamble", "/gamble delay 500"},
         {"Gamble", "/gamble warn 30"}, {"Gamble", "/gamble limit 250k"}, {"Gamble", "/gamble hud"}, {"Gamble", "/gamble effects"}, {"Gamble", "/gamble confetti"},
         {"Auktion", "/action start 500k 2m Item"}, {"Auktion", "/auction start 500k 2m Item"}, {"Auktion", "/floons auction hand 500k 2m"}, {"Auktion", "/action hand 500k 2m"}, {"Auktion", "/action end"}, {"Auktion", "/action cancel"}, {"Auktion", "/action extend 30"},
-        {"Auktion", "/action status"}, {"Auktion", "/action refund"}, {"Auktion", "/action history"}, {"Auktion", "/action test Spieler 1k"},
+        {"Auktion", "/action status"}, {"Auktion", "/action refund"}, {"Auktion", "/action tpa"}, {"Auktion", "/action tpahere"}, {"Auktion", "/action history"}, {"Auktion", "/action test Spieler 1k"},
         {"Auktion", "/action reset"}, {"Auktion", "/action reset bids"}, {"Auktion", "/action reset Spieler"}, {"Auktion", "/action pause"}, {"Auktion", "/action resume"}, {"Auktion", "/action buynow 5m"}, {"Auktion", "/action reserve 1m"}, {"Auktion", "/action stats"},
         {"Auktion", "/action queue add 500k 2m Item"}, {"Auktion", "/action queue list"}, {"Auktion", "/action queue next"}, {"Auktion", "/action queue remove 1"}, {"Auktion", "/action queue clear"},
         {"Streamer", "/giveaway start 60 Gewinn"}, {"Streamer", "/giveaway end"}, {"Streamer", "/giveaway cancel"}, {"Streamer", "/giveaway reroll"},

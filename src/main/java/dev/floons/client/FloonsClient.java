@@ -198,6 +198,8 @@ public class FloonsClient implements ClientModInitializer {
                 .then(ClientCommandManager.argument("sekunden", IntegerArgumentType.integer(1, 3600))
                     .executes(c -> ok(FloonsAuction.extend(IntegerArgumentType.getInteger(c, "sekunden"))))))
             .then(ClientCommandManager.literal("refund").executes(c -> { FloonsAuction.refundList(); return 1; }))
+            .then(ClientCommandManager.literal("tpa").executes(c -> { String e = FloonsAuction.tpaWinner(false); if (e != null) FloonsAuction.info(e); return 1; }))
+            .then(ClientCommandManager.literal("tpahere").executes(c -> { String e = FloonsAuction.tpaWinner(true); if (e != null) FloonsAuction.info(e); return 1; }))
             .then(ClientCommandManager.literal("reset")
                 .executes(c -> ok(FloonsAuction.reset()))
                 .then(ClientCommandManager.literal("bids").executes(c -> ok(FloonsAuction.resetBids())))
