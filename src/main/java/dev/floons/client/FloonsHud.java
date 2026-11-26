@@ -116,7 +116,7 @@ public class FloonsHud {
         ctx.getMatrices().pushMatrix();
         ctx.getMatrices().translate(0, y0 + ph - 22);
         ctx.getMatrices().scale(1.5f, 1.5f);
-        ctx.drawTextWithShadow(tr, wSub, -tr.getWidth(wSub) / 2, 0, FloonsTheme.alpha(FloonsTheme.TEFloonsT, alpha));
+        ctx.drawTextWithShadow(tr, wSub, -tr.getWidth(wSub) / 2, 0, FloonsTheme.alpha(FloonsTheme.TEXT, alpha));
         ctx.getMatrices().popMatrix();
         ctx.getMatrices().popMatrix();
     }
