@@ -25,7 +25,11 @@ public abstract class ClickableWidgetMixin {
         try {
             if (!FloonsConfig.get().niceButtons || FloonsConfig.get().allOff) return;
             Object self = this;
-            boolean button = self.getClass() == ButtonWidget.class || self instanceof CyclingButtonWidget;
+            // 1.21.11: Buttons aus ButtonWidget.builder() sind Unterklassen (nicht mehr genau ButtonWidget) – daher instanceof;
+            // Icon-Buttons (Textur, Schloss, ohne Text) bleiben Vanilla
+            boolean button = (self instanceof ButtonWidget && !(self instanceof net.minecraft.client.gui.widget.TexturedButtonWidget)
+                && !(self instanceof net.minecraft.client.gui.widget.LockButtonWidget)
+                && !((ClickableWidget) self).getMessage().getString().isEmpty()) || self instanceof CyclingButtonWidget;
             boolean slider = self instanceof SliderWidget;
             if (!button && !slider) return;
             MinecraftClient mc = MinecraftClient.getInstance();
