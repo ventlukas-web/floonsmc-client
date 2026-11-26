@@ -26,7 +26,7 @@ public class FloonsMenu extends FloonsScreen {
         {"Auktion", "Einstellungen"},
         {"HUD", "Mehr HUDs", "Sky Lyrics", "PvP-Anzeigen", "Extras", "Effekte", "Anti-Leak", "Crosshair", "Scoreboard", "Eigenes HUD"},
         {"Twitch-Chat", "Giveaway", "Auktion", "Streamer & Werbung"},
-        {"Musik", "Tools", "Wegpunkte", "Notizen", "KI"},
+        {"Musik", "Tools", "Preise", "Wegpunkte", "Notizen", "KI"},
         {"Server"},
         {"Commands"}
     };
@@ -157,6 +157,7 @@ public class FloonsMenu extends FloonsScreen {
             case "Eigenes HUD" -> custom(y);
             case "Wegpunkte" -> waypoints(y);
             case "Notizen" -> notes(y);
+            case "Preise" -> prices(y);
             case "Tools" -> timers(y);
             case "Server" -> serverPage(y);
             case "Commands" -> commands(y);
@@ -748,6 +749,27 @@ public class FloonsMenu extends FloonsScreen {
         if (c.waypoints.isEmpty()) label("Noch keine Wegpunkte.", left, y);
     }
 
+    private void prices(int y) {
+        FloonsConfig c = FloonsConfig.get();
+        label("WindSMP-Preise (wie FWM): alle Clients teilen gesehene", left, y);
+        label("/ah- und /orders-Preise über einen Preis-Server.", left, y + 11);
+        y += 26;
+        y = toggles(y, new Object[][]{
+            t("Preis im Item-Tooltip", () -> c.worthTooltip, v -> c.worthTooltip = v),
+            t("AH- & Order-Wert oben rechts in der Endertruhe", () -> c.worthOverlay, v -> c.worthOverlay = v),
+            t("Preise aus /ah & /orders lernen", () -> c.worthLearn, v -> c.worthLearn = v),
+            t("Gesehene Preise an den Server senden", () -> c.priceShare, v -> c.priceShare = v),
+        });
+        label("Preis-Server-URL (leer = nur eigene Preise)", left, y);
+        field(left, y + 10, PW, c.priceServer, 200, s -> { c.priceServer = s.trim(); c.save(); });
+        y += 34;
+        int half = (PW - 6) / 2;
+        button(() -> "Jetzt laden", () -> FloonsPrices.refresh(true), left, y, half, 18, true);
+        button(() -> "Wert der Endertruhe", () -> runCommand("/prices ec"), left + half + 6, y, half, 18);
+        y += 25;
+        label(FloonsPrices.statusLine(), left, y);
+    }
+
     private void notes(int y) {
         FloonsConfig c = FloonsConfig.get();
         label("Neue Notiz", left, y);
@@ -1021,6 +1043,7 @@ public class FloonsMenu extends FloonsScreen {
         {"Tools", "/roll 100"}, {"Tools", "/coinflip"}, {"Tools", "/roulette"}, {"Gamble", "/roulette Spieler"}, {"Gamble", "/roulette auto"}, {"Tools", "/calc"}, {"Tools", "/fullbright"}, {"Tools", "/antileak"}, {"Tools", "/antileak send"}, {"Tools", "/antileak test Text"}, {"Tools", "/antileak words a,b"}, {"Tools", "/antileak blocks"}, {"Tools", "/antileak chat"}, {"Tools", "/antileak hud"}, {"Tools", "/glass"}, {"Tools", "/shot"}, {"Tools", "/shot hud"},
         {"Tools", "/stopwatch start"}, {"Tools", "/stopwatch stop"}, {"Tools", "/stopwatch lap"}, {"Tools", "/stopwatch reset"},
         {"Tools", "/timer 60 Name"}, {"Tools", "/timer cancel"},
+        {"Preise", "/prices"}, {"Preise", "/prices hand"}, {"Preise", "/prices ec"}, {"Preise", "/prices refresh"}, {"Preise", "/prices share"}, {"Preise", "/prices server URL"},
         {"Notizen", "/note add Text"}, {"Notizen", "/note list"}, {"Notizen", "/note remove 1"}, {"Notizen", "/note clear"},
         {"Wegpunkte", "/waypoint add Name"}, {"Wegpunkte", "/waypoint add Name 0 64 0"}, {"Wegpunkte", "/waypoint list"},
         {"Wegpunkte", "/waypoint remove Name"}, {"Wegpunkte", "/waypoint clear"},

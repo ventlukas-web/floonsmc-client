@@ -51,6 +51,7 @@ public class FloonsClient implements ClientModInitializer {
         FloonsStreamer.register();
         FloonsTitle.register();
         FloonsChatDrag.register();
+        FloonsPrices.register();
         FloonsTwitch.start();
         HudElementRegistry.replaceElement(VanillaHudElements.SCOREBOARD,
             orig -> (ctx, tick) -> FloonsScoreboard.render(ctx, tick, () -> orig.render(ctx, tick)));
@@ -92,6 +93,7 @@ public class FloonsClient implements ClientModInitializer {
             FloonsStreamer.tick();
             FloonsVisuals.tick(mc);
             FloonsFx.tick(mc);
+            FloonsPrices.tick(mc);
         });
         ClientSendMessageEvents.COMMAND.register(FloonsGamble::onOwnCommand);
         ClientReceiveMessageEvents.GAME.register((msg, overlay) -> { if (!overlay) onChat(msg.getString()); });
@@ -116,6 +118,7 @@ public class FloonsClient implements ClientModInitializer {
             FloonsGamble.register(d);
             FloonsTools.register(d);
             FloonsStreamer.registerCommands(d);
+            FloonsPrices.registerCommands(d);
             FloonsLyricsCmd.register(d);
             FloonsAI.register(d);
             FloonsMusic.register(d);
@@ -278,6 +281,7 @@ public class FloonsClient implements ClientModInitializer {
         FloonsAuction.info("/action buynow <betrag|aus> | reserve <betrag|aus> | queue add <start> <dauer> <item> | queue list|next|remove <nr>|clear");
         FloonsAuction.info("/action test <spieler> <betrag> – Gebot simulieren (kein Geld)");
         FloonsAuction.info("Gamble: /win /lose /payback [spieler|all] · /gamble · /roll · /coinflip · /roulette · /calc");
+        FloonsAuction.info("/prices – WindSMP-Preise (Tooltip + Wert oben rechts in der Endertruhe), /prices server <url>");
         FloonsAuction.info("/floons menu oder Rechte Shift – Mod-Menü  ·  /floons – Einstellungen per Befehl");
     }
 

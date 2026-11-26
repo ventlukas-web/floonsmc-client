@@ -80,6 +80,10 @@ public final class FloonsConfig {
     public boolean payHud = true, notesHud = true, notify = true, satBorder = true;
     // ---------- Ender-Wert (WindSMP-Preise aus /ah und /orders) ----------
     public boolean worthOverlay = true, worthTooltip = true, worthLearn = true;
+    /** WindSMP-Preis-Server (Cloudflare Worker), leer = nur selbst gesehene Preise. */
+    public String priceServer = "";
+    /** gesehene /ah- und /orders-Preise an den Preis-Server senden */
+    public boolean priceShare = true;
     /** "ah" = günstigstes AH-Angebot, "order" = Order-Preis (Sofortverkauf). */
     public String worthMode = "ah";
     /** GUI-Titel, in denen AH-Preise gelernt werden (Orders werden am Wort "Order" erkannt). */
