@@ -86,6 +86,10 @@ public final class FloonsConfig {
     /** Suchbefehle für "Alle Preise suchen"; {item} = Itemname mit _ (z. B. diamond_sword). */
     /** Nach jeder Änderung in der Endertruhe die geänderten Items automatisch in /ah und /orders neu suchen. */
     public boolean worthAutoScan = true;
+    /** Preise, die jünger sind als so viele Minuten, werden bei der Suche übersprungen. */
+    public int worthFreshMin = 30;
+    /** Pause zwischen zwei Suchbefehlen (ms); zu klein kann vom Server als Spam gewertet werden. */
+    public int worthScanGapMs = 350;
     public String worthAhCmd = "ah {item}", worthOrderCmd = "orders {item}";
     public String worthMarketTitle = "(auction|auktion|\\bah\\b|markt|market)";
     public java.util.Map<String, float[]> hudPos = new java.util.HashMap<>();

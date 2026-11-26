@@ -260,6 +260,7 @@ public final class FloonsWorth {
         }
         if (best <= 0) return;
         if (scanning && !baseKey(st).equals(scanBase)) return;
+        if (scanning) scanHit = true;
         double perItem = bestUnit || src == Source.ORDER ? best : best / Math.max(1, st.getCount());
         String k = key(st);
         Price p = prices.computeIfAbsent(k, x -> new Price());
@@ -387,7 +388,8 @@ public final class FloonsWorth {
                 FloonsConfig k = FloonsConfig.get(); k.worthAutoScan = !k.worthAutoScan; k.save();
                 FloonsAuction.info("Ender-Wert: Preise nach jeder EC-Änderung aktualisieren: " + (k.worthAutoScan ? "an" : "aus")); return 1;
             }))
-            .then(ClientCommandManager.literal("scan").executes(c -> { startScan(); return 1; }))
+            .then(ClientCommandManager.literal("scan").executes(c -> { startScan(); return 1; })
+                .then(ClientCommandManager.literal("force").executes(c -> { scanForce = true; startScan(); if (!scanning) scanForce = false; return 1; })))
             .then(ClientCommandManager.literal("stop").executes(c -> { stopScan("Suche abgebrochen."); return 1; }))
             .then(ClientCommandManager.literal("cmd")
                 .then(ClientCommandManager.literal("ah").then(ClientCommandManager.argument("befehl", StringArgumentType.greedyString()).executes(c -> {
@@ -492,7 +494,9 @@ public final class FloonsWorth {
     private static int scanIdx, scanPhase, scanFails; // Phase 0 = AH, 1 = Orders
     private static long scanAt, scanOpenedAt;
     private static boolean scanSent, scanOpen;
-    private static final long OPEN_TIMEOUT = 5000, READ_MS = 1500, GAP_MS = 1100;
+    private static final long OPEN_TIMEOUT = 4000, READ_MAX = 1200, SETTLE_MS = 150;
+    private static boolean scanHit, scanForce;
+    private static long scanHitAt;
 
     public static boolean scanning() { return scanning; }
     public static String scanStatus() { return scanning ? "Suche " + (scanIdx + 1) + "/" + scanList.size() + ": " + scanList.get(Math.min(scanIdx, scanList.size() - 1)).name() + (scanPhase == 0 ? " (AH)" : " (Orders)") : ""; }
@@ -547,9 +551,13 @@ public final class FloonsWorth {
         Target t = scanList.get(scanIdx);
         scanBase = t.base();
         if (!scanSent) {
+            // frisch gesuchte Preise überspringen (spart die meiste Zeit)
+            Price pr = prices.get(t.key());
+            long fresh = Math.max(1, c.worthFreshMin) * 60_000L;
+            if (!scanForce && pr != null && now - (scanPhase == 0 ? pr.ahTime : pr.orderTime) < fresh) { advance(now, 0); return; }
             String cmd = (scanPhase == 0 ? c.worthAhCmd : c.worthOrderCmd).replace("{item}", t.search());
             mc.player.networkHandler.sendChatCommand(cmd);
-            scanSent = true; scanOpen = false; scanOpenedAt = now;
+            scanSent = true; scanOpen = false; scanOpenedAt = now; scanHit = false; scanHitAt = 0;
             return;
         }
         if (mc.currentScreen instanceof HandledScreen<?> hs && !(hs.getScreenHandler().slots.isEmpty())) {
@@ -559,8 +567,14 @@ public final class FloonsWorth {
                 if (slot.inventory instanceof PlayerInventory) continue;
                 learn(slot.getStack(), src);
             }
-            if (now - scanOpenedAt < READ_MS) return;
+            if (scanHit && scanHitAt == 0) scanHitAt = now;
+            // sobald ein Preis da ist, kurz warten bis alle Slots geladen sind, dann sofort weiter
+            if (!(scanHitAt > 0 && now - scanHitAt >= SETTLE_MS) && now - scanOpenedAt < READ_MAX) return;
             mc.player.closeHandledScreen();
+            // auch ohne Treffer merken, dass gesucht wurde (sonst wird ein Item ohne Angebote jedes Mal neu gesucht)
+            Price pr = prices.computeIfAbsent(t.key(), x -> new Price());
+            if (pr.name.isEmpty()) pr.name = t.name();
+            if (scanPhase == 0) pr.ahTime = now; else pr.orderTime = now;
         } else if (now - scanOpenedAt < OPEN_TIMEOUT) {
             return;
         } else if (++scanFails >= 3) {
@@ -568,12 +582,15 @@ public final class FloonsWorth {
                 + " öffnet kein Menü. Anpassen mit /ecworth cmd ah <befehl> bzw. /ecworth cmd order <befehl>");
             return;
         }
-        // nächster Schritt
-        scanSent = false; scanAt = now + GAP_MS;
+        advance(now, Math.max(150, c.worthScanGapMs));
+    }
+
+    private static void advance(long now, long gap) {
+        scanSent = false; scanAt = now + gap;
         if (scanPhase == 0) { scanPhase = 1; return; }
         scanPhase = 0;
         if (++scanIdx >= scanList.size()) {
-            scanning = false; scanBase = null; save();
+            scanning = false; scanBase = null; scanForce = false; save();
             FloonsAuction.info("Ender-Wert: Suche fertig.");
             show();
         }
@@ -581,7 +598,7 @@ public final class FloonsWorth {
 
     private static void help() {
         FloonsAuction.info(Text.literal("/ecworth – Wert der Endertruhe · missing – Items ohne Preis · hand – Wert in der Hand").formatted(Formatting.GRAY));
-        FloonsAuction.info(Text.literal("/ecworth scan – alle EC-Items in /ah und /orders suchen · stop · auto · cmd ah|order <befehl> · set <preis> · del · list · clear").formatted(Formatting.GRAY));
+        FloonsAuction.info(Text.literal("/ecworth scan – EC-Items in /ah und /orders suchen (scan force = auch frische) · stop · auto · cmd ah|order <befehl> · set <preis> · del · list · clear").formatted(Formatting.GRAY));
         FloonsAuction.info(Text.literal("Preise lernt der Client beim Durchblättern von /ah und /orders auf WindSMP.").formatted(Formatting.GRAY));
     }
 
