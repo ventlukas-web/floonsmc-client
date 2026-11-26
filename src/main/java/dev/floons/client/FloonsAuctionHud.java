@@ -58,6 +58,7 @@ public final class FloonsAuctionHud {
         List<Row> rows = new ArrayList<>();
         rows.add(new Row("Höchstgebot", hasBid ? FloonsAuction.fmt(FloonsAuction.best) : FloonsAuction.fmt(FloonsAuction.startBid) + " (Start)", FloonsTheme.GOOD));
         rows.add(new Row("Meistbietender", hasBid ? FloonsAuction.bestName : "–", hasBid ? FloonsTheme.GOOD : FloonsTheme.MUTED));
+        rows.add(new Row("Insgesamt geboten", FloonsAuction.fmt(FloonsAuction.total()) + "  ·  " + FloonsAuction.bids.size() + " Bieter", FloonsTheme.BLUE));
         rows.add(new Row("Nächstes Gebot ab", FloonsAuction.fmt(need), FloonsTheme.TEXT));
         if (FloonsAuction.buyNow > 0) rows.add(new Row("Sofortkauf", FloonsAuction.fmt(FloonsAuction.buyNow), FloonsTheme.BLUE));
         if (FloonsAuction.reserve > 0) {
@@ -73,7 +74,6 @@ public final class FloonsAuctionHud {
         int n = Math.min(3, top.size());
         for (int i = 0; i < n; i++)
             rows.add(new Row((i + 1) + ". " + top.get(i).getKey(), FloonsAuction.fmt(top.get(i).getValue()), i == 0 ? FloonsTheme.GOOD : FloonsTheme.TEXT));
-        rows.add(new Row("Gesamt", FloonsAuction.fmt(FloonsAuction.total()) + "  ·  " + FloonsAuction.bids.size() + " Bieter", FloonsTheme.MUTED));
 
         List<Row> feed = new ArrayList<>();
         if (c.bidFeed) {
