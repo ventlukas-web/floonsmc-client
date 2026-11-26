@@ -209,6 +209,16 @@ public final class FloonsLyrics {
         } catch (Exception e) { return null; }
     }
 
+    /** Kürzt den Text, bis er in der Lyrics-Schrift in maxW passt. */
+    private static net.minecraft.text.Text fit(TextRenderer tr, String s, int maxW, int color, boolean main) {
+        net.minecraft.text.Text t = FloonsSkyLyrics.styled(s, color, main);
+        while (s.length() > 1 && tr.getWidth(t) > maxW) { s = s.substring(0, s.length() - 2) + "…"; t = FloonsSkyLyrics.styled(s, color, main); }
+        return t;
+    }
+
+    /** Was gerade läuft (Windows-Mediensteuerung), nur wenn Sky Lyrics an ist. */
+    public static String[] nowPlaying() { return title.isEmpty() ? null : new String[]{title, artist, String.valueOf(playing)}; }
+
     /** {Kopfzeile, aktuelle Zeile, nächste Zeile, Zeilen-Nummer} oder null, wenn kein Song läuft. */
     public static String[] current() {
         if (title.isEmpty()) return null;
@@ -247,18 +257,21 @@ public final class FloonsLyrics {
         String head = (artist.isEmpty() ? title : artist + " – " + title);
         int sw = mc.getWindow().getScaledWidth();
         int maxW = (int) (sw * 0.55f);
-        head = tr.trimToWidth(head, maxW); cur = tr.trimToWidth(cur, maxW); next = tr.trimToWidth(next, maxW);
+        int c1 = FloonsSkyLyrics.color(cfg.lyricsColor, FloonsTheme.TEXT), c2 = FloonsSkyLyrics.color(cfg.lyricsColor2, FloonsTheme.MUTED);
+        net.minecraft.text.Text tHead = fit(tr, head, maxW, FloonsTheme.lerp(c2, 0xFF8A8A9A, 0.4f), false);
+        net.minecraft.text.Text tCur = fit(tr, cur, maxW, c1, true);
+        net.minecraft.text.Text tNext = next.isEmpty() ? null : fit(tr, next, maxW, c2, false);
         int pad = 8;
-        int w = Math.max(Math.max(tr.getWidth(head), tr.getWidth(cur)), Math.max(tr.getWidth(next), 120));
-        int h = 14 + 12 + (next.isEmpty() ? 0 : 11) + 8;
+        int w = Math.max(Math.max(tr.getWidth(tHead), tr.getWidth(tCur)), Math.max(tNext == null ? 0 : tr.getWidth(tNext), 120));
+        int h = 14 + 12 + (tNext == null ? 0 : 11) + 8;
         float[] pos0 = FloonsHud.place("lyrics", (sw - (w + pad * 2) * cfg.hudScale) / 2f, 6, (w + pad * 2) * cfg.hudScale, h * cfg.hudScale, mc);
         ctx.getMatrices().pushMatrix();
         ctx.getMatrices().translate(pos0[0], pos0[1]);
         ctx.getMatrices().scale(cfg.hudScale, cfg.hudScale);
         FloonsTheme.panel(ctx, 0, 0, w + pad * 2, h);
-        ctx.drawTextWithShadow(tr, head, pad + (w - tr.getWidth(head)) / 2, 5, FloonsTheme.MUTED);
-        ctx.drawTextWithShadow(tr, cur, pad + (w - tr.getWidth(cur)) / 2, 18, FloonsTheme.TEXT);
-        if (!next.isEmpty()) ctx.drawTextWithShadow(tr, next, pad + (w - tr.getWidth(next)) / 2, 30, FloonsTheme.alpha(FloonsTheme.MUTED, 0xA0));
+        ctx.drawTextWithShadow(tr, tHead, pad + (w - tr.getWidth(tHead)) / 2, 5, 0xFFFFFFFF);
+        ctx.drawTextWithShadow(tr, tCur, pad + (w - tr.getWidth(tCur)) / 2, 18, 0xFFFFFFFF);
+        if (tNext != null) ctx.drawTextWithShadow(tr, tNext, pad + (w - tr.getWidth(tNext)) / 2, 30, 0xFFFFFFFF);
         ctx.getMatrices().popMatrix();
     }
 }

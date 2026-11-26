@@ -30,7 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Floons Client – WindSMP-Mod. Bewusst OHNE Auto-Update (Verbindungen nur, wenn eingeschaltet/benutzt: Twitch-Chat, Sky Lyrics, Floons AI):
+ * Floons Client – WindSMP-Mod. Bewusst OHNE Auto-Update (Verbindungen nur, wenn eingeschaltet/benutzt: Twitch-Chat, Sky Lyrics, Floons AI, Musik):
  * neue Versionen kommen nur, wenn du die .jar selbst austauschst.
  */
 public class FloonsClient implements ClientModInitializer {
@@ -118,6 +118,7 @@ public class FloonsClient implements ClientModInitializer {
             FloonsStreamer.registerCommands(d);
             FloonsLyricsCmd.register(d);
             FloonsAI.register(d);
+            FloonsMusic.register(d);
         });
     }
 

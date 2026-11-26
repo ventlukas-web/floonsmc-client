@@ -116,6 +116,13 @@ public final class FloonsConfig {
     /** Lyrics so viele ms früher zeigen (gleicht Anzeige-Verzögerung aus), negativ = später */
     public int lyricsOffsetMs = 250;
     public double lyricsBX, lyricsBY = -1000, lyricsBZ;
+    /** Sky-Lyrics-Schrift: "clean" (Poppins), "bold" (Poppins Bold), "vanilla" (Minecraft) */
+    public String lyricsFont = "clean";
+    /** Farben: aktuelle Zeile, nächste Zeile (Kopfzeile wird daraus abgeleitet) */
+    public String lyricsColor = "#E6F0FF", lyricsColor2 = "#8CC8FF";
+    /** Musik: "spotify" oder "system" (Apple Music und andere Player über Windows-Medientasten) */
+    public String musicSource = "spotify";
+    public String spotifyClientId = "", spotifyRefresh = "";
     /** Floons AI (Claude API): eigener Key, Modell */
     public String aiKey = "";
     public String aiModel = "claude-haiku-5-5";

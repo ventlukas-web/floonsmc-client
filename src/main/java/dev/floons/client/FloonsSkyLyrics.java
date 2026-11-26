@@ -72,19 +72,42 @@ public final class FloonsSkyLyrics {
         float t = Math.min(1f, (System.currentTimeMillis() - lineAt) / 220f);
         int alpha = (int) (64 + 191 * t);
 
-        cur = show(cur, ID_CUR, l[1], 0xFFE6F0FF, sCur * (0.92f + 0.08f * t), alpha, base, true);
-        if (c.lyricsNext && !l[2].isEmpty()) next = show(next, ID_NEXT, l[2], 0xFF8CC8FF, sNext, 150, base.add(0, -(sCur * lh + sNext * 0.1), 0), false);
+        int c1 = color(c.lyricsColor, 0xFFE6F0FF), c2 = color(c.lyricsColor2, 0xFF8CC8FF);
+        int c3 = FloonsTheme.lerp(c2, 0xFF8A8A9A, 0.4f);
+        cur = show(cur, ID_CUR, l[1], c1, sCur * (0.92f + 0.08f * t), alpha, base, true);
+        if (c.lyricsNext && !l[2].isEmpty()) next = show(next, ID_NEXT, l[2], c2, sNext, 150, base.add(0, -(sCur * lh + sNext * 0.1), 0), false);
         else next = remove(next);
-        head = show(head, ID_HEAD, l[0], 0xFF8CA4C8, sHead, 140, base.add(0, sCur * lh + sHead * 0.05, 0), false);
+        head = show(head, ID_HEAD, l[0], c3, sHead, 140, base.add(0, sCur * lh + sHead * 0.05, 0), false);
     }
 
     private static int parse(String s) { try { return Integer.parseInt(s); } catch (Exception e) { return -1; } }
+
+    /** Schriftarten für Sky Lyrics: vanilla, clean (Poppins), bold (Poppins Bold). */
+    public static final String[] FONTS = {"clean", "bold", "vanilla"};
+
+    public static String fontName(String f) {
+        return switch (f) { case "bold" -> "Clean Bold"; case "vanilla" -> "Minecraft"; default -> "Clean"; };
+    }
+
+    static int color(String hex, int def) { Integer v = FloonsTheme.parseHex(hex); return v != null ? v : def; }
+
+    /** Text in der gewählten Lyrics-Schrift und Farbe. */
+    public static Text styled(String text, int color, boolean main) {
+        String f = FloonsConfig.get().lyricsFont;
+        net.minecraft.text.Style st = net.minecraft.text.Style.EMPTY.withColor(color & 0xFFFFFF);
+        if ("vanilla".equals(f)) st = st.withBold(main);
+        else {
+            String id = "bold".equals(f) ? "lyrics_bold" : main ? "lyrics_medium" : "lyrics_clean";
+            st = st.withFont(new net.minecraft.text.StyleSpriteSource.Font(net.minecraft.util.Identifier.of("floonsclient", id)));
+        }
+        return Text.literal(text).setStyle(st);
+    }
 
     private static DisplayEntity.TextDisplayEntity show(DisplayEntity.TextDisplayEntity e, int id, String text, int color, float scale, int alpha,
                                                         Vec3d pos, boolean main) {
         MinecraftClient mc = MinecraftClient.getInstance();
         ClientWorld w = mc.world;
-        String key = text + "|" + Math.round(scale * 50) + "|" + (alpha >> 4);
+        String key = text + "|" + Math.round(scale * 50) + "|" + (alpha >> 4) + "|" + color + "|" + FloonsConfig.get().lyricsFont;
         boolean fresh = e == null || e.isRemoved() || e.getEntityWorld() != w;
         if (fresh) {
             e = new DisplayEntity.TextDisplayEntity(EntityType.TEXT_DISPLAY, w);
@@ -109,7 +132,7 @@ public final class FloonsSkyLyrics {
         try {
             MinecraftClient mc = MinecraftClient.getInstance();
             NbtCompound n = new NbtCompound();
-            Text tx = Text.literal(text).styled(s -> s.withColor(color & 0xFFFFFF).withBold(main));
+            Text tx = styled(text, color, main);
             n.put("text", TextCodecs.CODEC.encodeStart(NbtOps.INSTANCE, tx).getOrThrow());
             n.putString("billboard", "center");
             n.putInt("line_width", 1000);

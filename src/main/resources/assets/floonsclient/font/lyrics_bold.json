@@ -1,0 +1,5 @@
+{
+  "providers": [
+    { "type": "ttf", "file": "floonsclient:poppins-bold.ttf", "size": 9.0, "oversample": 16.0, "shift": [0, 0.5] }
+  ]
+}

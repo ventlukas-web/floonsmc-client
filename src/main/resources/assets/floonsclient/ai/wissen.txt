@@ -11,7 +11,7 @@ Mod-Menü
 - Auktion: Auktion und Einstellungen.
 - Visuals: HUD, Mehr HUDs, Sky Lyrics, PvP-Anzeigen, Extras (Fullbright, NoFog, Auto-Sprint, Zoom mit C), Effekte, Anti-Leak, Crosshair, Scoreboard, Eigenes HUD. HUDs lassen sich verschieben (auch im offenen Chat ziehen).
 - Streamer: Twitch-Chat, Giveaway, Auktion, Streamer & Werbung.
-- Tools: Tools (Timer, Rechner mit Taste J), Wegpunkte, Notizen, KI (diese KI).
+- Tools: Musik, Tools (Timer, Rechner mit Taste J), Wegpunkte, Notizen, KI (diese KI).
 - Server: Server-Name und IP für den Beitreten-Button.
 - Commands: Liste aller Befehle.
 - Unten rechts gibt es Info-Pillen.
@@ -30,7 +30,15 @@ Sky Lyrics
 - Zeigt den synchronen Songtext des gerade laufenden Songs. Funktioniert unter Windows mit allem, was in der Windows-Mediensteuerung läuft (z. B. Spotify, Apple Music, Browser). Texte kommen von LRCLIB.
 - Modi: im Himmel, vor dir, an einer festen Stelle oder als HUD-Kasten. Nur für dich sichtbar.
 - Befehle: /lyrics (an/aus), /lyrics sky, /lyrics front, /lyrics hud, /lyrics here, /lyrics size 1.5, /lyrics offset 250.
-- Im Mod-Menü unter Visuals > Sky Lyrics.
+- Schrift wählbar: Clean (Poppins), Clean Bold, Minecraft. Farben für aktuelle und nächste Zeile frei wählbar (#RRGGBB oder Vorlagen: Client, Weiß, Gold, Pink, Lila, Grün).
+- Befehle dazu: /lyrics font clean|bold|vanilla, /lyrics color #RRGGBB [#RRGGBB].
+- Alle Einstellungen im Mod-Menü unter Visuals > Sky Lyrics.
+
+Musik
+- Mod-Menü Tools > Musik oder /music. Die Musik läuft weiter in Spotify bzw. Apple Music, der Client steuert nur.
+- Spotify: einmal eine eigene Spotify-App auf developer.spotify.com anlegen, Client-ID eintragen, Redirect URI http://127.0.0.1:43821/callback eintragen, dann "Mit Spotify verbinden". Danach: eigene Playlists importieren, Lied auswählen, Play/Pause, Weiter, Zurück, Lautstärke. Steuern braucht Spotify Premium; pro Spotify-App höchstens 5 freigeschaltete Spieler.
+- Apple Music und andere Player (Windows): Play/Pause, Weiter, Zurück und Windows-Lautstärke über die Medientasten. Playlists importieren geht bei Apple Music nicht.
+- Befehle: /music, /music play, /music pause, /music next, /music prev, /music vol 0-100 (nur Spotify).
 
 Nicht im Floons Client
 - Kein Auto-Update, kein Endertruhen-Wert.

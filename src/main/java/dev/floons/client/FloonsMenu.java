@@ -26,7 +26,7 @@ public class FloonsMenu extends FloonsScreen {
         {"Auktion", "Einstellungen"},
         {"HUD", "Mehr HUDs", "Sky Lyrics", "PvP-Anzeigen", "Extras", "Effekte", "Anti-Leak", "Crosshair", "Scoreboard", "Eigenes HUD"},
         {"Twitch-Chat", "Giveaway", "Auktion", "Streamer & Werbung"},
-        {"Tools", "Wegpunkte", "Notizen", "KI"},
+        {"Musik", "Tools", "Wegpunkte", "Notizen", "KI"},
         {"Server"},
         {"Commands"}
     };
@@ -133,6 +133,7 @@ public class FloonsMenu extends FloonsScreen {
             button(() -> ">", () -> { page[tab] = pg + 1; rebuild(); }, left + PW - 24, y, 24, 16);
             y += 22;
         }
+        onMusic = false;
         switch (ps[pg]) {
             case "Design" -> design(y);
             case "FPS" -> fps(y);
@@ -146,6 +147,7 @@ public class FloonsMenu extends FloonsScreen {
             case "Mehr HUDs" -> moreHud(y);
             case "Sky Lyrics" -> skyLyrics(y);
             case "KI" -> aiPage(y);
+            case "Musik" -> musicPage(y);
             case "PvP-Anzeigen" -> pvp(y);
             case "Extras" -> extras(y);
             case "Anti-Leak" -> antiLeak(y);
@@ -813,13 +815,17 @@ public class FloonsMenu extends FloonsScreen {
     }
 
     // ---------- Sky Lyrics ----------
+    private static final String[][] LYRIC_COLORS = {
+        {"Client", "#E6F0FF", "#8CC8FF"}, {"Weiß", "#FFFFFF", "#C8C8C8"}, {"Gold", "#FFE9A8", "#F5B942"},
+        {"Pink", "#FFD6EC", "#FF7AC2"}, {"Lila", "#F3E6FF", "#B89CFF"}, {"Grün", "#E3FFE9", "#6EE7A0"}};
+
     private void skyLyrics(int y) {
         FloonsConfig c = FloonsConfig.get();
         int half = (PW - 6) / 2;
         toggle("Sky Lyrics", () -> c.lyricsHud, v -> { c.lyricsHud = v; if (!v) FloonsSkyLyrics.clear(); }, left, y, half);
         toggle("Nächste Zeile", () -> c.lyricsNext, v -> c.lyricsNext = v, left + half + 6, y, half);
         y += 21;
-        button(() -> "Lyrics: " + FloonsLyricsCmd.modeName(c.lyricsMode), () -> {
+        button(() -> "Ort: " + FloonsLyricsCmd.modeName(c.lyricsMode), () -> {
             String[] m = {"sky", "front", "block", "hud"};
             int k = 0; for (int q = 0; q < m.length; q++) if (m[q].equals(c.lyricsMode)) k = q;
             c.lyricsMode = m[(k + 1) % m.length]; c.save(); FloonsSkyLyrics.clear();
@@ -828,14 +834,136 @@ public class FloonsMenu extends FloonsScreen {
             c.lyricsSize = c.lyricsSize >= 2.0f ? 0.5f : c.lyricsSize + 0.25f; c.save(); FloonsSkyLyrics.clear();
         }, left + half + 6, y, half, 18);
         y += 21;
+        button(() -> "Schrift: " + FloonsSkyLyrics.fontName(c.lyricsFont), () -> {
+            int k = 0; for (int q = 0; q < FloonsSkyLyrics.FONTS.length; q++) if (FloonsSkyLyrics.FONTS[q].equals(c.lyricsFont)) k = q;
+            c.lyricsFont = FloonsSkyLyrics.FONTS[(k + 1) % FloonsSkyLyrics.FONTS.length]; c.save();
+        }, left, y, half, 18, true);
+        button(() -> "Farb-Vorlage: " + lyricPreset(c), () -> {
+            int k = -1; for (int q = 0; q < LYRIC_COLORS.length; q++) if (LYRIC_COLORS[q][1].equalsIgnoreCase(c.lyricsColor)) k = q;
+            String[] p = LYRIC_COLORS[(k + 1) % LYRIC_COLORS.length];
+            c.lyricsColor = p[1]; c.lyricsColor2 = p[2]; c.save(); rebuild();
+        }, left + half + 6, y, half, 18);
+        y += 23;
+        label("Farbe Zeile (#RRGGBB)", left, y);
+        label("Farbe nächste Zeile", left + half + 6, y);
+        field(left, y + 10, half, c.lyricsColor, 7, v -> { Integer h = FloonsTheme.parseHex(v); if (h != null) { c.lyricsColor = FloonsTheme.toHex(h); c.save(); } });
+        field(left + half + 6, y + 10, half, c.lyricsColor2, 7, v -> { Integer h = FloonsTheme.parseHex(v); if (h != null) { c.lyricsColor2 = FloonsTheme.toHex(h); c.save(); } });
+        y += 33;
         button(() -> "Hier festmachen", () -> { c.lyricsHud = true; FloonsAuction.info(FloonsSkyLyrics.here()); }, left, y, half, 18);
         cycleLong("Versatz", new long[]{-500, -250, 0, 250, 500, 750},
             () -> (long) c.lyricsOffsetMs, v -> c.lyricsOffsetMs = (int) (long) v, v -> (v > 0 ? "+" : "") + v + " ms", left + half + 6, y, half);
-        y += 27;
-        label("Songtext des laufenden Songs (Spotify, Apple Music, Browser ...)", left, y);
-        label("schwebt im Himmel, vor dir oder an einer festen Stelle.", left, y + 11);
-        label("Nur Windows, nur für dich sichtbar. Texte von LRCLIB.", left, y + 22);
-        label("Befehle: /lyrics, /lyrics sky|front|hud|here, /lyrics size 1.5", left, y + 39);
+        y += 25;
+        label("Songtext des laufenden Songs (Spotify, Apple Music, Browser ...), nur Windows.", left, y);
+        label("Clean = Poppins (glatt), Clean Bold = Poppins fett, Minecraft = Vanilla.", left, y + 11);
+        label("/lyrics, /lyrics sky|front|hud|here, /lyrics font clean, /lyrics color #FFFFFF", left, y + 22);
+    }
+
+    private static String lyricPreset(FloonsConfig c) {
+        for (String[] p : LYRIC_COLORS) if (p[1].equalsIgnoreCase(c.lyricsColor) && p[2].equalsIgnoreCase(c.lyricsColor2)) return p[0];
+        return "Eigene";
+    }
+
+    // ---------- Musik ----------
+    private static int musicPg = 0;
+    private int shownP = -1, shownT = -1;
+    private String shownOpen = null;
+    private boolean onMusic = false;
+
+    /** /music: Menü direkt auf Tools > Musik öffnen. */
+    static void openMusicTab() {
+        for (int i = 0; i < TABS.length; i++) if (TABS[i].equals("Tools")) { tab = i; page[i] = 0; }
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (onMusic && (FloonsMusic.playlists.size() != shownP || FloonsMusic.tracks.size() != shownT
+            || !java.util.Objects.equals(FloonsMusic.openPlaylist, shownOpen))) rebuild();
+    }
+
+    private void musicPage(int y) {
+        FloonsConfig c = FloonsConfig.get();
+        int half = (PW - 6) / 2;
+        boolean sp = FloonsMusic.spotify();
+        onMusic = true;
+        shownP = FloonsMusic.playlists.size(); shownT = FloonsMusic.tracks.size(); shownOpen = FloonsMusic.openPlaylist;
+        button(() -> "Quelle: " + (FloonsMusic.spotify() ? "Spotify" : "Apple Music & andere"), () -> {
+            c.musicSource = FloonsMusic.spotify() ? "system" : "spotify"; c.save(); musicPg = 0; rebuild();
+        }, left, y, half, 18, true);
+        button(() -> FloonsMusic.status.isEmpty() ? "Status: bereit" : FloonsMusic.status, () -> {}, left + half + 6, y, half, 18);
+        y += 21;
+        button(() -> {
+            String t = FloonsMusic.nowTitle, a = FloonsMusic.nowArtist;
+            if (!FloonsMusic.spotify()) { String[] np = FloonsLyrics.nowPlaying(); if (np != null) { t = np[0]; a = np[1]; } }
+            return t.isEmpty() ? "Läuft gerade: nichts" : "Läuft: " + (a.isEmpty() ? t : a + " – " + t);
+        }, FloonsMusic::refresh, left, y, PW, 18);
+        y += 21;
+        int bw = (PW - 16) / 5;
+        button(() -> "Zurück", FloonsMusic::prev, left, y, bw, 18);
+        button(() -> FloonsMusic.playing ? "Pause" : "Play", FloonsMusic::toggle, left + (bw + 4), y, bw, 18, true);
+        button(() -> "Weiter", FloonsMusic::next, left + 2 * (bw + 4), y, bw, 18);
+        button(() -> "Leiser", () -> FloonsMusic.volume(-10), left + 3 * (bw + 4), y, bw, 18);
+        button(() -> "Lauter", () -> FloonsMusic.volume(10), left + 4 * (bw + 4), y, bw, 18);
+        y += 22;
+        if (sp && FloonsMusic.volume >= 0) { label("Spotify-Lautstärke: " + FloonsMusic.volume + " %   (/music vol 0-100)", left, y); y += 12; }
+        if (!sp) {
+            label("Apple Music, Browser usw. werden über die Windows-Medientasten", left, y);
+            label("gesteuert. Leiser/Lauter ändert die Windows-Lautstärke.", left, y + 11);
+            label("Playlists importieren geht nur mit Spotify (Apple sperrt das).", left, y + 22);
+            label("Titel-Anzeige: Sky Lyrics einschalten.", left, y + 33);
+            return;
+        }
+        if (!FloonsMusic.loggedIn()) {
+            label("Client-ID deiner Spotify-App (developer.spotify.com)", left, y);
+            field(left, y + 10, PW, c.spotifyClientId, 64, v -> { c.spotifyClientId = v.trim(); c.save(); });
+            y += 32;
+            button(() -> "Mit Spotify verbinden", FloonsMusic::login, left, y, PW, 18, true);
+            y += 23;
+            label("In der Spotify-App als Redirect URI eintragen:", left, y);
+            labels.add(new Label(FloonsMusic.REDIRECT, left, y + 11, FloonsTheme.TEXT));
+            label("Steuern braucht Spotify Premium. Bis zu 5 Spieler pro App.", left, y + 24);
+            return;
+        }
+        int per = 4;
+        if (FloonsMusic.openPlaylist == null) {
+            java.util.List<String[]> pl = FloonsMusic.playlists;
+            int pages = Math.max(1, (pl.size() + per - 1) / per);
+            musicPg = Math.floorMod(musicPg, pages);
+            for (int i = musicPg * per; i < Math.min(pl.size(), musicPg * per + per); i++) {
+                String[] p = pl.get(i);
+                button(() -> p[1] + "  ·  " + p[2] + " Lieder", () -> { musicPg = 0; FloonsMusic.openPlaylist(p[0], p[1]); }, left, y, PW - 64, 18);
+                button(() -> "Play", () -> FloonsMusic.play(p[0], 0), left + PW - 60, y, 60, 18, true);
+                y += 20;
+            }
+            if (pl.isEmpty()) { label("Noch keine Playlists geladen.", left, y + 5); y += 20; }
+            y += 2;
+            int tw = (PW - 12) / 4;
+            button(() -> "<", () -> { musicPg--; rebuild(); }, left, y, tw, 18);
+            button(() -> (musicPg + 1) + "/" + pages, () -> {}, left + tw + 4, y, tw, 18);
+            button(() -> ">", () -> { musicPg++; rebuild(); }, left + 2 * (tw + 4), y, tw, 18);
+            button(() -> "Neu laden", FloonsMusic::loadPlaylists, left + 3 * (tw + 4), y, tw, 18);
+            y += 21;
+            button(() -> "Von Spotify abmelden", () -> { FloonsMusic.logout(); rebuild(); }, left, y, PW, 18);
+        } else {
+            java.util.List<String[]> tl = FloonsMusic.tracks;
+            String pid = FloonsMusic.openPlaylist;
+            button(() -> "Zurück: " + FloonsMusic.openPlaylistName, () -> { musicPg = 0; FloonsMusic.closePlaylist(); }, left, y, 196, 18);
+            button(() -> "Alles abspielen", () -> FloonsMusic.play(pid, 0), left + 200, y, PW - 200, 18, true);
+            y += 21;
+            int pages = Math.max(1, (tl.size() + per - 1) / per);
+            musicPg = Math.floorMod(musicPg, pages);
+            for (int i = musicPg * per; i < Math.min(tl.size(), musicPg * per + per); i++) {
+                String[] t = tl.get(i); int idx = i;
+                button(() -> (idx + 1) + ". " + t[0] + (t[1].isEmpty() ? "" : "  ·  " + t[1]), () -> FloonsMusic.play(pid, idx), left, y, PW, 18);
+                y += 20;
+            }
+            if (tl.isEmpty()) { label("Lieder werden geladen …", left, y + 5); y += 20; }
+            y += 2;
+            int tw = (PW - 8) / 3;
+            button(() -> "<", () -> { musicPg--; rebuild(); }, left, y, tw, 18);
+            button(() -> (musicPg + 1) + "/" + pages, () -> {}, left + tw + 4, y, tw, 18);
+            button(() -> ">", () -> { musicPg++; rebuild(); }, left + 2 * (tw + 4), y, tw, 18);
+        }
     }
 
     // ---------- KI ----------
@@ -869,7 +997,8 @@ public class FloonsMenu extends FloonsScreen {
     // ---------- Commands ----------
     static final String[][] CMDS = {
         {"KI", "/ai Frage"}, {"KI", "/ki Frage"}, {"KI", "/ai reset"}, {"KI", "/ai key <key>"}, {"KI", "/ai model claude-haiku-5-5"},
-        {"Sky Lyrics", "/lyrics"}, {"Sky Lyrics", "/lyrics sky"}, {"Sky Lyrics", "/lyrics front"}, {"Sky Lyrics", "/lyrics hud"}, {"Sky Lyrics", "/lyrics here"}, {"Sky Lyrics", "/lyrics size 1.5"}, {"Sky Lyrics", "/lyrics offset 250"},
+        {"Sky Lyrics", "/lyrics"}, {"Sky Lyrics", "/lyrics sky"}, {"Sky Lyrics", "/lyrics front"}, {"Sky Lyrics", "/lyrics hud"}, {"Sky Lyrics", "/lyrics here"}, {"Sky Lyrics", "/lyrics size 1.5"}, {"Sky Lyrics", "/lyrics offset 250"}, {"Sky Lyrics", "/lyrics font clean"}, {"Sky Lyrics", "/lyrics color #FFFFFF"},
+        {"Musik", "/music"}, {"Musik", "/music play"}, {"Musik", "/music pause"}, {"Musik", "/music next"}, {"Musik", "/music prev"}, {"Musik", "/music vol 50"},
         {"Gamble", "/win"}, {"Gamble", "/win Spieler"}, {"Gamble", "/win Spieler 3"}, {"Gamble", "/win all"},
         {"Gamble", "/lose"}, {"Gamble", "/lose Spieler"}, {"Gamble", "/lose all"},
         {"Gamble", "/payback"}, {"Gamble", "/payback Spieler"}, {"Gamble", "/payback all"},
