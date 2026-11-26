@@ -37,7 +37,7 @@ public final class FloonsGiveawayHud {
             FloonsTheme.gradientText(ctx, tr, "GIVEAWAY", pad + 14, pad + 1);
             ctx.drawTextWithShadow(tr, "Vorschau – ziehen zum Verschieben", pad, pad + 22, FloonsTheme.MUTED);
             ctx.getMatrices().popMatrix();
-        }
+        } else FloonsHud.BOUNDS.remove("giveaway");
         if (FloonsStreamer.drawing()) wheel(ctx, tr, mc);
     }
 

@@ -34,7 +34,7 @@ public final class FloonsAuctionHud {
             if (c.bigCountdown) bigCountdown(ctx, tr, mc);
         } else if (!FloonsAuction.queue.isEmpty()) {
             queueCard(ctx, tr, mc, c);
-        }
+        } else FloonsHud.BOUNDS.remove("auction");
     }
 
     private static float[] defaultPos(MinecraftClient mc, FloonsConfig c, float fw, float fh) {

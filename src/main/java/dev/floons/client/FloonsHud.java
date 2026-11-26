@@ -65,9 +65,11 @@ public class FloonsHud {
 
     public static void render(DrawContext ctx, RenderTickCounter tick) {
         MinecraftClient mc = MinecraftClient.getInstance();
-        float[] sbb = BOUNDS.get("scoreboard");
+        // Elemente mit eigenem Render-Durchlauf (Scoreboard, Auktion, Giveaway) behalten ihre Fläche, sonst sind sie nicht verschiebbar
+        java.util.Map<String, float[]> keep = new java.util.HashMap<>();
+        for (String k : new String[]{"scoreboard", "auction", "giveaway"}) { float[] b = BOUNDS.get(k); if (b != null) keep.put(k, b); }
         BOUNDS.clear();
-        if (sbb != null) BOUNDS.put("scoreboard", sbb);
+        BOUNDS.putAll(keep);
         if (mc.options.hudHidden) return;
         if (FloonsClient.hideHud() || FloonsClient.off()) return;
         FloonsConfig cfg = FloonsConfig.get();
