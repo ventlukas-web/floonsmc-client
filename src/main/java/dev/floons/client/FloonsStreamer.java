@@ -305,10 +305,10 @@ public final class FloonsStreamer {
             .executes(c -> { status(); return 1; })
             .then(ClientCommandManager.literal("start")
                 .then(ClientCommandManager.argument("dauer", StringArgumentType.word())
-                    .then(ClientCommandManager.argument("preis", StringArgumentType.greedyString()).executes(c -> {
+                    .then(ClientCommandManager.argument("gewinn", StringArgumentType.greedyString()).executes(c -> {
                         int sec = FloonsAuction.parseDuration(StringArgumentType.getString(c, "dauer"));
                         if (sec < 0) return ok("Dauer ungültig (z. B. 60, 90s, 2m).");
-                        return ok(start(sec, StringArgumentType.getString(c, "preis")));
+                        return ok(start(sec, StringArgumentType.getString(c, "gewinn")));
                     }))))
             .then(ClientCommandManager.literal("end").executes(c -> ok(draw())))
             .then(ClientCommandManager.literal("cancel").executes(c -> ok(cancel())))
@@ -376,7 +376,7 @@ public final class FloonsStreamer {
     }
 
     private static void status() {
-        if (!gwOn) { FloonsGamble.chat("Kein Giveaway aktiv. /giveaway start <dauer> <preis>"); return; }
+        if (!gwOn) { FloonsGamble.chat("Kein Giveaway aktiv. /giveaway start <dauer> <gewinn>"); return; }
         FloonsGamble.chat(prize + " | noch " + FloonsAuction.mmss(left()) + " | " + entrants.size() + " Teilnehmer | " + howTo());
     }
 }

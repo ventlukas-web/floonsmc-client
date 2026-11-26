@@ -8,7 +8,7 @@ import net.minecraft.client.render.RenderTickCounter;
 import java.util.List;
 
 /**
- * Giveaway-HUD: Karte mit Logo, Preis, Zeitbalken, großer Teilnehmerzahl, Stichwort und Live-Beitritten.
+ * Giveaway-HUD: Karte mit Logo, Gewinn, Zeitbalken, großer Teilnehmerzahl, Stichwort und Live-Beitritten.
  * Beim Ziehen laufen die Namen wie ein Glücksrad durch (Mitte oben), danach wird der Gewinner gezeigt.
  */
 public final class FloonsGiveawayHud {

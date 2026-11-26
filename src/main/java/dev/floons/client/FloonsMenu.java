@@ -480,7 +480,7 @@ public class FloonsMenu extends FloonsScreen {
         int half = (PW - 6) / 2, x2 = left + half + 6;
         if (!FloonsStreamer.gwOn) {
             y += 0;
-            label("Preis", left, y); label("Dauer", left + PW - 90, y);
+            label("Gewinn (was verlost wird)", left, y); label("Dauer", left + PW - 90, y);
             field(left, y + 10, PW - 96, gPrize, 60, s -> gPrize = s);
             field(left + PW - 90, y + 10, 90, gDur, 8, s -> gDur = s);
             y += 34;
@@ -498,7 +498,7 @@ public class FloonsMenu extends FloonsScreen {
         if (!FloonsStreamer.gwOn) {
             button(() -> "Giveaway starten", () -> {
                 int sec = FloonsAuction.parseDuration(gDur);
-                if (gPrize.isBlank()) { FloonsGamble.chat("Erst einen Preis eintragen."); return; }
+                if (gPrize.isBlank()) { FloonsGamble.chat("Erst eintragen, was verlost wird."); return; }
                 if (sec < 5) { FloonsGamble.chat("Dauer ungültig (mindestens 5 Sekunden, z. B. 60, 2m)."); return; }
                 msg(FloonsStreamer.start(sec, gPrize.trim())); rebuild();
             }, left, y, half, 18, true);
@@ -818,7 +818,7 @@ public class FloonsMenu extends FloonsScreen {
         {"Auktion", "/action status"}, {"Auktion", "/action refund"}, {"Auktion", "/action history"}, {"Auktion", "/action test Spieler 1k"},
         {"Auktion", "/action reset"}, {"Auktion", "/action reset bids"}, {"Auktion", "/action reset Spieler"}, {"Auktion", "/action pause"}, {"Auktion", "/action resume"}, {"Auktion", "/action buynow 5m"}, {"Auktion", "/action reserve 1m"}, {"Auktion", "/action stats"},
         {"Auktion", "/action queue add 500k 2m Item"}, {"Auktion", "/action queue list"}, {"Auktion", "/action queue next"}, {"Auktion", "/action queue remove 1"}, {"Auktion", "/action queue clear"},
-        {"Streamer", "/giveaway start 60 Preis"}, {"Streamer", "/giveaway end"}, {"Streamer", "/giveaway cancel"}, {"Streamer", "/giveaway reroll"},
+        {"Streamer", "/giveaway start 60 Gewinn"}, {"Streamer", "/giveaway end"}, {"Streamer", "/giveaway cancel"}, {"Streamer", "/giveaway reroll"},
         {"Streamer", "/giveaway list"}, {"Streamer", "/giveaway keyword join"}, {"Streamer", "/giveaway winners 1"}, {"Streamer", "/giveaway twitch"}, {"Streamer", "/giveaway debug"}, {"Streamer", "/giveaway anymsg"}, {"Streamer", "/giveaway reply"}, {"Streamer", "/giveaway public"}, {"Streamer", "/giveaway add Spieler"},
         {"Streamer", "/twitch Kanal"}, {"Streamer", "/twitch off"}, {"Streamer", "/werbung"},
         {"Einstellungen", "/floons autoqueue"}, {"Einstellungen", "/floons bigcountdown"}, {"Einstellungen", "/floons feed"},
