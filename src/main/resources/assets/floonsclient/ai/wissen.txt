@@ -1,0 +1,36 @@
+Floons Client
+- Eigener Fabric-Client für Minecraft 1.21.11, gemacht für den Server WindSMP. Logo ist der Spielerkopf von Floons (blauer Skin), zu sehen bei jedem Wasserzeichen.
+- Design: dunkel, sattes Blau, Buttons fast schwarz. Farben unter General > Design änderbar.
+- Aktualisiert sich NICHT automatisch; neue Versionen gibt es über das GitHub-Repo (Jar selbst austauschen).
+- Im Hauptmenü gibt es einen Beitreten-Button und unten rechts einen Link zum TikTok @floonsmc.
+
+Mod-Menü
+- Öffnen mit /floons menu oder der rechten Shift-Taste. Seiten mit < und > durchblättern.
+- General: Design, FPS.
+- Gamble: Win, Lose, Payback, Multiplikator, Auto-Pay, Min/Max-Einsatz, Verlust-Limit.
+- Auktion: Auktion und Einstellungen.
+- Visuals: HUD, Mehr HUDs, Sky Lyrics, PvP-Anzeigen, Extras (Fullbright, NoFog, Auto-Sprint, Zoom mit C), Effekte, Anti-Leak, Crosshair, Scoreboard, Eigenes HUD. HUDs lassen sich verschieben (auch im offenen Chat ziehen).
+- Streamer: Twitch-Chat, Giveaway, Auktion, Streamer & Werbung.
+- Tools: Tools (Timer, Rechner mit Taste J), Wegpunkte, Notizen, KI (diese KI).
+- Server: Server-Name und IP für den Beitreten-Button.
+- Commands: Liste aller Befehle.
+- Unten rechts gibt es Info-Pillen.
+
+Auktion
+- Starten mit /action, /auction oder /floons auction.
+- Gebote sind Zahlungen an den Auktionator; die Zahlungen werden automatisch erkannt.
+- Sofortkauf und Mindestpreis im Menü einstellbar. Das Item kann aus der Hand, dem Inventar oder per Name gewählt werden.
+- Anti-Snipe (an/aus): Kommt in den letzten 10 Sekunden ein höheres Gebot, springt die Zeit wieder auf 15 Sekunden.
+
+Giveaway
+- Teilnahme ohne Geld: Spieler schreiben dem Host eine /msg, die automatisch erkannt wird (mit HUD).
+- Gezogen wird per drehendem Glücksrad ingame.
+
+Sky Lyrics
+- Zeigt den synchronen Songtext des gerade laufenden Songs. Funktioniert unter Windows mit allem, was in der Windows-Mediensteuerung läuft (z. B. Spotify, Apple Music, Browser). Texte kommen von LRCLIB.
+- Modi: im Himmel, vor dir, an einer festen Stelle oder als HUD-Kasten. Nur für dich sichtbar.
+- Befehle: /lyrics (an/aus), /lyrics sky, /lyrics front, /lyrics hud, /lyrics here, /lyrics size 1.5, /lyrics offset 250.
+- Im Mod-Menü unter Visuals > Sky Lyrics.
+
+Nicht im Floons Client
+- Kein Auto-Update, kein Endertruhen-Wert.

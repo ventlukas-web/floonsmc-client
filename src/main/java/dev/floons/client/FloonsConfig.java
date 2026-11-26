@@ -108,6 +108,17 @@ public final class FloonsConfig {
     public boolean armorHudMigrated = false;
     /** Hauptschalter: true = alle Funktionen der Mod aus (Menü, Taste und /floons on bleiben, damit man wieder einschalten kann). */
     public boolean allOff = false;
+    /** Sky Lyrics wie im Toasty Client: "sky" = im Himmel, "front" = vor dir, "block" = feste Stelle, "hud" = Kasten oben */
+    public boolean lyricsHud = false;
+    public String lyricsMode = "sky";
+    public float lyricsSize = 1.0f;
+    public boolean lyricsNext = true;
+    /** Lyrics so viele ms früher zeigen (gleicht Anzeige-Verzögerung aus), negativ = später */
+    public int lyricsOffsetMs = 250;
+    public double lyricsBX, lyricsBY = -1000, lyricsBZ;
+    /** Floons AI (Claude API): eigener Key, Modell */
+    public String aiKey = "";
+    public String aiModel = "claude-haiku-5-5";
     /** Eigener Nametag ueber dem Kopf in der 3. Person. */
     public boolean ownNametag = true;
     public boolean cpsHud = false, reachHud = false, pvpItems = false;

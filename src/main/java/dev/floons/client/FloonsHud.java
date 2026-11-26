@@ -163,6 +163,7 @@ public class FloonsHud {
         renderInfo(ctx, tr, mc, cfg, y, dt);
         renderKeys(ctx, tr, mc, cfg);
         renderModList(ctx, tr, mc, cfg);
+        FloonsLyrics.render(ctx, tr, mc, cfg);
         FloonsProf.end("HUD Grundpanels", p0);
         p0 = FloonsProf.begin();
         FloonsPanels.render(ctx, tr, mc, cfg, tick.getTickProgress(true));

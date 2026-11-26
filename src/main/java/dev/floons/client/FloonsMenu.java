@@ -24,9 +24,9 @@ public class FloonsMenu extends FloonsScreen {
         {"Design", "FPS"},
         {"Gamble"},
         {"Auktion", "Einstellungen"},
-        {"HUD", "Mehr HUDs", "PvP-Anzeigen", "Extras", "Effekte", "Anti-Leak", "Crosshair", "Scoreboard", "Eigenes HUD"},
+        {"HUD", "Mehr HUDs", "Sky Lyrics", "PvP-Anzeigen", "Extras", "Effekte", "Anti-Leak", "Crosshair", "Scoreboard", "Eigenes HUD"},
         {"Twitch-Chat", "Giveaway", "Auktion", "Streamer & Werbung"},
-        {"Tools", "Wegpunkte", "Notizen"},
+        {"Tools", "Wegpunkte", "Notizen", "KI"},
         {"Server"},
         {"Commands"}
     };
@@ -144,6 +144,8 @@ public class FloonsMenu extends FloonsScreen {
             case "Streamer & Werbung" -> streamerPage(y);
             case "HUD" -> hud(y);
             case "Mehr HUDs" -> moreHud(y);
+            case "Sky Lyrics" -> skyLyrics(y);
+            case "KI" -> aiPage(y);
             case "PvP-Anzeigen" -> pvp(y);
             case "Extras" -> extras(y);
             case "Anti-Leak" -> antiLeak(y);
@@ -810,8 +812,64 @@ public class FloonsMenu extends FloonsScreen {
         label("nächsten Öffnen des Hauptmenüs.", left, y + 22);
     }
 
+    // ---------- Sky Lyrics ----------
+    private void skyLyrics(int y) {
+        FloonsConfig c = FloonsConfig.get();
+        int half = (PW - 6) / 2;
+        toggle("Sky Lyrics", () -> c.lyricsHud, v -> { c.lyricsHud = v; if (!v) FloonsSkyLyrics.clear(); }, left, y, half);
+        toggle("Nächste Zeile", () -> c.lyricsNext, v -> c.lyricsNext = v, left + half + 6, y, half);
+        y += 21;
+        button(() -> "Lyrics: " + FloonsLyricsCmd.modeName(c.lyricsMode), () -> {
+            String[] m = {"sky", "front", "block", "hud"};
+            int k = 0; for (int q = 0; q < m.length; q++) if (m[q].equals(c.lyricsMode)) k = q;
+            c.lyricsMode = m[(k + 1) % m.length]; c.save(); FloonsSkyLyrics.clear();
+        }, left, y, half, 18, true);
+        button(() -> "Größe: " + String.format(Locale.ROOT, "%.2f", c.lyricsSize).replaceAll("0$", "") + "x", () -> {
+            c.lyricsSize = c.lyricsSize >= 2.0f ? 0.5f : c.lyricsSize + 0.25f; c.save(); FloonsSkyLyrics.clear();
+        }, left + half + 6, y, half, 18);
+        y += 21;
+        button(() -> "Hier festmachen", () -> { c.lyricsHud = true; FloonsAuction.info(FloonsSkyLyrics.here()); }, left, y, half, 18);
+        cycleLong("Versatz", new long[]{-500, -250, 0, 250, 500, 750},
+            () -> (long) c.lyricsOffsetMs, v -> c.lyricsOffsetMs = (int) (long) v, v -> (v > 0 ? "+" : "") + v + " ms", left + half + 6, y, half);
+        y += 27;
+        label("Songtext des laufenden Songs (Spotify, Apple Music, Browser ...)", left, y);
+        label("schwebt im Himmel, vor dir oder an einer festen Stelle.", left, y + 11);
+        label("Nur Windows, nur für dich sichtbar. Texte von LRCLIB.", left, y + 22);
+        label("Befehle: /lyrics, /lyrics sky|front|hud|here, /lyrics size 1.5", left, y + 39);
+    }
+
+    // ---------- KI ----------
+    private String aiQuestion = "";
+
+    private void aiPage(int y) {
+        FloonsConfig c = FloonsConfig.get();
+        int half = (PW - 6) / 2;
+        label("Floons AI: frag alles, auch zum Client. Im Chat: /ai <Frage> oder /ki <Frage>", left, y);
+        y += 13;
+        field(left, y, PW - 80, aiQuestion, 256, s -> aiQuestion = s);
+        button(() -> "Fragen", () -> {
+            if (aiQuestion.isBlank()) return;
+            String q = aiQuestion.trim(); aiQuestion = "";
+            close(); FloonsAI.ask(q);
+        }, left + PW - 74, y, 74, 18, true);
+        y += 27;
+        label("Claude-API-Key " + (FloonsAI.hasKey() ? "(gespeichert ✔ – zum Ändern neu einfügen)" : "(console.anthropic.com)"), left, y);
+        field(left, y + 10, PW, "", 256, s -> { if (s.trim().length() > 20) FloonsAI.setKey(s); });
+        y += 34;
+        button(() -> "Modell: " + c.aiModel.replace("claude-", ""), () -> {
+            int i = 0; for (int n = 0; n < FloonsAI.MODELS.length; n++) if (FloonsAI.MODELS[n].equals(c.aiModel)) i = n + 1;
+            c.aiModel = FloonsAI.MODELS[i % FloonsAI.MODELS.length]; c.save();
+        }, left, y, half, 18);
+        button(() -> "Neues Gespräch", FloonsAI::reset, left + half + 6, y, half, 18);
+        y += 26;
+        label("Haiku = schnell & günstig, Sonnet/Opus = schlauer.", left, y);
+        label("Kosten laufen über deinen Key. Key nicht zeigen, wenn du streamst.", left, y + 11);
+    }
+
     // ---------- Commands ----------
-    private static final String[][] CMDS = {
+    static final String[][] CMDS = {
+        {"KI", "/ai Frage"}, {"KI", "/ki Frage"}, {"KI", "/ai reset"}, {"KI", "/ai key <key>"}, {"KI", "/ai model claude-haiku-5-5"},
+        {"Sky Lyrics", "/lyrics"}, {"Sky Lyrics", "/lyrics sky"}, {"Sky Lyrics", "/lyrics front"}, {"Sky Lyrics", "/lyrics hud"}, {"Sky Lyrics", "/lyrics here"}, {"Sky Lyrics", "/lyrics size 1.5"}, {"Sky Lyrics", "/lyrics offset 250"},
         {"Gamble", "/win"}, {"Gamble", "/win Spieler"}, {"Gamble", "/win Spieler 3"}, {"Gamble", "/win all"},
         {"Gamble", "/lose"}, {"Gamble", "/lose Spieler"}, {"Gamble", "/lose all"},
         {"Gamble", "/payback"}, {"Gamble", "/payback Spieler"}, {"Gamble", "/payback all"},
