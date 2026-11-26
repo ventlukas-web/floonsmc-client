@@ -188,7 +188,7 @@ public final class FloonsAuction {
         }
         say("[Auktion] " + item + " geht an " + bestName + " für " + fmt(best) + "!");
         info("Insgesamt geboten: " + fmt(total) + " von " + bids.size() + " Bieter" + (bids.size() == 1 ? "" : "n"));
-        FloonsHud.overlay(true, "VERKAUFT", item + "  ·  " + bestName + "  ·  " + fmt(best));
+        FloonsHud.winner("VERKAUFT AN", bestName, item + "  ·  " + fmt(best));
         long over = bids.getOrDefault(bestName, 0L) - best;
         if (over > 0) info(bestName + " hat " + fmt(over) + " mehr gezahlt als nötig.");
         tpaButtons(bestName);

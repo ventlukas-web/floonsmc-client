@@ -45,6 +45,82 @@ public class FloonsHud {
         flashUntil = System.currentTimeMillis() + 1500;
     }
 
+    // ---------- Großes Gewinner-Popup am Ende (Auktion/Giveaway) ----------
+    private static String wLabel = "", wName = "", wSub = "";
+    private static long wStart = -100000;
+    private static final long W_MS = 6500;
+
+    /** Groß in der Bildschirmmitte: Label klein, Name riesig mit Spielerkopf, darunter Item/Preis. Mit Konfetti. */
+    public static void winner(String label, String name, String sub) {
+        wLabel = label; wName = name; wSub = sub; wStart = System.currentTimeMillis();
+        ovStart = -100000; // kleines Banner nicht zusätzlich
+        if (FloonsConfig.get().confetti) {
+            MinecraftClient mc = MinecraftClient.getInstance();
+            int w = mc.getWindow().getScaledWidth();
+            for (int i = 0; i < 220; i++) {
+                P p = new P();
+                p.x = RND.nextFloat() * w; p.y = -10 - RND.nextFloat() * 120;
+                p.vx = (RND.nextFloat() - 0.5f) * 60; p.vy = 50 + RND.nextFloat() * 110;
+                p.size = 2 + RND.nextInt(4);
+                p.color = RND.nextInt(5) == 0 ? 0xFFFFD54A : FloonsTheme.lerp(FloonsTheme.PURPLE, FloonsTheme.BLUE, RND.nextFloat());
+                parts.add(p);
+            }
+        }
+    }
+
+    private static void renderWinner(DrawContext ctx, TextRenderer tr, MinecraftClient mc) {
+        long el = System.currentTimeMillis() - wStart;
+        if (el < 0 || el > W_MS) return;
+        float t = el / (float) W_MS;
+        float a = t < 0.06f ? t / 0.06f : (t > 0.85f ? (1f - t) / 0.15f : 1f);
+        int alpha = (int) (255 * Math.max(0, Math.min(1, a)));
+        if (alpha < 8) return;
+        // Aufploppen mit leichtem Überschwingen
+        float in = Math.min(1f, el / 380f);
+        float pop = in < 1f ? (float) (1 + 0.18 * Math.sin(in * Math.PI) ) * (0.55f + 0.45f * in) : 1f;
+        int sw = mc.getWindow().getScaledWidth(), sh = mc.getWindow().getScaledHeight();
+        float nameScale = 4f;
+        int nameW = (int) (tr.getWidth(wName) * nameScale);
+        int head = 40;
+        int pw = Math.min(sw - 16, Math.max(Math.max(nameW + head + 50, tr.getWidth(wSub) * 1.5f + 60 > 0 ? (int) (tr.getWidth(wSub) * 1.5f) + 60 : 0), 260));
+        int ph = 104;
+        ctx.getMatrices().pushMatrix();
+        ctx.getMatrices().translate(sw / 2f, sh * 0.36f);
+        ctx.getMatrices().scale(pop, pop);
+        int x0 = -pw / 2, y0 = -ph / 2;
+        FloonsTheme.panel(ctx, x0, y0, pw, ph, Math.max(1, alpha * 19 / 20));
+        float pulse = (float) (0.5 + 0.5 * Math.sin(el / 160.0));
+        FloonsTheme.roundOutline(ctx, x0, y0, pw, ph, 14, FloonsTheme.alpha(FloonsTheme.lerp(0xFFFFD54A, FloonsTheme.PURPLE, pulse), alpha));
+        FloonsTheme.roundOutline(ctx, x0 - 2, y0 - 2, pw + 4, ph + 4, 16, FloonsTheme.alpha(FloonsTheme.lerp(FloonsTheme.PURPLE, FloonsTheme.BLUE, pulse), alpha / 3));
+        // Label
+        ctx.getMatrices().pushMatrix();
+        ctx.getMatrices().translate(0, y0 + 9);
+        ctx.getMatrices().scale(1.4f, 1.4f);
+        ctx.drawTextWithShadow(tr, wLabel, -tr.getWidth(wLabel) / 2, 0, FloonsTheme.alpha(0xFFFFD54A, alpha));
+        ctx.getMatrices().popMatrix();
+        // Kopf + Name
+        int rowW = head + 10 + nameW;
+        int hx = -rowW / 2, hy = y0 + 28;
+        boolean drewHead = false;
+        try {
+            var ne = mc.getNetworkHandler() == null ? null : mc.getNetworkHandler().getPlayerListEntry(wName);
+            if (ne != null) { net.minecraft.client.gui.PlayerSkinDrawer.draw(ctx, ne.getSkinTextures(), hx, hy, head); drewHead = true; }
+        } catch (Throwable ignored) {}
+        if (!drewHead) { rowW = nameW; hx = -rowW / 2 - head - 10; }
+        ctx.getMatrices().pushMatrix();
+        ctx.getMatrices().translate(hx + head + 10, hy + 2);
+        ctx.getMatrices().scale(nameScale, nameScale);
+        FloonsTheme.gradientText(ctx, tr, wName, 0, 0);
+        ctx.getMatrices().popMatrix();
+        // Untertitel
+        ctx.getMatrices().pushMatrix();
+        ctx.getMatrices().translate(0, y0 + ph - 22);
+        ctx.getMatrices().scale(1.5f, 1.5f);
+        ctx.drawTextWithShadow(tr, wSub, -tr.getWidth(wSub) / 2, 0, FloonsTheme.alpha(FloonsTheme.TEFloonsT, alpha));
+        ctx.getMatrices().popMatrix();
+        ctx.getMatrices().popMatrix();
+    }
+
     public static void overlay(boolean win, String title, String sub) {
         ovTitle = title; ovSub = sub;
         ovColor = win ? FloonsTheme.GOOD : FloonsTheme.BAD;
@@ -103,6 +179,7 @@ public class FloonsHud {
         p0 = FloonsProf.begin();
         renderConfetti(ctx, mc, dt);
         renderOverlay(ctx, tr, mc);
+        renderWinner(ctx, tr, mc);
         FloonsProf.end("Konfetti/Overlay", p0);
     }
 

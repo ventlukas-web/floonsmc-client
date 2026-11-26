@@ -168,7 +168,7 @@ public final class FloonsStreamer {
         lastWinners.addAll(pendingWinners);
         String list = String.join(", ", names);
         FloonsAuction.say("[Giveaway] Gewinner" + (names.size() > 1 ? "" : "") + ": " + list + " (" + prize + ")! " + lastPool.size() + " Teilnehmer.");
-        FloonsHud.overlay(true, names.size() > 1 ? "GEWINNER" : names.get(0), prize + "  ·  " + lastPool.size() + " Teilnehmer");
+        FloonsHud.winner(names.size() > 1 ? "GEWINNER (" + names.size() + ")" : "GEWINNER", names.size() > 1 ? String.join(", ", names) : names.get(0), prize + "  ·  " + lastPool.size() + " Teilnehmer");
         if (FloonsConfig.get().sound) FloonsGamble.playId("ui.toast.challenge_complete", 0.8f, 1.0f);
     }
 
