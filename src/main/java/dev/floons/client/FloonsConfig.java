@@ -81,7 +81,7 @@ public final class FloonsConfig {
     // ---------- Ender-Wert (WindSMP-Preise aus /ah und /orders) ----------
     public boolean worthOverlay = true, worthTooltip = true, worthLearn = true;
     /** WindSMP-Preis-Server (Cloudflare Worker), leer = nur selbst gesehene Preise. */
-    public String priceServer = "";
+    public String priceServer = "https://windsmp-prices.vent-lukas.workers.dev";
     /** gesehene /ah- und /orders-Preise an den Preis-Server senden */
     public boolean priceShare = true;
     /** "ah" = günstigstes AH-Angebot, "order" = Order-Preis (Sofortverkauf). */
